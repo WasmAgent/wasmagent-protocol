@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Registry of repositories that consume @wasmagent/protocol as an npm dependency, and the supported version band.",
+  "consumers": [
+    {
+      "repo": "WasmAgent/wasmagent-js",
+      "packageJsonPath": "package.json",
+      "version": "^0.1.5",
+      "notes": "Primary consumer; placeholder version until the repo actually adds the dependency."
+    },
+    {
+      "repo": "WasmAgent/wasmagent-proxy",
+      "packageJsonPath": "package.json",
+      "version": "^0.1.0",
+      "notes": "Placeholder version until the repo actually adds the dependency."
+    },
+    {
+      "repo": "WasmAgent/trace-pipeline",
+      "packageJsonPath": "package.json",
+      "version": "^0.1.0",
+      "notes": "Placeholder version until the repo actually adds the dependency."
+    },
+    {
+      "repo": "WasmAgent/wasmagent-train-replay",
+      "packageJsonPath": "package.json",
+      "version": "^0.1.0",
+      "notes": "Placeholder version until the repo actually adds the dependency."
+    },
+    {
+      "repo": "WasmAgent/open-agent-audit",
+      "packageJsonPath": "package.json",
+      "version": "^0.1.0",
+      "notes": "Placeholder version until the repo actually adds the dependency."
+    }
+  ],
+  "supportedBand": {
+    "min": "0.1.0",
+    "max": "0.1.99"
+  }
+}

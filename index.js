@@ -30,3 +30,6 @@ export function getSchema(id) {
 
 /** All schemas as a plain object keyed by id. */
 export const schemas = Object.fromEntries(index.schemas.map((s) => [s.id, getSchema(s.id)]));
+
+/** Machine-readable registry of repositories that consume @wasmagent/protocol. */
+export const consumerRegistry = JSON.parse(readFileSync(join(here, 'consumers.json'), 'utf8'));
