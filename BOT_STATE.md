@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 21:51 UTC by patrol_
+_Last updated: 2026-07-23 22:02 UTC by patrol_
 
 ## Queue
 
@@ -8,7 +8,7 @@ _Last updated: 2026-07-23 21:51 UTC by patrol_
 |---|---|
 | Pending | 5 |
 | Active (running/reviewing) | 0 |
-| Blocked | 6 |
+| Blocked | 5 |
 | Completed/Merged (all time) | 45 |
 
 ## Recent Activity (last 5)
@@ -23,8 +23,8 @@ _Last updated: 2026-07-23 21:51 UTC by patrol_
 
 ## Waiting for Human
 
+- #46: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
-- #37: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
 - #25: Fix WasmAgent/wasmagent-protocol#13 ([milestone Milestone 3 ] Publish an `aep-conformance/` fixture set in the package (
