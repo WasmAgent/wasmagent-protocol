@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 06:53 UTC by patrol_
+_Last updated: 2026-07-23 06:54 UTC by patrol_
 
 ## Queue
 
@@ -21,6 +21,7 @@ _Last updated: 2026-07-23 06:53 UTC by patrol_
 ## Waiting for Human
 
 - #4: [milestone Milestone 2 ] Migrate `wasmagent-proxy` Rust `aep-core` types to generate from / validate
+- #1: [milestone Milestone 1 ] Publish `@wasmagent/protocol@0.1.0` to npm and `wasmagent-protocol==0.1.0`
 
 ---
 _Maintained automatically by claude-bot-go patrol. Do not edit._
