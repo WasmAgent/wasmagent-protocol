@@ -28,6 +28,7 @@
     "schemas/"
   ],
   "scripts": {
+    "build": "node --test",
     "test": "node --test"
   },
   "publishConfig": {
