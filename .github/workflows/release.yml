@@ -61,11 +61,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Node 24 ships an npm new enough (>= 11.5.1) for OIDC trusted publishing.
-      # Per npm docs: do not cache in release builds; publish needs no token.
+      # IMPORTANT: do NOT set registry-url here. setup-node's registry-url writes
+      # a token-based .npmrc (//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}),
+      # and with no token that empty auth short-circuits OIDC and yields a 404.
+      # Plain setup lets npm perform the OIDC token exchange itself.
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
       - name: Show npm version (must be >= 11.5.1 for OIDC)
         run: npm --version
