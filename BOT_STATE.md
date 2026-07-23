@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-23 19:02 UTC by patrol_
+_Last updated: 2026-07-23 19:23 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 9 |
+| Pending | 6 |
 | Active (running/reviewing) | 1 |
 | Blocked | 2 |
-| Completed/Merged (all time) | 29 |
+| Completed/Merged (all time) | 32 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #41 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-23 |
+| #42 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-23 |
+| #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #44 | [milestone Milestone 2] Define version band policy and ad... | completed/complexity_gate_split | 2026-07-23 |
-| #36 | [milestone Milestone 2] Create @wasmagent/protocol packag... | merged/auto_closed_resolved | 2026-07-23 |
-| #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
-| #31 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-23 |
 
 ## Waiting for Human
 
@@ -29,7 +29,6 @@ _Last updated: 2026-07-23 19:02 UTC by patrol_
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
 - #25: Fix WasmAgent/wasmagent-protocol#13 ([milestone Milestone 3 ] Publish an `aep-conformance/` fixture set in the package (
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
-- #10: [milestone Milestone 2 ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consum...
 - #2: [milestone Milestone 1 ] Strip local schema copies from `wasmagent-js` (`packages/compliance/schemas/`,
 
 ---
