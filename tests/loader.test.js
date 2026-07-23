@@ -1,12 +1,12 @@
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { index, schemas, getSchema } from "../index.js";
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { getSchema, index, schemas } from '../index.js';
 
-test("registry lists at least one schema", () => {
+test('registry lists at least one schema', () => {
   assert.ok(index.schemas.length >= 1);
 });
 
-test("getSchema round-trips every registered id with a matching $id", () => {
+test('getSchema round-trips every registered id with a matching $id', () => {
   for (const entry of index.schemas) {
     const doc = getSchema(entry.id);
     assert.equal(doc.$id, entry.canonical_id, `${entry.id} $id mismatch`);
@@ -14,12 +14,12 @@ test("getSchema round-trips every registered id with a matching $id", () => {
   }
 });
 
-test("schemas map is keyed by id", () => {
+test('schemas map is keyed by id', () => {
   for (const entry of index.schemas) {
     assert.ok(entry.id in schemas, `${entry.id} missing from schemas map`);
   }
 });
 
-test("getSchema throws on unknown id", () => {
-  assert.throws(() => getSchema("does-not-exist"), /unknown schema id/);
+test('getSchema throws on unknown id', () => {
+  assert.throws(() => getSchema('does-not-exist'), /unknown schema id/);
 });

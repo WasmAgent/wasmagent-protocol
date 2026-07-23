@@ -6,7 +6,7 @@ export interface SchemaIndexEntry {
   path: string;
   canonical_id: string;
   version: string;
-  stability: "stable" | "evolving" | "unstable";
+  stability: 'stable' | 'evolving' | 'unstable';
   owners: string[];
   consumers: string[];
   summary: string;
