@@ -17,29 +17,21 @@ bullets into issues. Each bullet is scoped to concrete files.
 - [x] Strip local schema copies from `wasmagent-js` (`packages/compliance/schemas/`,
       `packages/core/src/ranking/schemas/rollout-wire.schema.json`) and depend on
       the npm package.
-- [ ] Strip local schema copies from `trace-pipeline` (`schemas/*.schema.json`)
-      and depend on the pip package; rename `repair-trace-entry` usage to
-      `repair-trace`.
+- [ ] Strip `trace-pipeline` local schema copies (`schemas/*.schema.json`) and depend on `wasmagent-protocol` (PyPI); rename `repair-trace-entry` usage to `repair-trace`. (tracked: WasmAgent/trace-pipeline#17)
 
 ## Milestone 2 — AEP as the authoritative evidence contract
 
-- [ ] Migrate `wasmagent-proxy` Rust `aep-core` types to generate from / validate
-      against `schemas/aep/aep-record.schema.json`.
+- [ ] Add a CI step in `wasmagent-proxy` that validates emitted AEP records against `@wasmagent/protocol`'s `schemas/aep/aep-record.schema.json` (vendor the schema from the published package at a pinned version). (tracked: WasmAgent/wasmagent-proxy#294)
 - [x] Point `wasmagent-train-replay` `EpochEvidenceBundle` at the shared AEP
       record schema for its evidence envelope.
-- [ ] Map `open-agent-audit` `schemas/v0.1/*` adapter onto the canonical AEP
-      record; document the version-skew adapter.
-- [ ] Add a cross-repo compatibility CI check: fail if any consumer pins an
-      out-of-range protocol version.
+- [ ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.schema.json` onto `@wasmagent/protocol` `aep-record`, with a conformance test proving a sample AEP record validates. (tracked: WasmAgent/open-agent-audit#94)
+- [ ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consumer repo's declared `@wasmagent/protocol` range and fails if any is out of the supported band.
 
 ## Milestone 3 — Stability & conformance
 
-- [ ] Promote `aep-record` from `evolving` to `stable` with a documented
-      versioning guarantee (precondition for the planned `wasmagent-py` runtime).
-- [ ] Provide a generated TypeScript type surface (`.d.ts` from schema) and
-      Python `TypedDict`s so consumers get types, not just validation.
-- [ ] Add a conformance test suite consumers can run against their own emitters
-      (`aep-conformance` fixtures published in the package).
+- [ ] Promote `aep-record` to `stable` in `schemas/index.json` and document the versioning guarantee in `docs/GOVERNANCE.md` (precondition for the planned `wasmagent-py` runtime).
+- [ ] Add `scripts/gen-types.mjs` that generates a `types/` TypeScript `.d.ts` surface from the JSON Schemas, wired into the build and exported from `package.json`.
+- [ ] Publish an `aep-conformance/` fixture set in the package (valid+invalid AEP records) plus a `bin/aep-conformance` runner consumers can point at their own emitter output.
 
 ## Milestone 4 — Evidence types beyond execution
 
