@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 17:57 UTC by patrol_
+_Last updated: 2026-07-23 18:00 UTC by patrol_
 
 ## Queue
 
@@ -24,6 +24,7 @@ _Last updated: 2026-07-23 17:57 UTC by patrol_
 ## Waiting for Human
 
 - #37: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
+- #36: [milestone Milestone 2] Create @wasmagent/protocol package with consumer registry and supported version band
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
 - #25: Fix WasmAgent/wasmagent-protocol#13 ([milestone Milestone 3 ] Publish an `aep-conformance/` fixture set in the package (
