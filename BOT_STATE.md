@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-23 16:27 UTC by patrol_
+_Last updated: 2026-07-23 16:39 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 7 |
+| Pending | 10 |
 | Active (running/reviewing) | 1 |
-| Blocked | 6 |
-| Completed/Merged (all time) | 17 |
+| Blocked | 3 |
+| Completed/Merged (all time) | 18 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #26 | Fix WasmAgent/wasmagent-protocol#12 ([milestone Milestone... | completed/complexity_gate_split | 2026-07-23 |
 | #27 | Fix WasmAgent/wasmagent-protocol#19 ([milestone Milestone... | completed/complexity_gate_split | 2026-07-23 |
 | #23 | [milestone Milestone 2 ] Add a CI step in `wasmagent-prox... | completed/complexity_gate_split | 2026-07-23 |
 | #20 | [milestone Milestone 4 ] Add `schemas/aep/artifact-attest... | completed/complexity_gate_split | 2026-07-23 |
-| #21 | [milestone Milestone 4 ] Update README + `docs/CONTRACT-C... | completed/complexity_gate_split | 2026-07-23 |
 
 ## Waiting for Human
 
