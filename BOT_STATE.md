@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 23:43 UTC by patrol_
+_Last updated: 2026-07-23 23:44 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-23 23:43 UTC by patrol_
 
 ## Waiting for Human
 
+- #51: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #50: Fix WasmAgent/wasmagent-protocol#47 (Create canonical-event.schema.json and @wasmagent/protocol aep-record foundation): 
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
