@@ -106,7 +106,8 @@ python3 tests/conformance.py
 Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
 tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
 
-- **0.1.4** — npm OIDC fix: setup-node@v6 + registry-url (v6 wires OIDC; ENEEDAUTH on v4).
+- **0.1.5** — first successful npm OIDC publish (trusted publisher now registered on npmjs).
+- **0.1.4** — npm OIDC groundwork; trusted publisher was not yet saved on npmjs.
 - **0.1.3** — npm OIDC attempt: dropped registry-url (ENEEDAUTH); PyPI only.
 - **0.1.2** — npm OIDC attempt (Node 24); PyPI only.
 - **0.1.1** — release-pipeline verification (PyPI); no schema changes.
