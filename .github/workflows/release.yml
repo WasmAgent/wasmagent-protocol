@@ -60,19 +60,18 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # Node 24 ships an npm new enough (>= 11.5.1) for OIDC trusted publishing.
+      # Per npm docs: do not cache in release builds; publish needs no token.
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-      # npm OIDC trusted publishing requires a recent npm (>= 11.5.1). The
-      # runner's bundled npm may be older, so upgrade explicitly.
-      - name: Upgrade npm to an OIDC-capable version
-        run: npm install -g npm@latest
+          package-manager-cache: false
+      - name: Show npm version (must be >= 11.5.1 for OIDC)
+        run: npm --version
       - name: Verify loader before publish
         run: node --test
-      - name: Publish to npm
-        # OIDC trusted publishing auto-generates provenance; no --provenance
-        # flag and no NODE_AUTH_TOKEN needed. npm >= 11.5.1 exchanges the OIDC
-        # id-token for a short-lived publish credential automatically.
+      - name: Publish to npm (OIDC — no token, provenance auto-generated)
         run: npm publish --access public
+
 

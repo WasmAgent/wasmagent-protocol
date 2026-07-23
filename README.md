@@ -106,7 +106,8 @@ python3 tests/conformance.py
 Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
 tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
 
-- **0.1.1** — release-pipeline verification; no schema changes.
+- **0.1.2** — npm OIDC publishing fix (Node 24 for npm ≥ 11.5.1); no schema changes.
+- **0.1.1** — release-pipeline verification (PyPI); no schema changes.
 - **0.1.0** — initial canonical extraction of the AEP + compliance schema family.
 
 ## License
