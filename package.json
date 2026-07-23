@@ -1,6 +1,6 @@
 {
   "name": "@wasmagent/protocol",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Canonical JSON Schemas for the WasmAgent Agent Evidence Protocol (AEP) and compliance contracts. Single source of truth across the WasmAgent org.",
   "keywords": ["wasmagent", "aep", "agent-evidence-protocol", "json-schema", "compliance", "provenance"],
   "homepage": "https://github.com/WasmAgent/wasmagent-protocol#readme",
