@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-23 17:56 UTC by patrol_
+_Last updated: 2026-07-23 17:57 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 7 |
+| Pending | 5 |
 | Active (running/reviewing) | 1 |
-| Blocked | 2 |
-| Completed/Merged (all time) | 25 |
+| Blocked | 3 |
+| Completed/Merged (all time) | 26 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #31 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-23 |
 | #39 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-23 |
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #32 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-23 |
-| #33 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-23 |
 
 ## Waiting for Human
 
