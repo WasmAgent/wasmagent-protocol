@@ -1,0 +1,10 @@
+{
+  "schema_version": "compliance-eval-record/v2",
+  "task_id": "t-1",
+  "task_spec_hash": "sha256:abcd",
+  "model": "m",
+  "mode": "turbo",
+  "violations": [],
+  "repair_trace": [],
+  "final_pass": true
+}

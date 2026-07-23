@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "protocol": "AEP",
+  "description": "Registry of canonical WasmAgent protocol schemas. This is the single source of truth for every cross-repository contract in the org. Downstream repos consume these via the versioned npm (@wasmagent/protocol) and pip (wasmagent-protocol) packages and MUST NOT keep local copies.",
+  "canonical_host": "https://wasmagent.dev/schemas/",
+  "schemas": [
+    {
+      "id": "aep-record",
+      "title": "AEPRecord",
+      "path": "schemas/aep/aep-record.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
+      "version": "aep/v0.2",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "wasmagent-proxy", "trace-pipeline", "wasmagent-train-replay", "open-agent-audit"],
+      "summary": "Runtime action evidence and run provenance record — the core Agent Evidence Protocol contract."
+    },
+    {
+      "id": "constraint-ir",
+      "title": "ConstraintIR",
+      "path": "schemas/compliance/constraint-ir.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/constraint-ir.schema.json",
+      "version": "compliance/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "Typed, repairable, prioritised constraint — superset of @wasmagent/core Criterion."
+    },
+    {
+      "id": "constraint-violation",
+      "title": "ConstraintViolation",
+      "path": "schemas/compliance/constraint-violation.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/constraint-violation.schema.json",
+      "version": "compliance/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "A failed constraint plus its location in the artifact."
+    },
+    {
+      "id": "repair-trace",
+      "title": "RepairTrace",
+      "path": "schemas/compliance/repair-trace.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/repair-trace.schema.json",
+      "version": "compliance/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "Per-round repair record. Supersedes trace-pipeline's repair-trace-entry naming."
+    },
+    {
+      "id": "task-spec",
+      "title": "TaskSpec",
+      "path": "schemas/compliance/task-spec.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/task-spec.schema.json",
+      "version": "compliance/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "Public contract for a compliance run. One TaskSpec -> one run -> one ComplianceEvalRecord."
+    },
+    {
+      "id": "compliance-eval-record",
+      "title": "ComplianceEvalRecord",
+      "path": "schemas/compliance/compliance-eval-record.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/compliance-eval-record.schema.json",
+      "version": "compliance-eval-record/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "One record per compliance run."
+    },
+    {
+      "id": "rollout-wire",
+      "title": "Rollout Wire Format",
+      "path": "schemas/compliance/rollout-wire.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/compliance/rollout-wire.schema.json",
+      "version": "rollout-wire/v1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "trace-pipeline"],
+      "summary": "Intermediate JSONL formats in the wasmagent -> evomerge data pipeline (branch/dpo/ppo records)."
+    }
+  ]
+}

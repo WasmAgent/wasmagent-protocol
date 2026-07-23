@@ -1,0 +1,9 @@
+{
+  "id": "t-1",
+  "intent": "x",
+  "language": "en",
+  "constraints": [],
+  "priority_hierarchy": [
+    "make_it_nice"
+  ]
+}

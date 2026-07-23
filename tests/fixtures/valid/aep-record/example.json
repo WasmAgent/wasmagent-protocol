@@ -1,0 +1,28 @@
+{
+  "schema_version": "aep/v0.2",
+  "run_id": "run-abc123",
+  "trace_id": "trace-001",
+  "runtime_version": "wasmagent-js@1.20.0",
+  "created_at_ms": 1737600000000,
+  "capability_decisions": [
+    {
+      "capability": "fs.write",
+      "subject": "agent-1",
+      "resource": "/tmp/out.txt",
+      "decision": "allow"
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "a1",
+      "tool_name": "write_file",
+      "state_changing": true,
+      "timestamp_ms": 1737600000100
+    }
+  ],
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "k1",
+    "sig": "base64sig=="
+  }
+}

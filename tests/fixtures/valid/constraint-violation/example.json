@@ -1,0 +1,13 @@
+{
+  "constraint_id": "c-1",
+  "level": "hard",
+  "category": "format",
+  "hint": "Expected valid JSON but got trailing comma",
+  "evidence_span": {
+    "line_range": [
+      10,
+      12
+    ]
+  },
+  "detected_at": "post_decode"
+}

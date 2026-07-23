@@ -1,0 +1,19 @@
+# Verification pipeline for wasmagent-protocol.
+# Consumed by the WasmAgent bot's merge gate. All commands must exit 0 for a PR
+# to be considered green. This repo is spec-only, so verification = schemas are
+# well-formed, refs resolve, fixtures pass/fail correctly, and both loaders work.
+version: 1
+
+setup:
+  - python3 -m pip install --quiet --upgrade jsonschema referencing build
+
+steps:
+  - name: schema-conformance
+    run: python3 tests/conformance.py
+  - name: js-loader
+    run: node --test
+  - name: python-wheel-import
+    run: |
+      python3 -m build --wheel
+      python3 -m pip install --quiet --force-reinstall dist/*.whl
+      python3 -c "from wasmagent_protocol import get_schema; assert get_schema('aep-record')['title']=='AEPRecord'"

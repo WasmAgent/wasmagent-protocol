@@ -1,0 +1,6 @@
+# Every schema and contract change requires owner review — these are cross-repo
+# contracts, so changes here ripple into every consumer repository.
+* @telleroutlook
+
+# The schemas themselves are the highest-stakes surface.
+/schemas/ @telleroutlook

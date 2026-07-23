@@ -1,0 +1,19 @@
+{
+  "id": "t-1",
+  "intent": "Summarize the changelog",
+  "language": "en",
+  "constraints": [
+    {
+      "id": "c-1",
+      "description": "under 200 words",
+      "verify_method": "word_count",
+      "level": "hard",
+      "priority": 80,
+      "category": "content"
+    }
+  ],
+  "priority_hierarchy": [
+    "system_policy",
+    "user_explicit_constraints"
+  ]
+}

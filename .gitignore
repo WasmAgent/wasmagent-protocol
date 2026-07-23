@@ -1,0 +1,16 @@
+# Node
+node_modules/
+npm-debug.log*
+*.tgz
+
+# Python
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store

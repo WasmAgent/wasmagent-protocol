@@ -1,0 +1,9 @@
+{
+  "id": "c-1",
+  "description": "x",
+  "verify_method": "json_parse",
+  "level": "critical",
+  "priority": 90,
+  "category": "format",
+  "unexpected": true
+}

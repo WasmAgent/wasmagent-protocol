@@ -1,0 +1,46 @@
+name: conformance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  schema-conformance:
+    name: Schema conformance (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m pip install --upgrade pip jsonschema referencing
+      - name: Validate schemas + fixtures
+        run: python tests/conformance.py
+
+  js-loader:
+    name: JS loader smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: getSchema round-trips every registered id
+        run: node --test
+
+  python-loader:
+    name: Python loader smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m pip install --upgrade pip build
+      - name: Build wheel and import from it
+        run: |
+          python -m build --wheel
+          python -m pip install dist/*.whl
+          python -c "from wasmagent_protocol import get_schema, schema_ids; assert get_schema('aep-record')['title']=='AEPRecord'; print('ids:', schema_ids())"

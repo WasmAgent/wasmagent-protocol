@@ -1,0 +1,9 @@
+{
+  "rollout_id": "r-1",
+  "task": "solve",
+  "branch_index": 0,
+  "temperature": 0.7,
+  "session_id": "s-1",
+  "tool_call_sequence": [],
+  "final_answer": "42"
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@wasmagent/protocol",
+  "version": "0.1.0",
+  "description": "Canonical JSON Schemas for the WasmAgent Agent Evidence Protocol (AEP) and compliance contracts. Single source of truth across the WasmAgent org.",
+  "keywords": ["wasmagent", "aep", "agent-evidence-protocol", "json-schema", "compliance", "provenance"],
+  "homepage": "https://github.com/WasmAgent/wasmagent-protocol#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WasmAgent/wasmagent-protocol.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WasmAgent/wasmagent-protocol/issues"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "schemas/"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

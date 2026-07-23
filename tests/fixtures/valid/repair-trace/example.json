@@ -1,0 +1,9 @@
+{
+  "round": 1,
+  "violation_ids": [
+    "c-1"
+  ],
+  "strategy": "patch",
+  "ok": true,
+  "remaining_violation_ids": []
+}

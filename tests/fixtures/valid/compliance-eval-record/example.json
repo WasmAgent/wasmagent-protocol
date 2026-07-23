@@ -1,0 +1,11 @@
+{
+  "schema_version": "compliance-eval-record/v1",
+  "task_id": "t-1",
+  "task_spec_hash": "sha256:abcd",
+  "model": "qwen2.5-1.5b",
+  "mode": "full_pcl",
+  "violations": [],
+  "repair_trace": [],
+  "final_pass": true,
+  "artifact": "Final output text."
+}

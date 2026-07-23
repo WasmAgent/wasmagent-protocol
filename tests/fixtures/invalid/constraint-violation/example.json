@@ -1,0 +1,8 @@
+{
+  "constraint_id": "c-1",
+  "level": "hard",
+  "category": "format",
+  "hint": "x",
+  "evidence_span": {},
+  "detected_at": "sometime"
+}
