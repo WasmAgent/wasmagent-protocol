@@ -51,3 +51,25 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  npm-publish:
+    name: Publish to npm (Trusted Publishing / OIDC)
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # mandatory for npm OIDC trusted publishing
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      # npm OIDC trusted publishing requires a recent npm (>= 11.5.1). The
+      # runner's bundled npm may be older, so upgrade explicitly.
+      - name: Upgrade npm to an OIDC-capable version
+        run: npm install -g npm@latest
+      - name: Verify loader before publish
+        run: node --test
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+
