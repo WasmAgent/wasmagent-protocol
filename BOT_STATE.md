@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 16:56 UTC by patrol_
+_Last updated: 2026-07-23 17:01 UTC by patrol_
 
 ## Queue
 
@@ -9,7 +9,7 @@ _Last updated: 2026-07-23 16:56 UTC by patrol_
 | Pending | 5 |
 | Active (running/reviewing) | 0 |
 | Blocked | 8 |
-| Completed/Merged (all time) | 19 |
+| Completed/Merged (all time) | 20 |
 
 ## Recent Activity (last 5)
 
@@ -17,12 +17,13 @@ _Last updated: 2026-07-23 16:56 UTC by patrol_
 |---|---|---|---|
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
+| #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #26 | Fix WasmAgent/wasmagent-protocol#12 ([milestone Milestone... | completed/complexity_gate_split | 2026-07-23 |
 | #27 | Fix WasmAgent/wasmagent-protocol#19 ([milestone Milestone... | completed/complexity_gate_split | 2026-07-23 |
-| #23 | [milestone Milestone 2 ] Add a CI step in `wasmagent-prox... | completed/complexity_gate_split | 2026-07-23 |
 
 ## Waiting for Human
 
+- #37: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #33: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
