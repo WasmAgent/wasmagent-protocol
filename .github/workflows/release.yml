@@ -71,5 +71,8 @@ jobs:
       - name: Verify loader before publish
         run: node --test
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        # OIDC trusted publishing auto-generates provenance; no --provenance
+        # flag and no NODE_AUTH_TOKEN needed. npm >= 11.5.1 exchanges the OIDC
+        # id-token for a short-lived publish credential automatically.
+        run: npm publish --access public
 
