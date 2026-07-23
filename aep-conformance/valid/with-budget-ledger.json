@@ -1,0 +1,22 @@
+{
+  "schema_version": "aep/v0.2",
+  "run_id": "run-budget",
+  "trace_id": "trace-budget-001",
+  "created_at_ms": 1737600000000,
+  "budget_ledger": {
+    "token_budget": { "limit": 100000, "spent": 42300 },
+    "latency_budget": { "limit_ms": 30000, "actual_ms": 8421 },
+    "tool_budget": { "limit": 50, "spent": 3 },
+    "risk_budget": { "limit": 100, "spent": 12 },
+    "retry_budget": { "limit": 5, "spent": 0 },
+    "human_approval_budget": { "limit": 3, "spent": 1 }
+  },
+  "run_context": {
+    "agent_id": "agent-1",
+    "agent_version": "0.4.2",
+    "subagent_id": "sub-1",
+    "delegation_chain": ["agent-1", "sub-1"],
+    "environment_digest": "sha256:env",
+    "dependency_lock_digest": "sha256:lock"
+  }
+}

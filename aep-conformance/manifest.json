@@ -1,0 +1,79 @@
+{
+  "name": "aep-conformance",
+  "description": "Machine-readable index of the aep-record conformance fixture set. Each entry names a fixture, whether it MUST pass (valid) or MUST fail (invalid) against the canonical aep-record schema, and for invalid cases the JSON Schema keyword the violation is expected to trip. Consumers iterate these fixtures to self-check their emitter output.",
+  "schema": {
+    "id": "aep-record",
+    "version": "aep/v0.2",
+    "canonical_id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
+    "path": "schemas/aep/aep-record.schema.json"
+  },
+  "fixtures": [
+    {
+      "path": "valid/minimal.json",
+      "valid": true,
+      "description": "Minimal record carrying only the three required top-level fields (schema_version, run_id, created_at_ms)."
+    },
+    {
+      "path": "valid/v0.1.json",
+      "valid": true,
+      "description": "Record using the legacy aep/v0.1 schema_version plus optional scalar provenance fields."
+    },
+    {
+      "path": "valid/with-capabilities.json",
+      "valid": true,
+      "description": "Record exercising capability_decisions, actions, verifier_results, and the signature envelope."
+    },
+    {
+      "path": "valid/with-budget-ledger.json",
+      "valid": true,
+      "description": "Record exercising a fully-populated budget_ledger (all six budget kinds) and run_context."
+    },
+    {
+      "path": "valid/with-refs.json",
+      "valid": true,
+      "description": "Record exercising input_refs (with taint_labels) and output_refs (with redaction_profile)."
+    },
+    {
+      "path": "invalid/bad-schema-version.json",
+      "valid": false,
+      "description": "schema_version is outside the allowed aep/v0.1, aep/v0.2 enum.",
+      "expect_keyword": "enum"
+    },
+    {
+      "path": "invalid/missing-run-id.json",
+      "valid": false,
+      "description": "Missing the required run_id top-level field.",
+      "expect_keyword": "required"
+    },
+    {
+      "path": "invalid/missing-created-at-ms.json",
+      "valid": false,
+      "description": "Missing the required created_at_ms top-level field.",
+      "expect_keyword": "required"
+    },
+    {
+      "path": "invalid/bad-capability-decision.json",
+      "valid": false,
+      "description": "A capability decision uses a value outside the allow/deny/ask_user/dry_run enum.",
+      "expect_keyword": "enum"
+    },
+    {
+      "path": "invalid/missing-action-required.json",
+      "valid": false,
+      "description": "An action is missing the required tool_name field.",
+      "expect_keyword": "required"
+    },
+    {
+      "path": "invalid/bad-timestamp-type.json",
+      "valid": false,
+      "description": "An action timestamp_ms is a string rather than a number.",
+      "expect_keyword": "type"
+    },
+    {
+      "path": "invalid/missing-signature-required.json",
+      "valid": false,
+      "description": "The signature block is present but missing its required sig field.",
+      "expect_keyword": "required"
+    }
+  ]
+}

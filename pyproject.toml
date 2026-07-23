@@ -35,3 +35,6 @@ packages = ["src/wasmagent_protocol"]
 # from an installed wheel.
 [tool.hatch.build.targets.wheel.force-include]
 "schemas" = "wasmagent_protocol/schemas"
+# Ship the aep-conformance fixture corpus so consumers can self-check their
+# emitter output from an installed wheel (mirrors how schemas ship).
+"aep-conformance" = "wasmagent_protocol/aep_conformance"

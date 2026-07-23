@@ -1,0 +1,13 @@
+{
+  "schema_version": "aep/v0.2",
+  "run_id": "run-bad-ts-type",
+  "created_at_ms": 1737600000000,
+  "actions": [
+    {
+      "action_id": "a1",
+      "tool_name": "write_file",
+      "state_changing": true,
+      "timestamp_ms": "1737600000100"
+    }
+  ]
+}

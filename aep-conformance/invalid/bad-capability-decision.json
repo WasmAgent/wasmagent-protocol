@@ -1,0 +1,13 @@
+{
+  "schema_version": "aep/v0.2",
+  "run_id": "run-bad-decision",
+  "created_at_ms": 1737600000000,
+  "capability_decisions": [
+    {
+      "capability": "fs.write",
+      "subject": "agent-1",
+      "resource": "/tmp/x",
+      "decision": "blocked"
+    }
+  ]
+}

@@ -20,12 +20,14 @@
       "types": "./index.d.ts",
       "import": "./index.js"
     },
-    "./schemas/*": "./schemas/*"
+    "./schemas/*": "./schemas/*",
+    "./aep-conformance/*": "./aep-conformance/*"
   },
   "files": [
     "index.js",
     "index.d.ts",
-    "schemas/"
+    "schemas/",
+    "aep-conformance/"
   ],
   "scripts": {
     "test": "node --test"
