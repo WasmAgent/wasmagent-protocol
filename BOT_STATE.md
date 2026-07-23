@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 10:46 UTC by patrol_
+_Last updated: 2026-07-23 10:48 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-23 10:46 UTC by patrol_
 
 - #21: [milestone Milestone 4 ] Update README + `docs/CONTRACT-CHANGE-PROCESS.md` to list the new evidence types...
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
+- #13: [milestone Milestone 3 ] Publish an `aep-conformance/` fixture set in the package (valid+invalid AEP reco...
 - #1: [milestone Milestone 1 ] Publish `@wasmagent/protocol@0.1.0` to npm and `wasmagent-protocol==0.1.0`
 
 ---
