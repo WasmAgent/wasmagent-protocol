@@ -43,29 +43,17 @@ bullets into issues. Each bullet is scoped to concrete files.
 
 ## Milestone 4 — Evidence types beyond execution
 
-AEP today covers **execution** evidence (`aep-record`: actions, capability
-decisions, verifier results). As the runtime matures, other agent facets become
-things you must be able to *prove*, not just run. Each enters the protocol as a
-new **evidence record** under AEP — sharing the signature/trust envelope — rather
-than as a rename. **AEP (Agent Evidence Protocol) stays the name**; "Evidence" is
-the moat, and these are all evidence of something. (See the boundary note: the
-protocol is *sedimented from shipping products*, so each lands only once the
-runtime feature it describes is real — not designed up front.)
+AEP today covers execution evidence (`aep-record`). Memory / Replay / Checkpoint
+/ Artifact each enter the protocol as a **new evidence record under AEP** sharing
+one signature envelope — not a rename to "ARP" (rejected: dilutes the provable
+positioning and forces an org-wide breaking rename). Each bullet below is a
+single self-contained schema deliverable; land one only after the runtime
+feature it describes is real (protocol is sedimented, not designed up front).
 
-- [ ] `memory-evidence` — tamper-evident record of agent memory reads/writes
-      (provenance of what the agent remembered and when). Sediment from
-      wasmagent-js memory work (RFC shared-state epic).
-- [ ] `replay-evidence` — deterministic-replay attestation: inputs, seeds, and
-      the digest chain that proves a run reproduces.
-- [ ] `checkpoint-evidence` — signed checkpoint/fork records so a resumed or
-      forked run carries proof of its ancestry.
-- [ ] `artifact-attestation` — provenance + signature for produced artifacts
-      (files, patches, outputs) linking them back to the run that made them.
-- [ ] Shared `EvidenceEnvelope` base schema factored out so every evidence type
-      reuses one signature/trust-log/version structure.
-
-Rejected alternative (recorded for posterity): renaming AEP → "ARP / Agent
-Runtime Protocol". Rejected — it would dilute the *provable* positioning into a
-generic "runtime" one, and trigger an org-wide breaking rename of already-shipped
-schema `$id`s, package names, and cross-repo docs. AEP already subsumes these
-types.
+- [ ] Add `schemas/aep/evidence-envelope.schema.json` — shared base (schema_version, signature{alg,key_id,sig}, trace_id, created_at_ms) that every evidence record `$ref`s; register in `schemas/index.json` with a valid+invalid fixture under `tests/fixtures/`.
+- [ ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-envelope` for its signature/version fields; keep field set identical (no breaking change), add fixture proving equivalence.
+- [ ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/write record (keys: mem_ref, op enum[read,write], digest, prior_digest, timestamp_ms); register in index + valid/invalid fixtures.
+- [ ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestation (keys: run_id, seed, input_digests[], output_digest, engine_version); register in index + valid/invalid fixtures.
+- [ ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork record (keys: checkpoint_id, parent_run_id, fork_of, state_digest, created_at_ms); register in index + valid/invalid fixtures.
+- [ ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provenance (keys: artifact_uri, digest, produced_by_run_id, tool_name, signature); register in index + valid/invalid fixtures.
+- [ ] Update README + `docs/CONTRACT-CHANGE-PROCESS.md` to list the new evidence types and their consumer repos once each ships.
