@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/v0.1/canonical-event.schema.json",
+  "title": "CanonicalEvent",
+  "description": "Canonical event schema — the foundational, extensible event structure for the Agent Evidence Protocol. Maps onto the AEP record model and provides a single-event envelope that adapters can produce from heterogeneous upstream event formats.",
+  "type": "object",
+  "required": ["schema_version", "event_id", "event_type", "timestamp_ms", "source"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["canonical-event/v0.1"],
+      "description": "Schema version discriminator. Consumers MUST reject unknown values."
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Unique identifier for this event within its trace (UUIDv7 or equivalent)."
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Qualified event type name, e.g. 'tool.invocation', 'capability.decision', 'verifier.result'. Dot-separated namespace convention."
+    },
+    "timestamp_ms": {
+      "type": "number",
+      "description": "Epoch-millisecond timestamp when the event occurred."
+    },
+    "source": {
+      "type": "object",
+      "required": ["run_id"],
+      "description": "Provenance: identifies the agent run that produced this event.",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "description": "Unique identifier for the agent run."
+        },
+        "trace_id": {
+          "type": "string",
+          "description": "Trace identifier for distributed correlation."
+        },
+        "parent_event_id": {
+          "type": ["string", "null"],
+          "description": "Parent event in a causal chain, if any."
+        },
+        "agent_id": {
+          "type": "string",
+          "description": "Logical agent identifier."
+        },
+        "runtime_version": {
+          "type": "string",
+          "description": "Runtime version string, e.g. 'wasmagent-js@1.20.0'."
+        },
+        "model_provider": {
+          "type": "string",
+          "description": "LLM provider, e.g. 'anthropic', 'openai'."
+        },
+        "model_id": {
+          "type": "string",
+          "description": "Model identifier, e.g. 'claude-sonnet-5-20250514'."
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-type-specific body. Schema is determined by event_type; consumers should dispatch on that field. This field is extensible and intentionally untyped at the protocol level."
+    },
+    "correlation": {
+      "type": "object",
+      "description": "Optional cross-event correlation metadata.",
+      "properties": {
+        "causal_chain_id": {
+          "type": "string",
+          "description": "Groups events sharing a causal relationship."
+        },
+        "scope_lease_id": {
+          "type": "string",
+          "description": "Capability scope lease, if applicable."
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "description": "Security and attestation metadata attached to this event.",
+      "properties": {
+        "taint_labels": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Data-flow taint labels propagated from inputs."
+        },
+        "capability_decision": {
+          "type": "object",
+          "required": ["capability", "decision"],
+          "description": "Capability decision governing this event, if applicable.",
+          "properties": {
+            "capability": { "type": "string" },
+            "subject": { "type": "string" },
+            "resource": { "type": "string" },
+            "decision": {
+              "type": "string",
+              "enum": ["allow", "deny", "ask_user", "dry_run"]
+            },
+            "reason_code": { "type": "string" }
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "key_id", "sig"],
+      "description": "Cryptographic signature over this event.",
+      "properties": {
+        "alg": { "type": "string" },
+        "key_id": { "type": "string" },
+        "sig": { "type": "string" },
+        "bundle": { "type": "object" },
+        "transparency_log_ref": { "type": "string" }
+      }
+    }
+  }
+}
