@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 11:13 UTC by patrol_
+_Last updated: 2026-07-23 11:21 UTC by patrol_
 
 ## Queue
 
@@ -21,6 +21,7 @@ _Last updated: 2026-07-23 11:13 UTC by patrol_
 
 ## Waiting for Human
 
+- #23: [milestone Milestone 2 ] Add a CI step in `wasmagent-proxy` that validates emitted AEP records against `@...
 - #21: [milestone Milestone 4 ] Update README + `docs/CONTRACT-CHANGE-PROCESS.md` to list the new evidence types...
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
 - #13: [milestone Milestone 3 ] Publish an `aep-conformance/` fixture set in the package (valid+invalid AEP reco...
