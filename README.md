@@ -101,6 +101,14 @@ python3 -m pip install jsonschema
 python3 tests/conformance.py
 ```
 
+## Releases
+
+Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
+tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
+
+- **0.1.1** — release-pipeline verification; no schema changes.
+- **0.1.0** — initial canonical extraction of the AEP + compliance schema family.
+
 ## License
 
 [Apache-2.0](LICENSE).

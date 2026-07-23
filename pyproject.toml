@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wasmagent-protocol"
-version = "0.1.0"
+version = "0.1.1"
 description = "Canonical JSON Schemas for the WasmAgent Agent Evidence Protocol (AEP) and compliance contracts. Single source of truth across the WasmAgent org."
 readme = "README.md"
 requires-python = ">=3.9"
