@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-23 13:20 UTC by patrol_
+_Last updated: 2026-07-23 13:30 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,8 @@ _Last updated: 2026-07-23 13:20 UTC by patrol_
 
 ## Waiting for Human
 
+- #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
+- #33: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
 - #10: [milestone Milestone 2 ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consum...
 
