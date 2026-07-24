@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-24 19:56 UTC by patrol_
+_Last updated: 2026-07-24 20:21 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 10 |
-| Active (running/reviewing) | 1 |
-| Blocked | 0 |
+| Active (running/reviewing) | 0 |
+| Blocked | 1 |
 | Completed/Merged (all time) | 104 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,7 @@ _Last updated: 2026-07-24 19:56 UTC by patrol_
 
 ## Waiting for Human
 
+- #66: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #62: Create adapter in open-agent-audit mapping canonical-event to aep-record with conformance test
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
