@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-24 01:34 UTC by patrol_
+_Last updated: 2026-07-24 01:44 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 5 |
+| Pending | 6 |
 | Active (running/reviewing) | 0 |
-| Blocked | 4 |
-| Completed/Merged (all time) | 54 |
+| Blocked | 3 |
+| Completed/Merged (all time) | 55 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #50 | Fix WasmAgent/wasmagent-protocol#47 (Create canonical-eve... | completed/complexity_gate_split | 2026-07-23 |
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | merged/auto_closed_resolved | 2026-07-23 |
 | #2 | [milestone Milestone 1 ] Strip local schema copies from `... | completed/maintenance_done | 2026-07-23 |
 | #45 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-23 |
-| #47 | Create canonical-event.schema.json and @wasmagent/protoco... | completed/complexity_gate_split | 2026-07-23 |
 
 ## Waiting for Human
 
