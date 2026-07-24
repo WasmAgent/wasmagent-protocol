@@ -1,0 +1,7 @@
+{
+  "schema_version": "checkpoint-evidence/v9.9",
+  "checkpoint_id": "cp-abc123",
+  "parent_run_id": "run-xyz789",
+  "state_digest": "sha256:a1b2c3d4",
+  "created_at_ms": 1737600000000
+}

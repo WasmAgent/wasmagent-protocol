@@ -71,6 +71,17 @@
       "summary": "One record per compliance run."
     },
     {
+      "id": "checkpoint-evidence",
+      "title": "CheckpointEvidence",
+      "path": "schemas/aep/checkpoint-evidence.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/checkpoint-evidence.schema.json",
+      "version": "checkpoint-evidence/v0.1",
+      "stability": "evolving",
+      "owners": ["wasmagent-protocol"],
+      "consumers": ["wasmagent-js", "wasmagent-train-replay"],
+      "summary": "Signed checkpoint and fork record — agent state at a checkpoint boundary for provenance across forks and replay."
+    },
+    {
       "id": "rollout-wire",
       "title": "Rollout Wire Format",
       "path": "schemas/compliance/rollout-wire.schema.json",
