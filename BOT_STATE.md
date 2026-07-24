@@ -1,13 +1,13 @@
 # Bot State
 
-_Last updated: 2026-07-24 05:00 UTC by patrol_
+_Last updated: 2026-07-24 05:09 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 6 |
-| Active (running/reviewing) | 0 |
+| Active (running/reviewing) | 1 |
 | Blocked | 4 |
 | Completed/Merged (all time) | 68 |
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-24 05:00 UTC by patrol_
 
 ## Waiting for Human
 
+- #53: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #52: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #51: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
