@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-24 22:02 UTC by patrol_
+_Last updated: 2026-07-24 22:13 UTC by patrol_
 
 ## Queue
 
@@ -24,6 +24,7 @@ _Last updated: 2026-07-24 22:02 UTC by patrol_
 ## Waiting for Human
 
 - #66: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
+- #65: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
