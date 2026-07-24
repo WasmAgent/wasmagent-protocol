@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-24 22:40 UTC by patrol_
+_Last updated: 2026-07-24 22:50 UTC by patrol_
 
 ## Queue
 
@@ -9,17 +9,17 @@ _Last updated: 2026-07-24 22:40 UTC by patrol_
 | Pending | 5 |
 | Active (running/reviewing) | 0 |
 | Blocked | 4 |
-| Completed/Merged (all time) | 106 |
+| Completed/Merged (all time) | 107 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #68 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-24 |
 | #67 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/complexity_gate_split | 2026-07-24 |
 | #62 | Create adapter in open-agent-audit mapping canonical-even... | completed/complexity_gate_split | 2026-07-24 |
 | #53 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/needs_split_proposed | 2026-07-24 |
 | #51 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-24 |
-| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | merged/auto_closed_resolved | 2026-07-24 |
 
 ## Waiting for Human
 
