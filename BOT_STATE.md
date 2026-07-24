@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-24 23:30 UTC by patrol_
+_Last updated: 2026-07-24 23:39 UTC by patrol_
 
 ## Queue
 
@@ -25,6 +25,7 @@ _Last updated: 2026-07-24 23:30 UTC by patrol_
 
 - #66: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #65: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
+- #64: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #61: Create schemas/v0.1/canonical-event.schema.json schema definition
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
