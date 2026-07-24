@@ -1,15 +1,15 @@
 # Bot State
 
-_Last updated: 2026-07-24 02:18 UTC by patrol_
+_Last updated: 2026-07-24 02:27 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 7 |
+| Pending | 8 |
 | Active (running/reviewing) | 0 |
-| Blocked | 2 |
-| Completed/Merged (all time) | 58 |
+| Blocked | 1 |
+| Completed/Merged (all time) | 59 |
 
 ## Recent Activity (last 5)
 
@@ -19,7 +19,7 @@ _Last updated: 2026-07-24 02:18 UTC by patrol_
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
-| #50 | Fix WasmAgent/wasmagent-protocol#47 (Create canonical-eve... | completed/complexity_gate_split | 2026-07-23 |
+| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 
 ## Waiting for Human
 
