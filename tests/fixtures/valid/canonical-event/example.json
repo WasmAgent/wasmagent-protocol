@@ -1,0 +1,33 @@
+{
+  "schema_version": "canonical-event/v0.1",
+  "event_id": "evt-01jxq5k2r-abc123",
+  "event_type": "tool.invocation",
+  "timestamp_ms": 1737600000100,
+  "source": {
+    "run_id": "run-abc123",
+    "trace_id": "trace-001",
+    "agent_id": "agent-1",
+    "runtime_version": "wasmagent-js@1.20.0",
+    "model_provider": "anthropic",
+    "model_id": "claude-sonnet-5"
+  },
+  "payload": {
+    "tool_name": "write_file",
+    "state_changing": true,
+    "args": { "path": "/tmp/out.txt" }
+  },
+  "security": {
+    "taint_labels": ["user-input"],
+    "capability_decision": {
+      "capability": "fs.write",
+      "subject": "agent-1",
+      "resource": "/tmp/out.txt",
+      "decision": "allow"
+    }
+  },
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "k1",
+    "sig": "base64sig=="
+  }
+}
