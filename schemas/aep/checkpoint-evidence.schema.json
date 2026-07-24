@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/checkpoint-evidence.schema.json",
+  "title": "CheckpointEvidence",
+  "description": "Signed checkpoint and fork record — captures agent state at a checkpoint boundary, enabling provenance across forks and replay. Canonical source for wasmagent-js and wasmagent-train-replay.",
+  "type": "object",
+  "required": ["schema_version", "checkpoint_id", "parent_run_id", "state_digest", "created_at_ms"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["checkpoint-evidence/v0.1"] },
+    "checkpoint_id": {
+      "type": "string",
+      "description": "Unique identifier for this checkpoint."
+    },
+    "parent_run_id": {
+      "type": "string",
+      "description": "The run_id of the originating AEP record this checkpoint was taken from."
+    },
+    "fork_of": {
+      "type": ["string", "null"],
+      "description": "If this checkpoint is a fork, the checkpoint_id of the ancestor checkpoint; null for root checkpoints."
+    },
+    "state_digest": {
+      "type": "string",
+      "description": "Cryptographic digest of the captured agent state at checkpoint time."
+    },
+    "created_at_ms": {
+      "type": "number",
+      "description": "Epoch-millisecond timestamp when the checkpoint was created."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "The run_id assigned to the new run spawned from this checkpoint (if any)."
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional signature over the checkpoint payload for tamper evidence.",
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": { "type": "string" },
+        "key_id": { "type": "string" },
+        "sig": { "type": "string" },
+        "bundle": { "type": "object" },
+        "transparency_log_ref": { "type": "string" }
+      }
+    }
+  }
+}
