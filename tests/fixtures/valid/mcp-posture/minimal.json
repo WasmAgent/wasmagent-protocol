@@ -1,6 +1,12 @@
 {
   "posture_version": "0.1",
-  "agent_id": "test-agent-001",
-  "scanned_at": "2026-01-01T00:00:00Z",
-  "servers": []
+  "identity": {
+    "snapshot_id": "snap-001",
+    "agent_id": "a1",
+    "captured_at": "2026-01-01T00:00:00Z"
+  },
+  "servers": [],
+  "attestation": {
+    "generator": "test-tool"
+  }
 }

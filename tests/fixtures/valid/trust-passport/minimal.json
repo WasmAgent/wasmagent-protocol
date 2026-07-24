@@ -1,8 +1,9 @@
 {
   "passport_version": "0.1",
   "identity": {
-    "agent_id": "test-agent-001",
-    "issued_at": "2026-01-01T00:00:00Z"
+    "passport_id": "pp-001",
+    "agent_id": "a1",
+    "issuer": "test-issuer"
   },
   "validity": {
     "issued_at": "2026-01-01T00:00:00Z",
@@ -12,6 +13,6 @@
     "revoked": false
   },
   "attestation": {
-    "trust_score": 80
+    "issuer": "test-issuer"
   }
 }
