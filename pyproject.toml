@@ -23,6 +23,7 @@ dependencies = []
 
 [project.optional-dependencies]
 validate = ["jsonschema>=4.0"]
+dev = ["jsonschema>=4.0", "referencing>=0.30", "pytest>=7.0"]
 
 [project.urls]
 Homepage = "https://github.com/WasmAgent/wasmagent-protocol"
