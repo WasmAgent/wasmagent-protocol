@@ -1,28 +1,29 @@
 # Bot State
 
-_Last updated: 2026-07-24 05:13 UTC by patrol_
+_Last updated: 2026-07-24 05:21 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 6 |
-| Active (running/reviewing) | 0 |
-| Blocked | 4 |
-| Completed/Merged (all time) | 69 |
+| Pending | 4 |
+| Active (running/reviewing) | 1 |
+| Blocked | 5 |
+| Completed/Merged (all time) | 70 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #59 | Create foundational @wasmagent/protocol package structure... | merged/auto_closed_resolved | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #58 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
-| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 
 ## Waiting for Human
 
+- #60: Fix WasmAgent/wasmagent-protocol#58 ([milestone Milestone 2] Create @wasmagent/protocol package structure and initial re
 - #53: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #52: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #51: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
