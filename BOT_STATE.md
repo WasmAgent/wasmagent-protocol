@@ -1,21 +1,21 @@
 # Bot State
 
-_Last updated: 2026-07-24 04:45 UTC by patrol_
+_Last updated: 2026-07-24 04:54 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 7 |
-| Active (running/reviewing) | 0 |
+| Active (running/reviewing) | 1 |
 | Blocked | 4 |
-| Completed/Merged (all time) | 66 |
+| Completed/Merged (all time) | 67 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
-| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
+| #58 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
