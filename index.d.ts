@@ -30,3 +30,25 @@ export const schemas: Record<string, unknown>;
  * (e.g. "aep-record", "constraint-ir"). Throws on unknown id.
  */
 export function getSchema(id: string): unknown;
+
+export interface ConsumerEntry {
+  repo: string;
+  packageJsonPath: string;
+  version?: string;
+  notes?: string;
+}
+
+export interface SupportedBand {
+  min: string;
+  max: string;
+}
+
+export interface ConsumerRegistry {
+  $schema: string;
+  description: string;
+  consumers: ConsumerEntry[];
+  supportedBand: SupportedBand;
+}
+
+/** Machine-readable registry of repositories that consume @wasmagent/protocol. */
+export const consumerRegistry: ConsumerRegistry;

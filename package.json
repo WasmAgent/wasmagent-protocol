@@ -20,12 +20,14 @@
       "types": "./index.d.ts",
       "import": "./index.js"
     },
-    "./schemas/*": "./schemas/*"
+    "./schemas/*": "./schemas/*",
+    "./consumers.json": "./consumers.json"
   },
   "files": [
     "index.js",
     "index.d.ts",
-    "schemas/"
+    "schemas/",
+    "consumers.json"
   ],
   "scripts": {
     "test": "node --test"
