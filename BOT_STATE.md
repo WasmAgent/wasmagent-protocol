@@ -1,30 +1,29 @@
 # Bot State
 
-_Last updated: 2026-07-24 21:59 UTC by patrol_
+_Last updated: 2026-07-24 22:01 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 4 |
-| Active (running/reviewing) | 1 |
-| Blocked | 5 |
-| Completed/Merged (all time) | 104 |
+| Pending | 5 |
+| Active (running/reviewing) | 0 |
+| Blocked | 4 |
+| Completed/Merged (all time) | 105 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #62 | Create adapter in open-agent-audit mapping canonical-even... | completed/complexity_gate_split | 2026-07-24 |
 | #53 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/needs_split_proposed | 2026-07-24 |
 | #51 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | merged/auto_closed_resolved | 2026-07-24 |
-| #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 
 ## Waiting for Human
 
 - #66: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
-- #62: Create adapter in open-agent-audit mapping canonical-event to aep-record with conformance test
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
