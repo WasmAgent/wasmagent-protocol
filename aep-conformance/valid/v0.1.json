@@ -1,0 +1,9 @@
+{
+  "schema_version": "aep/v0.1",
+  "run_id": "run-v0-1",
+  "trace_id": "trace-v0-1",
+  "runtime_version": "wasmagent-js@1.19.0",
+  "model_provider": "anthropic",
+  "model_id": "claude-sonnet-5",
+  "created_at_ms": 1737600000000
+}
