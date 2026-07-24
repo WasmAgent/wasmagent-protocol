@@ -1,29 +1,28 @@
 # Bot State
 
-_Last updated: 2026-07-24 04:54 UTC by patrol_
+_Last updated: 2026-07-24 04:58 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 7 |
+| Pending | 5 |
 | Active (running/reviewing) | 1 |
-| Blocked | 4 |
-| Completed/Merged (all time) | 67 |
+| Blocked | 5 |
+| Completed/Merged (all time) | 68 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
-| #58 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
+| #58 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 | #52 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/maintenance_done | 2026-07-24 |
 
 ## Waiting for Human
 
-- #54: Fix WasmAgent/wasmagent-protocol#50 (Fix WasmAgent/wasmagent-protocol#47 (Create canonical-event.schema.json and @wasmag
 - #52: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #51: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
