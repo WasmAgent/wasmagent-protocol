@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-25 21:58 UTC by patrol_
+_Last updated: 2026-07-25 22:07 UTC by patrol_
 
 ## Queue
 
@@ -15,11 +15,11 @@ _Last updated: 2026-07-25 21:58 UTC by patrol_
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #11 | [milestone Milestone 3 ] Promote `aep-record` to `stable`... | completed/issue_closed_upstream | 2026-07-25 |
+| #12 | [milestone Milestone 3 ] Add `scripts/gen-types.mjs` that... | completed/issue_closed_upstream | 2026-07-25 |
+| #13 | [milestone Milestone 3 ] Publish an `aep-conformance/` fi... | completed/issue_closed_upstream | 2026-07-25 |
 | #94 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/complexity_gate_split | 2026-07-25 |
 | #95 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
-| #93 | Create @wasmagent/protocol package structure and version ... | merged/auto_closed_resolved | 2026-07-25 |
-| #92 | [milestone Milestone 2.1] Create @wasmagent/protocol pack... | completed/complexity_gate_split | 2026-07-25 |
-| #89 | stale-check #89 | completed/maintenance_done | 2026-07-25 |
 
 ## Waiting for Human
 
