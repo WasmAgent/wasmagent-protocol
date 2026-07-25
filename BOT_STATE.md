@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-25 07:31 UTC by patrol_
+_Last updated: 2026-07-25 07:41 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 7 |
-| Active (running/reviewing) | 1 |
-| Blocked | 2 |
-| Completed/Merged (all time) | 117 |
+| Active (running/reviewing) | 0 |
+| Blocked | 3 |
+| Completed/Merged (all time) | 118 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #72 | Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone... | completed/maintenance_done | 2026-07-25 |
 | #77 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #73 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #74 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #75 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-25 |
-| #71 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-24 |
 
 ## Waiting for Human
 
