@@ -50,6 +50,12 @@ prevents the drift that motivated the repo's creation.
 See [`CONTRACT-CHANGE-PROCESS.md`](CONTRACT-CHANGE-PROCESS.md) for the full
 workflow.
 
+## Version band mechanism
+
+- All consumer repositories must pin or declare an acceptable version range within the supported `@wasmagent/protocol` version band.
+- A cross-repo CI compatibility check (`scripts/check-consumer-versions.mjs`) verifies that consumer repos do not depend on out-of-band protocol versions.
+- Protocol packages (`@wasmagent/protocol` on npm, `wasmagent-protocol` on PyPI) serve as the foundation contract across all WasmAgent ecosystem services.
+
 ## Exit condition
 
 Per org policy, every repository declares what would cause it to be archived or

@@ -25,7 +25,7 @@ bullets into issues. Each bullet is scoped to concrete files.
 - [x] Point `wasmagent-train-replay` `EpochEvidenceBundle` at the shared AEP
       record schema for its evidence envelope.
 - [ ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.schema.json` onto `@wasmagent/protocol` `aep-record`, with a conformance test proving a sample AEP record validates. (tracked: WasmAgent/open-agent-audit#94)
-- [ ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consumer repo's declared `@wasmagent/protocol` range and fails if any is out of the supported band.
+- [ ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consumer repo's declared `@wasmagent/protocol` range and fails if any is out of the supported band. (tracked: WasmAgent/wasmagent-protocol#69)
 
 ## Milestone 3 — Stability & conformance
 
