@@ -1,30 +1,31 @@
 # Bot State
 
-_Last updated: 2026-07-25 09:54 UTC by patrol_
+_Last updated: 2026-07-25 10:05 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 8 |
-| Active (running/reviewing) | 1 |
+| Pending | 10 |
+| Active (running/reviewing) | 0 |
 | Blocked | 0 |
-| Completed/Merged (all time) | 124 |
+| Completed/Merged (all time) | 126 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #88 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-25 |
+| #85 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-25 |
 | #87 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-25 |
 | #82 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #83 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-25 |
-| #81 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/complexity_gate_split | 2026-07-25 |
-| #79 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 
 ## Waiting for Human
 
-- #88: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
-- #85: [milestone Milestone 2] Create @wasmagent/protocol package structure and version band mechanism
+- #91: docs: 15-milestones.md Milestone 4 references non-existent schemas
+- #90: docs: GOVERNANCE.md scope section excludes AgentBOM, MCP Posture, Trust Passport
+- #89: docs: README table missing 3 schemas (AgentBOM, MCP Posture, Trust Passport)
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
