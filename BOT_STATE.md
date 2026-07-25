@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-25 01:36 UTC by patrol_
+_Last updated: 2026-07-25 01:41 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 10 |
+| Pending | 9 |
 | Active (running/reviewing) | 0 |
-| Blocked | 0 |
+| Blocked | 1 |
 | Completed/Merged (all time) | 117 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,7 @@ _Last updated: 2026-07-25 01:36 UTC by patrol_
 
 ## Waiting for Human
 
+- #79: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #72: Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone 2] Create @wasmagent/protocol package foundation and version b
 - #70: Fix WasmAgent/wasmagent-protocol#61 (Create schemas/v0.1/canonical-event.schema.json schema definition): implement chang
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
