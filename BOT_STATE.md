@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-25 07:56 UTC by patrol_
+_Last updated: 2026-07-25 08:04 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 7 |
-| Active (running/reviewing) | 1 |
+| Pending | 8 |
+| Active (running/reviewing) | 0 |
 | Blocked | 0 |
-| Completed/Merged (all time) | 121 |
+| Completed/Merged (all time) | 123 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #82 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
+| #83 | [milestone Milestone 2] Create @wasmagent/protocol packag... | completed/complexity_gate_split | 2026-07-25 |
 | #81 | [milestone Milestone 2 ] In `open-agent-audit`, add an ad... | completed/complexity_gate_split | 2026-07-25 |
 | #79 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #72 | Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone... | merged/auto_closed_resolved | 2026-07-25 |
-| #72 | Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone... | completed/maintenance_done | 2026-07-25 |
-| #77 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 
 ## Waiting for Human
 
