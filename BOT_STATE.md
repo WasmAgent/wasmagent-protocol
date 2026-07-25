@@ -1,13 +1,13 @@
 # Bot State
 
-_Last updated: 2026-07-25 13:57 UTC by patrol_
+_Last updated: 2026-07-25 14:05 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 7 |
-| Active (running/reviewing) | 0 |
+| Active (running/reviewing) | 1 |
 | Blocked | 0 |
 | Completed/Merged (all time) | 130 |
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-25 13:57 UTC by patrol_
 
 ## Waiting for Human
 
+- #93: Create @wasmagent/protocol package structure and version band specification
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
