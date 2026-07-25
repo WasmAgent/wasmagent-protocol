@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-25 08:43 UTC by patrol_
+_Last updated: 2026-07-25 08:51 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-25 08:43 UTC by patrol_
 
 ## Waiting for Human
 
+- #85: [milestone Milestone 2] Create @wasmagent/protocol package structure and version band mechanism
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
