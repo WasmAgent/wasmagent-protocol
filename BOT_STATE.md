@@ -1,32 +1,30 @@
 # Bot State
 
-_Last updated: 2026-07-25 07:44 UTC by patrol_
+_Last updated: 2026-07-25 07:52 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 10 |
-| Active (running/reviewing) | 0 |
+| Pending | 8 |
+| Active (running/reviewing) | 1 |
 | Blocked | 0 |
-| Completed/Merged (all time) | 118 |
+| Completed/Merged (all time) | 120 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #79 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
+| #72 | Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone... | merged/auto_closed_resolved | 2026-07-25 |
 | #72 | Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone... | completed/maintenance_done | 2026-07-25 |
 | #77 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
 | #73 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | completed/complexity_gate_split | 2026-07-25 |
-| #74 | [milestone Milestone 4 ] Add `schemas/aep/replay-evidence... | completed/complexity_gate_split | 2026-07-25 |
-| #75 | [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evid... | completed/complexity_gate_split | 2026-07-25 |
 
 ## Waiting for Human
 
-- #79: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
-- #72: Fix WasmAgent/wasmagent-protocol#69 ([milestone Milestone 2] Create @wasmagent/protocol package foundation and version b
 - #70: Fix WasmAgent/wasmagent-protocol#61 (Create schemas/v0.1/canonical-event.schema.json schema definition): implement chang
 - #43: [milestone Milestone 2] Create @wasmagent/protocol package and onboard first consumer repo
 - #34: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
