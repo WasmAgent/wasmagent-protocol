@@ -55,3 +55,20 @@ business logic, no product code.
 ## Governance
 See `docs/GOVERNANCE.md` (maintainer, versioning, exit condition) and the org
 [repository boundary policy](https://github.com/WasmAgent/.github/blob/main/docs/repository-boundaries.md).
+
+
+## Schema Addition Checklist (MANDATORY — CI will fail without all steps)
+
+The conformance test (`tests/conformance.py`) enforces four invariants.
+Every new schema MUST satisfy all four or `merge gate: test failed` will block the PR.
+
+### Steps for every new `schemas/aep/<name>.schema.json`:
+
+**1.** Create the schema file with `$id`: `"https://wasmagent.dev/schemas/aep/<name>.schema.json"`
+**2.** Register in `schemas/index.json` with id, path, canonical_id, version, stability, owners, summary
+**3.** Create VALID fixture: `tests/fixtures/valid/<name>/example.json` (must pass schema validation)
+**4.** Create INVALID fixture: `tests/fixtures/invalid/<name>/example.json` (must fail validation)
+
+Verify: `python3 tests/conformance.py && node --test` — both must exit 0.
+
+Common failures: missing `$id`, not in index.json, fixture directory name != index id, wrong fixture validity.
