@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-26 07:33 UTC by patrol_
+_Last updated: 2026-07-26 07:54 UTC by patrol_
 
 ## Queue
 
@@ -9,17 +9,17 @@ _Last updated: 2026-07-26 07:33 UTC by patrol_
 | Pending | 1 |
 | Active (running/reviewing) | 0 |
 | Blocked | 8 |
-| Completed/Merged (all time) | 136 |
+| Completed/Merged (all time) | 137 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #103 | Scaffold `schemas/aep/` evidence family: base schema, sch... | merged/auto_closed_resolved | 2026-07-26 |
 | #97 | Bootstrap schemas/index.json registry so new schemas can ... | merged/auto_closed_resolved | 2026-07-26 |
 | #34 | [milestone Milestone 4 ] Add `schemas/aep/artifact-attest... | completed/complexity_gate_split | 2026-07-26 |
 | #15 | [milestone Milestone 4 ] Add `schemas/aep/evidence-envelo... | completed/already_implemented | 2026-07-25 |
 | #11 | [milestone Milestone 3 ] Promote `aep-record` to `stable`... | completed/issue_closed_upstream | 2026-07-25 |
-| #12 | [milestone Milestone 3 ] Add `scripts/gen-types.mjs` that... | completed/issue_closed_upstream | 2026-07-25 |
 
 ## Waiting for Human
 
