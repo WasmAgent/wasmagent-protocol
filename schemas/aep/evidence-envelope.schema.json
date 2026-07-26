@@ -23,6 +23,7 @@
     },
     "signature": {
       "type": "object",
+      "description": "Cryptographic signature over the evidence record (tamper-evident integrity)",
       "required": [
         "alg",
         "key_id",
@@ -43,13 +44,26 @@
         },
         "bundle": {
           "type": "object",
-          "description": "Optional bundled certificate or key material"
+          "description": "Optional bundled certificate or key material",
+          "properties": {
+            "cert_chain": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "PEM-encoded certificate chain (leaf first)"
+            },
+            "format": {
+              "type": "string",
+              "description": "Bundle format identifier, e.g. x509-pem, jwk"
+            }
+          },
+          "additionalProperties": false
         },
         "transparency_log_ref": {
           "type": "string",
           "description": "Reference to a transparency log entry for this signature"
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }
