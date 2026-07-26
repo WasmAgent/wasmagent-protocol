@@ -1,13 +1,13 @@
 # Bot State
 
-_Last updated: 2026-07-26 19:01 UTC by patrol_
+_Last updated: 2026-07-26 19:31 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 0 |
-| Active (running/reviewing) | 0 |
+| Active (running/reviewing) | 1 |
 | Blocked | 5 |
 | Completed/Merged (all time) | 144 |
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-26 19:01 UTC by patrol_
 
 ## Waiting for Human
 
+- #112: Scaffold `schemas/aep/` directory, AEP index registration, and `tests/fixtures/{valid,invalid}/` fixture infrastructure
 - #96: [milestone Milestone 2.1] Initialize @wasmagent/protocol package structure and version band mechanism
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
