@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-26 03:59 UTC by patrol_
+_Last updated: 2026-07-26 04:30 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
 | Pending | 3 |
-| Active (running/reviewing) | 1 |
-| Blocked | 6 |
+| Active (running/reviewing) | 0 |
+| Blocked | 7 |
 | Completed/Merged (all time) | 135 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,7 @@ _Last updated: 2026-07-26 03:59 UTC by patrol_
 
 ## Waiting for Human
 
+- #102: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #101: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #99: Create shared `evidence-envelope` schema with signature/version fields
 - #97: Bootstrap schemas/index.json registry so new schemas can be registered
