@@ -42,6 +42,21 @@
       "summary": "Shared envelope base for all AEP evidence records \u2014 schema_version, trace_id, created_at_ms, and optional signature."
     },
     {
+      "id": "memory-evidence",
+      "title": "MemoryEvidence",
+      "path": "schemas/aep/memory-evidence.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/memory-evidence.schema.json",
+      "version": "aep/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js"
+      ],
+      "summary": "Tamper-evident memory read/write record \u2014 binds a memory access to a content digest and the prior state digest so a chain of memory operations is verifiable."
+    },
+    {
       "id": "constraint-ir",
       "title": "ConstraintIR",
       "path": "schemas/compliance/constraint-ir.schema.json",

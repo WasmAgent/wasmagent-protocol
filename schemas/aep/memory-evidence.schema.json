@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/memory-evidence.schema.json",
+  "title": "MemoryEvidence",
+  "description": "Tamper-evident memory read/write record — binds an agent memory access to a content digest and the digest of the memory state observed immediately before, so a chain of memory operations is verifiable and non-repudiable. Shares the AEP signature envelope.",
+  "type": "object",
+  "required": ["schema_version", "mem_ref", "op", "digest", "prior_digest", "timestamp_ms"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["aep/v0.1"], "description": "Semver-like schema identifier for the memory-evidence evidence type" },
+    "trace_id": { "type": "string", "description": "Optional correlation ID linking related evidence records" },
+    "mem_ref": { "type": "string", "description": "Stable reference (URI or opaque id) of the memory cell or region accessed" },
+    "op": { "type": "string", "enum": ["read", "write"], "description": "Memory operation performed against mem_ref" },
+    "digest": { "type": "string", "description": "Content digest of the memory value read or written (e.g. sha256:...)" },
+    "prior_digest": { "type": ["string", "null"], "description": "Content digest of the memory cell immediately before this op; null on a cold read / first write so the chain start is explicit" },
+    "timestamp_ms": { "type": "number", "description": "UTC epoch milliseconds when the memory op was recorded" },
+    "signature": {
+      "type": "object",
+      "description": "Optional tamper-evident signature over the record content",
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": { "type": "string", "description": "Signature algorithm, e.g. ed25519" },
+        "key_id": { "type": "string", "description": "Identifier of the signing key" },
+        "sig": { "type": "string", "description": "Base64-encoded signature bytes" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

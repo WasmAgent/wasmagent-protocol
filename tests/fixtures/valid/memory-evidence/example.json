@@ -1,0 +1,14 @@
+{
+  "schema_version": "aep/v0.1",
+  "trace_id": "trace-mem-001",
+  "mem_ref": "mem://agent-1/context-window",
+  "op": "write",
+  "digest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+  "prior_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timestamp_ms": 1737600000200,
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "mem-key-001",
+    "sig": "base64sig=="
+  }
+}
