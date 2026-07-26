@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-26 00:02 UTC by patrol_
+_Last updated: 2026-07-26 00:28 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 5 |
-| Active (running/reviewing) | 0 |
-| Blocked | 1 |
+| Pending | 3 |
+| Active (running/reviewing) | 1 |
+| Blocked | 4 |
 | Completed/Merged (all time) | 134 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,8 @@ _Last updated: 2026-07-26 00:02 UTC by patrol_
 
 ## Waiting for Human
 
+- #98: Add shared `evidence-envelope` schema with signature/version fields
+- #97: Bootstrap schemas/index.json registry so new schemas can be registered
 - #96: [milestone Milestone 2.1] Initialize @wasmagent/protocol package structure and version band mechanism
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
