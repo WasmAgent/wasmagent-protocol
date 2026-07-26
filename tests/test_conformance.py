@@ -30,3 +30,24 @@ def test_conformance_harness() -> None:
         "conformance harness reported failures:\n"
         + "\n".join(f"  - {e}" for e in conformance.errors)
     )
+
+
+def test_evidence_envelope_schema() -> None:
+    """Verify evidence-envelope schema registration, canonical $id, and signature shape."""
+    import wasmagent_protocol
+
+    assert "evidence-envelope" in wasmagent_protocol.schema_ids()
+    envelope = wasmagent_protocol.get_schema("evidence-envelope")
+    assert envelope["$id"] == "https://wasmagent.dev/schemas/aep/evidence-envelope.schema.json"
+    assert envelope["title"] == "EvidenceEnvelope"
+    assert set(envelope["required"]) == {"schema_version", "created_at_ms"}
+
+    # Signature field properties must match aep-record signature fields
+    aep_record = wasmagent_protocol.get_schema("aep-record")
+    env_sig = envelope["properties"]["signature"]
+    aep_sig = aep_record["properties"]["signature"]
+
+    assert set(env_sig["required"]) == set(aep_sig["required"])
+    assert set(env_sig["properties"].keys()) == set(aep_sig["properties"].keys())
+    assert env_sig["properties"]["bundle"] == aep_sig["properties"]["bundle"]
+

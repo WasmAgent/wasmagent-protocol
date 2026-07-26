@@ -23,47 +23,18 @@
     },
     "signature": {
       "type": "object",
-      "description": "Cryptographic signature over the evidence record (tamper-evident integrity)",
       "required": [
         "alg",
         "key_id",
         "sig"
       ],
       "properties": {
-        "alg": {
-          "type": "string",
-          "description": "Signature algorithm, e.g. ed25519"
-        },
-        "key_id": {
-          "type": "string",
-          "description": "Identifier of the signing key"
-        },
-        "sig": {
-          "type": "string",
-          "description": "Base64-encoded signature bytes"
-        },
-        "bundle": {
-          "type": "object",
-          "description": "Optional bundled certificate or key material",
-          "properties": {
-            "cert_chain": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "PEM-encoded certificate chain (leaf first)"
-            },
-            "format": {
-              "type": "string",
-              "description": "Bundle format identifier, e.g. x509-pem, jwk"
-            }
-          },
-          "additionalProperties": false
-        },
-        "transparency_log_ref": {
-          "type": "string",
-          "description": "Reference to a transparency log entry for this signature"
-        }
-      },
-      "additionalProperties": false
+        "alg": { "type": "string" },
+        "key_id": { "type": "string" },
+        "sig": { "type": "string" },
+        "bundle": { "type": "object" },
+        "transparency_log_ref": { "type": "string" }
+      }
     }
   }
 }

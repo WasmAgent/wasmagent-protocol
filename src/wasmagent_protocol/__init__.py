@@ -24,10 +24,17 @@ _SCHEMAS_PKG = "wasmagent_protocol.schemas"
 
 def _read(rel_path: str) -> str:
     # rel_path is e.g. "index.json" or "aep/aep-record.schema.json"
-    resource = resources.files(_SCHEMAS_PKG)
-    for part in rel_path.split("/"):
-        resource = resource / part
-    return resource.read_text(encoding="utf-8")
+    try:
+        resource = resources.files(_SCHEMAS_PKG)
+        for part in rel_path.split("/"):
+            resource = resource / part
+        return resource.read_text(encoding="utf-8")
+    except (ModuleNotFoundError, TypeError, FileNotFoundError):
+        schemas_dir = Path(__file__).resolve().parent.parent.parent / "schemas"
+        p = schemas_dir
+        for part in rel_path.split("/"):
+            p = p / part
+        return p.read_text(encoding="utf-8")
 
 
 INDEX: dict[str, Any] = json.loads(_read("index.json"))
@@ -69,8 +76,15 @@ def schema_path(schema_id: str) -> Path:
         raise KeyError(
             f"unknown schema id {schema_id!r}; known: {', '.join(_PATHS)}"
         ) from None
-    resource = resources.files(_SCHEMAS_PKG)
-    for part in rel.split("/"):
-        resource = resource / part
-    with resources.as_file(resource) as p:
-        return Path(p)
+    try:
+        resource = resources.files(_SCHEMAS_PKG)
+        for part in rel.split("/"):
+            resource = resource / part
+        with resources.as_file(resource) as p:
+            return Path(p)
+    except (ModuleNotFoundError, TypeError, FileNotFoundError):
+        schemas_dir = Path(__file__).resolve().parent.parent.parent / "schemas"
+        p = schemas_dir
+        for part in rel.split("/"):
+            p = p / part
+        return p
