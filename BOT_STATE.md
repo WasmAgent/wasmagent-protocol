@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-26 12:08 UTC by patrol_
+_Last updated: 2026-07-26 12:22 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 4 |
-| Active (running/reviewing) | 0 |
+| Pending | 2 |
+| Active (running/reviewing) | 1 |
 | Blocked | 5 |
-| Completed/Merged (all time) | 140 |
+| Completed/Merged (all time) | 142 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #109 | Establish `schemas/index.json` registry and `tests/fixtur... | merged/auto_closed_resolved | 2026-07-26 |
+| #108 | Create base schemas/index.json schema registry | merged/auto_closed_resolved | 2026-07-26 |
 | #106 | Create schemas/index.json registry and AEP schema scaffol... | merged/auto_closed_resolved | 2026-07-26 |
 | #107 | Establish `schemas/index.json` schema registry and `tests... | merged/auto_closed_resolved | 2026-07-26 |
 | #104 | [milestone Milestone 4 ] Add `schemas/aep/memory-evidence... | merged/auto_closed_resolved | 2026-07-26 |
-| #103 | Scaffold `schemas/aep/` evidence family: base schema, sch... | merged/auto_closed_resolved | 2026-07-26 |
-| #97 | Bootstrap schemas/index.json registry so new schemas can ... | merged/auto_closed_resolved | 2026-07-26 |
 
 ## Waiting for Human
 
