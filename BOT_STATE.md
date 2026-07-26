@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-26 06:59 UTC by patrol_
+_Last updated: 2026-07-26 07:27 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 4 |
-| Active (running/reviewing) | 1 |
-| Blocked | 4 |
+| Pending | 1 |
+| Active (running/reviewing) | 0 |
+| Blocked | 8 |
 | Completed/Merged (all time) | 136 |
 
 ## Recent Activity (last 5)
@@ -29,7 +29,6 @@ _Last updated: 2026-07-26 06:59 UTC by patrol_
 - #96: [milestone Milestone 2.1] Initialize @wasmagent/protocol package structure and version band mechanism
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 - #76: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
-- #28: Fix WasmAgent/wasmagent-protocol#20 ([milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — pro
 - #16: [milestone Milestone 4 ] Refactor `schemas/aep/aep-record.schema.json` to `$ref` the shared `evidence-env...
 
 ---
