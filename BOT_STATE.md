@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-07-26 02:49 UTC by patrol_
+_Last updated: 2026-07-26 03:15 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 3 |
+| Pending | 4 |
 | Active (running/reviewing) | 0 |
-| Blocked | 6 |
+| Blocked | 5 |
 | Completed/Merged (all time) | 135 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,7 @@ _Last updated: 2026-07-26 02:49 UTC by patrol_
 
 ## Waiting for Human
 
+- #101: [milestone Milestone 4 ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestati...
 - #99: Create shared `evidence-envelope` schema with signature/version fields
 - #97: Bootstrap schemas/index.json registry so new schemas can be registered
 - #96: [milestone Milestone 2.1] Initialize @wasmagent/protocol package structure and version band mechanism
