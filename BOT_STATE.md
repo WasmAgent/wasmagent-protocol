@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-26 14:34 UTC by patrol_
+_Last updated: 2026-07-26 15:24 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 3 |
+| Pending | 0 |
 | Active (running/reviewing) | 0 |
-| Blocked | 5 |
-| Completed/Merged (all time) | 143 |
+| Blocked | 7 |
+| Completed/Merged (all time) | 144 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #111 | Establish AEP schema registry: create schemas/index.json,... | merged/auto_closed_resolved | 2026-07-26 |
 | #99 | Create shared `evidence-envelope` schema with signature/v... | merged/auto_closed_resolved | 2026-07-26 |
 | #109 | Establish `schemas/index.json` registry and `tests/fixtur... | merged/auto_closed_resolved | 2026-07-26 |
 | #108 | Create base schemas/index.json schema registry | merged/auto_closed_resolved | 2026-07-26 |
 | #106 | Create schemas/index.json registry and AEP schema scaffol... | merged/auto_closed_resolved | 2026-07-26 |
-| #107 | Establish `schemas/index.json` schema registry and `tests... | merged/auto_closed_resolved | 2026-07-26 |
 
 ## Waiting for Human
 
