@@ -17,7 +17,27 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
-__all__ = ["INDEX", "get_schema", "schema_path", "schema_ids"]
+__all__ = [
+    "INDEX",
+    "get_schema",
+    "schema_path",
+    "schema_ids",
+    # Re-export TypedDict types from types.py for convenience.
+    "AEPRecord",
+    "AEPRecordSchemaVersion",
+    "AEPInputRef",
+    "AEPOutputRef",
+    "AEPCapabilityDecision",
+    "AEPAction",
+    "AEPVerifierResult",
+    "AEPBudgetEntry",
+    "AEPBudgetLedger",
+    "AEPRunContext",
+    "SideEffectClass",
+    "RecordingMode",
+    "AEPArgumentDrift",
+    "AEPSignature",
+]
 
 _SCHEMAS_PKG = "wasmagent_protocol.schemas"
 # Editable / source-checkout fallback: the canonical schemas live at the repo
@@ -105,3 +125,24 @@ def schema_path(schema_id: str) -> Path:
         return node
     with resources.as_file(node) as p:
         return Path(p)
+
+
+# ---------------------------------------------------------------------------
+# Re-export TypedDict types for convenience.
+# ---------------------------------------------------------------------------
+from wasmagent_protocol.types import (  # noqa: E402, F811 — lazy re-export
+    AEPAction,
+    AEPArgumentDrift,
+    AEPBudgetEntry,
+    AEPBudgetLedger,
+    AEPCapabilityDecision,
+    AEPInputRef,
+    AEPRecord,
+    AEPRecordSchemaVersion,
+    AEPRunContext,
+    AEPSignature,
+    AEPOutputRef,
+    AEPVerifierResult,
+    RecordingMode,
+    SideEffectClass,
+)

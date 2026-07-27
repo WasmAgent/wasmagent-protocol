@@ -61,9 +61,24 @@ npm install @wasmagent/protocol
 
 ```ts
 import { schemas, getSchema } from "@wasmagent/protocol";
+import type { AEPRecord, AEPAction, AEPSideEffectClass } from "@wasmagent/protocol";
 
 const aep = getSchema("aep-record"); // parsed JSON Schema object
+
+// Compile-time type checking for AEP records:
+const record: AEPRecord = {
+  schema_version: "aep/v0.3",
+  run_id: "run-abc",
+  created_at_ms: Date.now(),
+};
 ```
+
+The package exports TypeScript interfaces for all `aep-record` sub-structures:
+`AEPRecord`, `AEPAction`, `AEPInputRef`, `AEPOutputRef`,
+`AEPCapabilityDecision`, `AEPVerifierResult`, `AEPBudgetLedger`,
+`AEPBudgetEntry`, `AEPRunContext`, `AEPArgumentDrift`, `AEPSignature`, and
+the union types `AEPRecordSchemaVersion`, `AEPCapabilityDecisionValue`,
+`AEPSideEffectClass`, and `AEPRecordingMode`.
 
 ### Python
 
@@ -73,10 +88,26 @@ pip install wasmagent-protocol
 
 ```python
 from wasmagent_protocol import get_schema, schema_path
+from wasmagent_protocol.types import AEPRecord, AEPAction
 
 aep = get_schema("aep-record")        # parsed dict
 path = schema_path("aep-record")      # pathlib.Path to the .json file
+
+# Static type checking with TypedDict:
+record: AEPRecord = {
+    "schema_version": "aep/v0.3",
+    "run_id": "run-abc",
+    "created_at_ms": 1737600000000,
+}
 ```
+
+The ``wasmagent_protocol.types`` module exports TypedDict classes for all
+`aep-record` sub-structures: `AEPRecord`, `AEPAction`, `AEPInputRef`,
+`AEPOutputRef`, `AEPCapabilityDecision`, `AEPVerifierResult`,
+`AEPBudgetEntry`, `AEPBudgetLedger`, `AEPRunContext`, `AEPArgumentDrift`,
+`AEPSignature`, and the literal types `AEPRecordSchemaVersion`,
+`SideEffectClass`, and `RecordingMode`. All are also re-exported from the
+top-level package for convenience.
 
 ## Preventing cross-repo drift
 
