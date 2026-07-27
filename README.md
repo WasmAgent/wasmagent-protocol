@@ -89,6 +89,48 @@ path = schema_path("aep-record")      # pathlib.Path to the .json file
 - Every schema has at least one valid and one invalid conformance fixture under
   [`tests/fixtures/`](tests/fixtures/). CI rejects any schema without both.
 
+### Version bands
+
+`@wasmagent/protocol` ships on a **version band** model so consumers pin a
+compatibility window, not a single patch. A *band* is one minor line
+(`0.1.x`, `0.2.x`, …). Every release inside a band is backward-compatible —
+fixes and additive optional fields only. A new minor opens the next band; a
+breaking change bumps the package **major**. Crossing a band boundary is always
+an explicit consumer action.
+
+The current band is declared in `package.json#versionBand` (machine-readable)
+and re-exported from the package as `versionBand`:
+
+| | |
+|---|---|
+| Band | `0.1` (alpha) |
+| Recommended range | `~0.1.5` (stay on the `0.1.x` patch band) |
+| Also accepted | `>=0.1.0 <0.2.0`, `^0.1.5`, `0.1.x` |
+| Runtime band | Node `>=18` (`package.json#engines`) |
+
+**Declare the dependency like this:**
+
+```json
+"dependencies": {
+  "@wasmagent/protocol": "~0.1.5"
+}
+```
+
+`~0.1.5` is recommended for the alpha: you receive every backward-compatible
+patch within the `0.1` band and are never auto-upgraded across a band boundary.
+When the next additive minor (`0.2.x`) ships, opt in by bumping to `~0.2.0`;
+when a breaking major ships, bump it consciously. Read the band at runtime:
+
+```ts
+import { versionBand } from "@wasmagent/protocol";
+// versionBand.band === "0.1"
+// versionBand.supportedRanges.recommended === "~0.1.5"
+```
+
+The Python distribution (`wasmagent-protocol` on PyPI) mirrors the same minor
+band via its own package version and declares its runtime band with
+`requires-python = ">=3.9"` in `pyproject.toml`.
+
 See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md) for the
 full change workflow and [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) for
 maintainer and exit-condition policy.

@@ -13,6 +13,19 @@
   },
   "license": "Apache-2.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "versionBand": {
+    "band": "0.1",
+    "status": "alpha",
+    "summary": "Current supported compatibility band for @wasmagent/protocol. All releases within the 0.1.x band are backward-compatible (fixes and additive optional fields only); a new minor or major release opens the next band.",
+    "supportedRanges": {
+      "recommended": "~0.1.5",
+      "alsoAccepted": [">=0.1.0 <0.2.0", "^0.1.5", "0.1.x"]
+    },
+    "policy": "Consumers should declare a range that stays within one band (recommended: ~0.1.5). Additive changes bump the package minor and open the next band (0.2.x); breaking changes bump the package major. Crossing a band boundary is always an explicit consumer action. See README.md (Version bands)."
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
