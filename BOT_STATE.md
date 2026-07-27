@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-27 14:52 UTC by patrol_
+_Last updated: 2026-07-27 18:41 UTC by patrol_
 
 ## Queue
 
@@ -24,6 +24,7 @@ _Last updated: 2026-07-27 14:52 UTC by patrol_
 ## Waiting for Human
 
 - #120: Establish AEP schema scaffolding: schemas/index.json registry, schemas/aep/ directory, and valid/invalid fixture conventions
+- #100: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 
 ---
