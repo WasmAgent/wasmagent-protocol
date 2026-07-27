@@ -59,9 +59,10 @@ def build_registry() -> dict[str, dict]:
     return registry
 
 
-def check_index(registry: dict[str, dict]) -> list[dict]:
-    index_path = SCHEMAS / "index.json"
-    index = load_json(index_path)
+def check_index(index: dict) -> list[dict]:
+    """Validate the flat registry: every listed schema exists on disk and its
+    file $id matches the index's canonical_id. Returns the schemas array
+    (possibly empty on failure)."""
     if not index or "schemas" not in index:
         err("schemas/index.json missing or has no 'schemas' array")
         return []
@@ -168,13 +169,152 @@ def check_fixtures(index_entries: list[dict], registry: dict[str, dict]) -> None
                 err(f"INVALID fixture accepted (should fail): {f.relative_to(ROOT)}")
 
 
+def _resolve_local_def(node, defs: dict) -> dict | None:
+    """Follow a single ``{"$ref": "#/$defs/<name>"}`` pointer to its target in
+    ``defs``; return ``node`` unchanged otherwise. Only single-hop local refs
+    are resolved — the idiomatic way AEP schemas reuse shared definitions."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref.startswith("#/$defs/"):
+            target = defs.get(ref[len("#/$defs/"):])
+            if isinstance(target, dict):
+                return target
+    return node
+
+
+def _check_base_envelope(path: Path, base: dict) -> None:
+    """The AEP base envelope must declare Draft 2020-12, define the common
+    provenance/timestamp fields, and define produced_by_run_id as a non-empty
+    string reused by every downstream evidence schema."""
+    rel = path.relative_to(ROOT)
+    if base.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
+        err(f"{rel}: base envelope $schema must be Draft 2020-12")
+    props = base.get("properties") if isinstance(base.get("properties"), dict) else {}
+    defs = base.get("$defs") if isinstance(base.get("$defs"), dict) else {}
+    prid = _resolve_local_def(props.get("produced_by_run_id"), defs)
+    if not isinstance(prid, dict):
+        prid = defs.get("produced_by_run_id")
+    if not isinstance(prid, dict):
+        err(f"{rel}: base envelope must define produced_by_run_id")
+    else:
+        if prid.get("type") != "string":
+            err(f"{rel}: produced_by_run_id must be a JSON string")
+        if prid.get("minLength", 0) < 1:
+            err(f"{rel}: produced_by_run_id must be non-empty (minLength >= 1)")
+    for field in ("schema_version", "evidence_type", "created_at_ms"):
+        if field not in props and field not in defs:
+            err(f"{rel}: base envelope must define the common field {field!r}")
+
+
+def _run_aep_fixtures_if_present(
+    path: Path, doc: dict, fixture_id: str, ref_registry
+) -> None:
+    """Run VALID/INVALID fixtures for an AEP schema when its fixture dirs exist.
+
+    No error is raised when fixtures are absent — discovery must still succeed
+    (a newly-added schema with no fixtures still loads cleanly).
+    """
+    valid_dir = FIXTURES / "valid" / fixture_id
+    invalid_dir = FIXTURES / "invalid" / fixture_id
+    valids = sorted(valid_dir.glob("*.json")) if valid_dir.is_dir() else []
+    invalids = sorted(invalid_dir.glob("*.json")) if invalid_dir.is_dir() else []
+    if not valids and not invalids:
+        return
+    validator = Draft202012Validator(doc, registry=ref_registry)
+    for f in valids:
+        inst = load_json(f)
+        errs = list(validator.iter_errors(inst)) if inst is not None else []
+        if errs:
+            err(f"VALID fixture rejected: {f.relative_to(ROOT)}: {errs[0].message}")
+    for f in invalids:
+        inst = load_json(f)
+        if inst is None:
+            continue
+        if not list(validator.iter_errors(inst)):
+            err(f"INVALID fixture accepted (should fail): {f.relative_to(ROOT)}")
+
+
+def check_aep_family(index: dict, registry: dict[str, dict]) -> None:
+    """Discover every schemas/aep/*.schema.json and enforce the shared AEP
+    base-envelope contract (issue #122 bootstrap).
+
+    Discovery is tolerant: a schema with no fixtures still loads without error.
+    Strict fixture coverage for *registered* schemas is enforced separately by
+    check_fixtures; this function adds the AEP-family invariants:
+
+    - schemas/index.json carries an 'aep' family section whose 'base' names a
+      schema registered in the flat schemas array, with a 'members' id list.
+    - schemas/aep/_base.schema.json exists and satisfies the base-envelope
+      contract (Draft 2020-12, produced_by_run_id as a non-empty string, and the
+      common provenance/timestamp fields).
+    - Every schemas/aep/*.schema.json is discovered and loadable; any fixtures
+      present for a discovered-but-unregistered schema are validated.
+    """
+    aep_dir = SCHEMAS / "aep"
+    if not aep_dir.is_dir():
+        err("schemas/aep/: AEP family directory missing")
+        return
+
+    families = index.get("families") if isinstance(index, dict) else None
+    aep_family = families.get("aep") if isinstance(families, dict) else None
+    id_by_canonical = {
+        e.get("canonical_id"): e.get("id")
+        for e in (index.get("schemas") or [])
+        if isinstance(e, dict)
+    }
+    registered_ids = {i for i in id_by_canonical.values() if isinstance(i, str)}
+
+    if not isinstance(aep_family, dict):
+        err("schemas/index.json: missing 'aep' family section")
+    else:
+        base_id = aep_family.get("base")
+        if not isinstance(base_id, str) or not base_id:
+            err("schemas/index.json: aep family 'base' must name a registered schema id")
+        elif base_id not in registered_ids:
+            err(f"schemas/index.json: aep family base {base_id!r} is not a registered schema")
+        members = aep_family.get("members")
+        if not isinstance(members, list) or not all(isinstance(m, str) for m in members):
+            err("schemas/index.json: aep family 'members' must be a list of schema ids")
+
+    discovered = sorted(aep_dir.glob("*.schema.json"))
+    if not discovered:
+        err("schemas/aep/: no *.schema.json schemas discovered")
+
+    base_path = aep_dir / "_base.schema.json"
+    if not base_path.is_file():
+        err("schemas/aep/_base.schema.json: base envelope schema missing")
+    else:
+        base = load_json(base_path)
+        if base is not None:
+            _check_base_envelope(base_path, base)
+
+    # Forward-looking fixture run: validate fixtures for any discovered AEP
+    # schema that is NOT yet in the flat registry. Registered schemas are owned
+    # by check_fixtures; here we only guarantee loadability + fixture pass/fail
+    # for an unregistered schema, tolerating missing fixtures entirely.
+    if not HAVE_JSONSCHEMA or not discovered:
+        return
+    ref_registry = build_reference_registry(registry)
+    for path in discovered:
+        doc = load_json(path)
+        if doc is None:
+            continue
+        sid = doc.get("$id")
+        if isinstance(sid, str) and sid in id_by_canonical:
+            continue
+        fixture_id = path.name[: -len(".schema.json")]
+        _run_aep_fixtures_if_present(path, doc, fixture_id, ref_registry)
+
+
 def main() -> int:
     if not HAVE_JSONSCHEMA:
         print("WARNING: jsonschema not installed — running structural checks only.")
     registry = build_registry()
-    index_entries = check_index(registry)
+    index = load_json(SCHEMAS / "index.json") or {}
+    index_entries = check_index(index)
     check_schemas_valid(registry)
     check_refs()
+    check_aep_family(index, registry)
     check_fixtures(index_entries, registry)
 
     if errors:

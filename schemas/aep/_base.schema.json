@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/_base.schema.json",
+  "title": "AEPBase",
+  "description": "Common envelope that every AEP (Agent Evidence Provenance) schema extends. Defines the shared provenance/timestamp fields and produced_by_run_id (string, non-empty) that downstream evidence schemas reuse via the $defs block. This is a base/reference schema, not a concrete evidence record: concrete schemas (aep-record, evidence-envelope, and the planned artifact-attestation / replay-evidence / checkpoint-evidence records) build on it.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evidence_type",
+    "produced_by_run_id",
+    "created_at_ms"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "#/$defs/schema_version" },
+    "evidence_type": { "$ref": "#/$defs/evidence_type" },
+    "trace_id": { "$ref": "#/$defs/trace_id" },
+    "parent_trace_id": { "$ref": "#/$defs/parent_trace_id" },
+    "created_at_ms": { "$ref": "#/$defs/created_at_ms" },
+    "produced_by_run_id": { "$ref": "#/$defs/produced_by_run_id" },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "$defs": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Semver-like schema identifier, e.g. aep/v0.4"
+    },
+    "evidence_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Discriminator naming the concrete evidence record type this envelope carries (e.g. aep-record, artifact-attestation, replay-evidence)."
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Correlation ID linking related evidence records in the same run/trace."
+    },
+    "parent_trace_id": {
+      "type": ["string", "null"],
+      "description": "Parent trace when this evidence belongs to a nested/subagent trace."
+    },
+    "created_at_ms": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the record was created."
+    },
+    "produced_by_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty identifier of the run that produced this evidence. Reused by every downstream AEP evidence schema; never null or empty."
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional tamper-evident signature over the record content.",
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "description": "Signature algorithm, e.g. ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "description": "Identifier of the signing key"
+        },
+        "sig": {
+          "type": "string",
+          "description": "Base64-encoded signature bytes"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

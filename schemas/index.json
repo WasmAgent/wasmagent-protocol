@@ -5,6 +5,25 @@
   "canonical_host": "https://wasmagent.dev/schemas/",
   "schemas": [
     {
+      "id": "aep-base",
+      "title": "AEPBase",
+      "path": "schemas/aep/_base.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/_base.schema.json",
+      "version": "aep-base/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js",
+        "wasmagent-proxy",
+        "trace-pipeline",
+        "wasmagent-train-replay",
+        "open-agent-audit"
+      ],
+      "summary": "Common envelope every AEP evidence schema extends — schema_version, evidence_type, created_at_ms, trace_id, and produced_by_run_id (string, non-empty) reused by downstream evidence schemas."
+    },
+    {
       "id": "aep-record",
       "title": "AEPRecord",
       "path": "schemas/aep/aep-record.schema.json",
@@ -185,5 +204,16 @@
       ],
       "summary": "Trust Passport \u2014 signed, expiring, verifiable trust-state artifact for AI agents."
     }
-  ]
+  ],
+  "families": {
+    "aep": {
+      "title": "Agent Evidence Provenance",
+      "description": "Runtime action and provenance evidence records emitted by WasmAgent agents. Every member extends the shared AEP base envelope (aep-base), which defines produced_by_run_id and the common timestamp/provenance fields.",
+      "base": "aep-base",
+      "members": [
+        "aep-record",
+        "evidence-envelope"
+      ]
+    }
+  }
 }
