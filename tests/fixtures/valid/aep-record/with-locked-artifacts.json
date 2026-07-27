@@ -1,0 +1,29 @@
+{
+  "schema_version": "aep/v0.3",
+  "run_id": "run-001",
+  "created_at_ms": 1700000000000,
+  "run_artifacts": [
+    {
+      "artifact_id": "art-pr-42",
+      "class": "pr",
+      "state": "completed",
+      "output_hash": "sha256:abc123",
+      "output_uri": "https://github.com/WasmAgent/wasmagent/pull/42"
+    },
+    {
+      "artifact_id": "art-test-report",
+      "class": "test-report",
+      "state": "completed",
+      "depends_on": [
+        "art-pr-42"
+      ],
+      "output_hash": "sha256:def456",
+      "output_uri": "https://ci.example.com/reports/run-001"
+    },
+    {
+      "artifact_id": "art-draft",
+      "class": "file",
+      "state": "generating"
+    }
+  ]
+}

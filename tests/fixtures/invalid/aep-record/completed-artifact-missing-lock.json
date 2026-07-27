@@ -1,0 +1,12 @@
+{
+  "schema_version": "aep/v0.3",
+  "run_id": "run-002",
+  "created_at_ms": 1700000000000,
+  "run_artifacts": [
+    {
+      "artifact_id": "art-pr-99",
+      "class": "pr",
+      "state": "completed"
+    }
+  ]
+}
