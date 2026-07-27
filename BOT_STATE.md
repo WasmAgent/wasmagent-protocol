@@ -1,12 +1,12 @@
 # Bot State
 
-_Last updated: 2026-07-27 08:37 UTC by patrol_
+_Last updated: 2026-07-27 10:37 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 8 |
+| Pending | 7 |
 | Active (running/reviewing) | 0 |
 | Blocked | 0 |
 | Completed/Merged (all time) | 148 |
@@ -23,7 +23,6 @@ _Last updated: 2026-07-27 08:37 UTC by patrol_
 
 ## Waiting for Human
 
-- #114: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 
 ---
