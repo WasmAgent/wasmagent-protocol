@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/v0.1/canonical-event.schema.json",
+  "title": "CanonicalEvent",
+  "description": "Canonical agent event — the normalized, single-event shape that open-agent-audit emits and maps onto an AEP record (aep-record). Each field has a direct aep-record counterpart: run_id/trace_id/created_at_ms/signature map 1:1; agent -> run_context; action -> actions[]; capability_decision -> capability_decisions[]; verifier_result -> verifier_results[].",
+  "type": "object",
+  "required": ["schema_version", "event_id", "event_type", "run_id", "created_at_ms"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["canonical-event/v0.1"],
+      "description": "Wire version tag for the canonical event envelope."
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Stable, unique identifier for this single event within the run."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["action", "capability_decision", "verifier_result", "run_lifecycle", "custom"],
+      "description": "Discriminator naming which canonical payload this event carries."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "The run this event belongs to. Maps to aep-record.run_id."
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Optional trace/correlation id. Maps to aep-record.trace_id."
+    },
+    "parent_trace_id": {
+      "type": ["string", "null"],
+      "description": "Optional parent trace id for nested/delegated runs. Maps to aep-record.parent_trace_id."
+    },
+    "created_at_ms": {
+      "type": "number",
+      "description": "Unix-epoch milliseconds at which the event was recorded. Maps to aep-record.created_at_ms."
+    },
+    "agent": {
+      "$ref": "#/$defs/agent",
+      "description": "Identity of the agent that produced the event. Maps to aep-record.run_context."
+    },
+    "action": {
+      "$ref": "#/$defs/action",
+      "description": "A single tool action. Maps to one entry of aep-record.actions[]."
+    },
+    "capability_decision": {
+      "$ref": "#/$defs/capabilityDecision",
+      "description": "A capability allow/deny decision. Maps to one entry of aep-record.capability_decisions[]."
+    },
+    "verifier_result": {
+      "$ref": "#/$defs/verifierResult",
+      "description": "A verifier pass/fail result. Maps to one entry of aep-record.verifier_results[]."
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Free-form event-specific payload for event_type 'custom'. Ignored by the open-agent-audit -> aep-record adapter for typed event_types."
+    },
+    "signature": {
+      "$ref": "#/$defs/signature",
+      "description": "Optional tamper-evident signature over the event. Maps to aep-record.signature."
+    }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "properties": {
+        "agent_id": { "type": "string" },
+        "agent_version": { "type": "string" },
+        "subagent_id": { "type": "string" },
+        "delegation_chain": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "action": {
+      "type": "object",
+      "required": ["action_id", "tool_name", "state_changing", "timestamp_ms"],
+      "properties": {
+        "action_id": { "type": "string" },
+        "tool_name": { "type": "string" },
+        "state_changing": { "type": "boolean" },
+        "timestamp_ms": { "type": "number" },
+        "precondition_digest": { "type": "string" },
+        "result_digest": { "type": "string" },
+        "parent_action_id": { "type": "string" },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "capabilityDecision": {
+      "type": "object",
+      "required": ["capability", "subject", "resource", "decision"],
+      "properties": {
+        "capability": { "type": "string" },
+        "subject": { "type": "string" },
+        "resource": { "type": "string" },
+        "decision": { "type": "string", "enum": ["allow", "deny", "ask_user", "dry_run"] },
+        "reason_code": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "verifierResult": {
+      "type": "object",
+      "required": ["verifier_id", "passed"],
+      "properties": {
+        "verifier_id": { "type": "string" },
+        "passed": { "type": "boolean" },
+        "score": { "type": "number" },
+        "claim_ids": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": { "type": "string" },
+        "key_id": { "type": "string" },
+        "sig": { "type": "string" },
+        "bundle": { "type": "object" },
+        "transparency_log_ref": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

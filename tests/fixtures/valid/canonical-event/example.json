@@ -1,0 +1,24 @@
+{
+  "schema_version": "canonical-event/v0.1",
+  "event_id": "evt-001",
+  "event_type": "action",
+  "run_id": "run-abc123",
+  "trace_id": "trace-001",
+  "created_at_ms": 1737600000000,
+  "agent": {
+    "agent_id": "agent-1",
+    "agent_version": "1.20.0"
+  },
+  "action": {
+    "action_id": "a1",
+    "tool_name": "write_file",
+    "state_changing": true,
+    "timestamp_ms": 1737600000100,
+    "result_digest": "sha256:abcd"
+  },
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "k1",
+    "sig": "base64sig=="
+  }
+}

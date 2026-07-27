@@ -1,0 +1,7 @@
+{
+  "schema_version": "canonical-event/v9.9",
+  "event_id": "evt-bad",
+  "event_type": "not-a-real-type",
+  "run_id": "run-abc123",
+  "created_at_ms": 1737600000000
+}
