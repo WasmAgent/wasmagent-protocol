@@ -1,0 +1,26 @@
+{
+  "schema_version": "aep/v0.3",
+  "run_id": "run-v03",
+  "trace_id": "trace-v03",
+  "created_at_ms": 1737600000000,
+  "user_id": "user-42",
+  "subject_id": "agent-subject-1",
+  "side_effect_class": "mutate-external",
+  "run_side_effect_class_max": "network-egress",
+  "recording_mode": "full",
+  "argument_drift": {
+    "tool_name": "write_file",
+    "declared_digest": "sha256:aaa",
+    "actual_digest": "sha256:bbb",
+    "diff_summary": "path argument rewritten by policy",
+    "drifted_args": ["path"]
+  },
+  "actions": [
+    {
+      "action_id": "a1",
+      "tool_name": "write_file",
+      "state_changing": true,
+      "timestamp_ms": 1737600000100
+    }
+  ]
+}

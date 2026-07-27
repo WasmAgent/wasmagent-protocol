@@ -34,7 +34,7 @@ Only contracts that genuinely cross a repository boundary:
 
 | Schema | Version | Consumers |
 | --- | --- | --- |
-| `aep-record` | `aep/v0.2` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `aep-record` | `aep/v0.3` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
 | `constraint-ir` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `constraint-violation` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `repair-trace` | `compliance/v1` | wasmagent-js, trace-pipeline |
@@ -143,6 +143,7 @@ python3 -m wasmagent_protocol check --scan --root .
 Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
 tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
 
+- **0.1.7** — `aep-record` unified to `aep/v0.3`: reconciles the wasmagent-js and trace-pipeline forks into one canonical record. Additive optional fields `user_id`, `subject_id`, `side_effect_class` (per-record) + `run_side_effect_class_max` (per-run) sharing one enum, `recording_mode`, `argument_drift`. `aep/v0.1`/`aep/v0.2` stay accepted; `signature` stays optional.
 - **0.1.6** — cross-repo schema-drift gate: `wasmagent-protocol check` CLI (npm + PyPI) and the reusable `.github/workflows/schema-drift.yml` workflow.
 - **0.1.5** — first successful npm OIDC publish (trusted publisher now registered on npmjs).
 - **0.1.4** — npm OIDC groundwork; trusted publisher was not yet saved on npmjs.

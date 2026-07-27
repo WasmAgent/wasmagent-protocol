@@ -1,0 +1,6 @@
+{
+  "schema_version": "aep/v0.3",
+  "run_id": "run-bad-runsec",
+  "created_at_ms": 1737600000000,
+  "run_side_effect_class_max": "delete-everything"
+}
