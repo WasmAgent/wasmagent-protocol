@@ -78,6 +78,40 @@ aep = get_schema("aep-record")        # parsed dict
 path = schema_path("aep-record")      # pathlib.Path to the .json file
 ```
 
+## Preventing cross-repo drift
+
+Downstream repos must not keep local copies of these schemas — but "must not"
+is now also **enforced in CI**, not just written down. This repo ships a reusable
+drift gate.
+
+### CLI
+
+Both packages expose `wasmagent-protocol check`. It fails non-zero when a
+vendored schema differs from the canonical version, when a canonical `$id` is
+re-declared without depending on the package, or when a competing
+`schemas/index.json` is shipped.
+
+```bash
+# compare one vendored file against the pinned canonical version
+wasmagent-protocol check path/to/aep-record.schema.json --id aep-record
+
+# scan a whole repo for drift and competing registries
+wasmagent-protocol check --scan --root .
+```
+
+### Reusable GitHub workflow
+
+Consumer repos call the shared gate with one job:
+
+```yaml
+jobs:
+  schema-drift:
+    uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.6
+```
+
+A PR in any consumer that forks or drifts a canonical schema now fails CI
+automatically. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
+
 ## Versioning & stability
 
 - Each schema carries a `version` string (see the registry).
@@ -97,8 +131,11 @@ maintainer and exit-condition policy.
 
 ```bash
 # validate every schema is well-formed and every fixture conforms
-python3 -m pip install jsonschema
+python3 -m pip install -e ".[dev]"
 python3 tests/conformance.py
+
+# run the drift gate against this repo (auto-detects the canonical source)
+python3 -m wasmagent_protocol check --scan --root .
 ```
 
 ## Releases
@@ -106,6 +143,7 @@ python3 tests/conformance.py
 Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
 tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
 
+- **0.1.6** — cross-repo schema-drift gate: `wasmagent-protocol check` CLI (npm + PyPI) and the reusable `.github/workflows/schema-drift.yml` workflow.
 - **0.1.5** — first successful npm OIDC publish (trusted publisher now registered on npmjs).
 - **0.1.4** — npm OIDC groundwork; trusted publisher was not yet saved on npmjs.
 - **0.1.3** — npm OIDC attempt: dropped registry-url (ENEEDAUTH); PyPI only.

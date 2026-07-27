@@ -20,14 +20,43 @@ from typing import Any
 __all__ = ["INDEX", "get_schema", "schema_path", "schema_ids"]
 
 _SCHEMAS_PKG = "wasmagent_protocol.schemas"
+# Editable / source-checkout fallback: the canonical schemas live at the repo
+# root under schemas/, which is two directories above this file
+# (src/wasmagent_protocol/__init__.py -> <repo>/schemas). Built wheels ship the
+# same tree inside the package via force-include, so the resource API is tried
+# first; this Path is the fallback for `pip install -e .` where force-include is
+# not materialized.
+_SOURCE_SCHEMAS = Path(__file__).resolve().parents[2] / "schemas"
+
+
+def _schemas_root():
+    """Locate the canonical schemas directory as a Traversable.
+
+    Installed wheels package schemas under ``wasmagent_protocol.schemas``
+    (force-include in pyproject). Editable installs do not materialize that
+    mapping, so fall back to the repo-root ``schemas/`` directory.
+    """
+    try:
+        root = resources.files(_SCHEMAS_PKG)
+        if root.joinpath("index.json").is_file():
+            return root
+    except Exception:  # pragma: no cover - depends on install layout
+        pass
+    if (_SOURCE_SCHEMAS / "index.json").is_file():
+        return _SOURCE_SCHEMAS
+    raise FileNotFoundError(
+        "wasmagent_protocol schemas not found: neither the packaged "
+        "wasmagent_protocol.schemas resource nor the source checkout at "
+        f"{_SOURCE_SCHEMAS} contains index.json"
+    )
 
 
 def _read(rel_path: str) -> str:
     # rel_path is e.g. "index.json" or "aep/aep-record.schema.json"
-    resource = resources.files(_SCHEMAS_PKG)
+    node = _schemas_root()
     for part in rel_path.split("/"):
-        resource = resource / part
-    return resource.read_text(encoding="utf-8")
+        node = node.joinpath(part)
+    return node.read_text(encoding="utf-8")
 
 
 INDEX: dict[str, Any] = json.loads(_read("index.json"))
@@ -69,8 +98,10 @@ def schema_path(schema_id: str) -> Path:
         raise KeyError(
             f"unknown schema id {schema_id!r}; known: {', '.join(_PATHS)}"
         ) from None
-    resource = resources.files(_SCHEMAS_PKG)
+    node = _schemas_root()
     for part in rel.split("/"):
-        resource = resource / part
-    with resources.as_file(resource) as p:
+        node = node.joinpath(part)
+    if isinstance(node, Path):
+        return node
+    with resources.as_file(node) as p:
         return Path(p)
