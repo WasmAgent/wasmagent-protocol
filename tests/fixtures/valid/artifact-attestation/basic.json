@@ -1,0 +1,7 @@
+{
+  "artifact_uri": "pkg:npm/example@1.0.0",
+  "digest": "sha256:abc123",
+  "produced_by_run_id": "run-123",
+  "tool_name": "builder",
+  "signature": "sig123"
+}
