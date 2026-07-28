@@ -1,0 +1,11 @@
+{
+  "name": "@wasmagent/protocol",
+  "canonical_host": "https://wasmagent.dev/schemas/",
+  "schemas": [
+    {
+      "id": "aep-record",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
+      "version": "aep/v0.3"
+    }
+  ]
+}

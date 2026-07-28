@@ -184,6 +184,23 @@
         "open-agent-audit"
       ],
       "summary": "Trust Passport \u2014 signed, expiring, verifiable trust-state artifact for AI agents."
+    },
+    {
+      "id": "package",
+      "title": "Package",
+      "path": "schemas/package/package.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/package/v0.1.schema.json",
+      "version": "package/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js",
+        "trace-pipeline",
+        "open-agent-audit"
+      ],
+      "summary": "Machine-readable manifest of a published WasmAgent protocol package release \u2014 which canonical schemas a versioned @wasmagent/protocol / wasmagent-protocol build bundles, where it ships, and the canonical host its schemas resolve under."
     }
   ]
 }

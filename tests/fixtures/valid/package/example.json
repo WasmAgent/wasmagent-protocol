@@ -1,0 +1,31 @@
+{
+  "name": "@wasmagent/protocol",
+  "version": "0.1.7",
+  "canonical_host": "https://wasmagent.dev/schemas/",
+  "registries": [
+    {
+      "name": "npm",
+      "url": "https://www.npmjs.com/package/@wasmagent/protocol"
+    },
+    {
+      "name": "pypi",
+      "url": "https://pypi.org/project/wasmagent-protocol/"
+    }
+  ],
+  "schemas": [
+    {
+      "id": "aep-record",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
+      "version": "aep/v0.3",
+      "stability": "evolving"
+    },
+    {
+      "id": "evidence-envelope",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/evidence-envelope.schema.json",
+      "version": "aep/v0.1",
+      "stability": "evolving"
+    }
+  ],
+  "published_at": "2026-07-28T00:00:00Z",
+  "license": "Apache-2.0"
+}
