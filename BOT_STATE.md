@@ -1,12 +1,12 @@
 # Bot State
 
-_Last updated: 2026-07-28 11:53 UTC by patrol_
+_Last updated: 2026-07-28 12:31 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 10 |
+| Pending | 11 |
 | Active (running/reviewing) | 0 |
 | Blocked | 0 |
 | Completed/Merged (all time) | 156 |
@@ -23,6 +23,7 @@ _Last updated: 2026-07-28 11:53 UTC by patrol_
 
 ## Waiting for Human
 
+- #150: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
 - #149: [milestone Milestone 5 ] Pipeline health and SLA monitoring — add end-to-end latency tracking, per-stag...
 - #141: [milestone Milestone 4] Define checkpoint/fork architecture model and core data structures
 - #131: Create @wasmagent/protocol package with aep-record type definition
