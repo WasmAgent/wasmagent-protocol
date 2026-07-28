@@ -3,70 +3,32 @@
   "$id": "https://wasmagent.dev/schemas/aep/evidence-envelope.schema.json",
   "title": "EvidenceEnvelope",
   "description": "Shared envelope base for all AEP evidence records. Every evidence type wraps its payload in this envelope, which carries schema_version, trace_id, created_at_ms, evidence_type, payload, metadata, and an optional signature.",
-  "type": "object",
-  "required": [
-    "schema_version",
-    "created_at_ms",
-    "evidence_type",
-    "payload"
-  ],
-  "properties": {
-    "schema_version": {
-      "type": "string",
-      "description": "Semver-like schema identifier, e.g. aep/v0.1"
+  "allOf": [
+    {
+      "$ref": "_base.schema.json"
     },
-    "trace_id": {
-      "type": "string",
-      "description": "Optional correlation ID linking related evidence records"
-    },
-    "created_at_ms": {
-      "type": "number",
-      "description": "UTC epoch milliseconds when the record was created (envelope timestamp)"
-    },
-    "evidence_type": {
-      "type": "string",
-      "description": "Discriminator for the kind of evidence enclosed, e.g. 'execution', 'artifact', 'checkpoint', 'replay', 'memory'"
-    },
-    "payload": {
-      "description": "The evidence content \u2014 structure depends on evidence_type",
+    {
       "type": "object",
-      "properties": {
-        "contents": {
-          "description": "The primary evidence payload (opaque per evidence_type)"
-        }
-      },
-      "additionalProperties": true
-    },
-    "metadata": {
-      "type": "object",
-      "description": "Optional key-value metadata about the evidence record",
-      "additionalProperties": {
-        "type": ["string", "number", "boolean", "null", "array", "object"]
-      }
-    },
-    "signature": {
-      "type": "object",
-      "description": "Optional tamper-evident signature over the record content",
       "required": [
-        "alg",
-        "key_id",
-        "sig"
+        "evidence_type",
+        "payload"
       ],
       "properties": {
-        "alg": {
+        "evidence_type": {
           "type": "string",
-          "description": "Signature algorithm, e.g. ed25519"
+          "description": "Discriminator for the kind of evidence enclosed, e.g. 'execution', 'artifact', 'checkpoint', 'replay', 'memory'"
         },
-        "key_id": {
-          "type": "string",
-          "description": "Identifier of the signing key"
-        },
-        "sig": {
-          "type": "string",
-          "description": "Base64-encoded signature bytes"
+        "payload": {
+          "description": "The evidence content — structure depends on evidence_type",
+          "type": "object",
+          "properties": {
+            "contents": {
+              "description": "The primary evidence payload (opaque per evidence_type)"
+            }
+          },
+          "additionalProperties": true
         }
-      },
-      "additionalProperties": false
+      }
     }
-  }
+  ]
 }
