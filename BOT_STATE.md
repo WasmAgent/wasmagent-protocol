@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-28 10:58 UTC by patrol_
+_Last updated: 2026-07-28 11:47 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-28 10:58 UTC by patrol_
 
 ## Waiting for Human
 
+- #149: [milestone Milestone 5 ] Pipeline health and SLA monitoring — add end-to-end latency tracking, per-stag...
 - #141: [milestone Milestone 4] Define checkpoint/fork architecture model and core data structures
 - #131: Create @wasmagent/protocol package with aep-record type definition
 - #128: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
