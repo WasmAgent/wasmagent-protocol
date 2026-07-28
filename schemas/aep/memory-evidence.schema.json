@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/memory-evidence.schema.json",
+  "title": "MemoryEvidence",
+  "description": "Tamper-evident memory read/write record. Each op records the content digest of the memory cell plus the digest observed immediately before the op (prior_digest), so successive records form a hash chain: altering any past write changes its digest and breaks the chain at the next read/write, making tamper detectable. Records are linked into AEP actions via aep-record's memory_read_refs / memory_write_refs.",
+  "type": "object",
+  "required": [
+    "mem_ref",
+    "op",
+    "digest",
+    "prior_digest",
+    "timestamp_ms"
+  ],
+  "properties": {
+    "mem_ref": {
+      "type": "string",
+      "description": "Stable reference (key/path) to the memory cell that was read or written"
+    },
+    "op": {
+      "type": "string",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "description": "Memory operation performed against the referenced cell"
+    },
+    "digest": {
+      "type": "string",
+      "description": "Content digest of the memory cell — post-write content for a write, or the value returned by a read"
+    },
+    "prior_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Digest of the memory cell's content immediately before this op. Null when the cell did not previously exist (first write / creation). Carries the hash-chain link that makes the record tamper-evident."
+    },
+    "timestamp_ms": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the memory op was recorded"
+    }
+  }
+}
