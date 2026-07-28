@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-28 06:57 UTC by patrol_
+_Last updated: 2026-07-28 09:41 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 15 |
-| Active (running/reviewing) | 0 |
+| Pending | 11 |
+| Active (running/reviewing) | 1 |
 | Blocked | 0 |
-| Completed/Merged (all time) | 152 |
+| Completed/Merged (all time) | 154 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #131 | Create @wasmagent/protocol package with aep-record type d... | completed/maintenance_done | 2026-07-28 |
+| #137 | Fix WasmAgent/wasmagent-protocol#133 ([milestone Mileston... | completed/maintenance_done | 2026-07-28 |
 | #137 | Fix WasmAgent/wasmagent-protocol#133 ([milestone Mileston... | completed/maintenance_done | 2026-07-28 |
 | #140 | [prereq] Add base fixture test infrastructure for new sch... | merged/auto_closed_resolved | 2026-07-28 |
 | #133 | [milestone Milestone 2] Create canonical-event.schema.jso... | completed/retry_split | 2026-07-28 |
-| #120 | Establish AEP schema scaffolding: schemas/index.json regi... | completed/retry_split | 2026-07-27 |
-| #125 | [milestone Milestone 4] Add schemas/aep/ directory struct... | completed/issue_closed_upstream | 2026-07-27 |
 
 ## Waiting for Human
 
@@ -29,7 +29,6 @@ _Last updated: 2026-07-28 06:57 UTC by patrol_
 - #128: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #126: [milestone Milestone 4] Create AEP base directory structure and infrastructure
 - #100: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
-- #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
 
 ---
 _Maintained automatically by claude-bot-go patrol. Do not edit._
