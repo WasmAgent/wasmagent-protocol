@@ -81,6 +81,9 @@
     { "if": { "properties": { "type": { "const": "tool_call" } }, "required": ["type"] }, "then": { "required": ["tool"] } },
     { "if": { "properties": { "type": { "const": "policy_decision" } }, "required": ["type"] }, "then": { "required": ["policy"] } },
     { "if": { "properties": { "type": { "const": "human_approval" } }, "required": ["type"] }, "then": { "required": ["human"] } },
+    { "if": { "properties": { "type": { "const": "observation" } }, "required": ["type"] }, "then": { "required": ["observation"] } },
+    { "if": { "properties": { "type": { "const": "model_output" } }, "required": ["type"] }, "then": { "required": ["model_output"] } },
+    { "if": { "properties": { "type": { "const": "final_answer" } }, "required": ["type"] }, "then": { "required": [] } },
     { "if": { "properties": { "type": { "const": "error" } }, "required": ["type"] }, "then": { "required": ["error"] } }
   ]
 }
