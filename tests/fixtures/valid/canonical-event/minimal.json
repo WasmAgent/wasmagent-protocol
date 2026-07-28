@@ -1,0 +1,6 @@
+{
+  "schema_version": "canonical-event/v0.1",
+  "event_id": "evt-minimal",
+  "event_type": "observation",
+  "timestamp_ms": 1737600000000
+}

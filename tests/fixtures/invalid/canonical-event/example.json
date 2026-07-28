@@ -1,0 +1,5 @@
+{
+  "schema_version": "canonical-event/v9.9",
+  "event_type": "not-a-real-event-type",
+  "timestamp_ms": 1737600000000
+}

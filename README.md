@@ -35,6 +35,7 @@ Only contracts that genuinely cross a repository boundary:
 | Schema | Version | Consumers |
 | --- | --- | --- |
 | `aep-record` | `aep/v0.3` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `canonical-event` | `canonical-event/v0.1` | open-agent-audit, wasmagent-js |
 | `constraint-ir` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `constraint-violation` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `repair-trace` | `compliance/v1` | wasmagent-js, trace-pipeline |

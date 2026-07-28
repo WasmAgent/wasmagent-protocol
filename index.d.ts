@@ -32,6 +32,49 @@ export const schemas: Record<string, unknown>;
 export function getSchema(id: string): unknown;
 
 // ---------------------------------------------------------------------------
+// Schema instance types (convenience views).
+//
+// The authoritative contract for every record shape is its JSON Schema
+// (see schemas/index.json). Load and validate against it at runtime via
+// getSchema(<id>). The interfaces below capture only the required top-level
+// fields so consumers can type their payloads ergonomically; the index
+// signature passes through every optional schema property unchanged.
+// ---------------------------------------------------------------------------
+
+/**
+ * Convenience structural view of an Agent Evidence Protocol (AEP) record —
+ * runtime action evidence and run provenance. Authoritative shape:
+ * getSchema('aep-record') → schemas/aep/aep-record.schema.json.
+ */
+export interface AEPRecord {
+  /** Schema version, one of `aep/v0.1` | `aep/v0.2` | `aep/v0.3`. */
+  schema_version: string;
+  /** Identifier of the run this record captures. */
+  run_id: string;
+  /** UTC epoch milliseconds when the record was created. */
+  created_at_ms: number;
+  [key: string]: unknown;
+}
+
+/**
+ * Convenience structural view of a normalized event — the foundational record
+ * heterogeneous agent evidence is normalized into before being mapped onto an
+ * AEPRecord. Authoritative shape:
+ * getSchema('canonical-event') → schemas/aep/canonical-event.schema.json.
+ */
+export interface CanonicalEvent {
+  /** Canonical-event schema version, currently `canonical-event/v0.1`. */
+  schema_version: string;
+  /** Globally-unique identifier for this event within its trace. */
+  event_id: string;
+  /** Kind of event: action | decision | observation | error | lifecycle. */
+  event_type: string;
+  /** UTC epoch milliseconds when the event occurred. */
+  timestamp_ms: number;
+  [key: string]: unknown;
+}
+
+// ---------------------------------------------------------------------------
 // Cross-repo schema drift detection.
 // ---------------------------------------------------------------------------
 
