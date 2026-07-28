@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-07-28 01:25 UTC by patrol_
+_Last updated: 2026-07-28 01:26 UTC by patrol_
 
 ## Queue
 
@@ -23,6 +23,7 @@ _Last updated: 2026-07-28 01:25 UTC by patrol_
 
 ## Waiting for Human
 
+- #128: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #126: [milestone Milestone 4] Create AEP base directory structure and infrastructure
 - #100: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #78: [milestone Milestone 4 ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork rec...
