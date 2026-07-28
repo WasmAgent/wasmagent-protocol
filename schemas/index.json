@@ -184,6 +184,23 @@
         "open-agent-audit"
       ],
       "summary": "Trust Passport \u2014 signed, expiring, verifiable trust-state artifact for AI agents."
+    },
+    {
+      "id": "canonical-event",
+      "title": "CanonicalEvent",
+      "path": "schemas/v0.1/canonical-event.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/v0.1/canonical-event.schema.json",
+      "version": "canonical-event/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "open-agent-audit"
+      ],
+      "consumers": [
+        "open-agent-audit",
+        "wasmagent-js",
+        "trace-pipeline"
+      ],
+      "summary": "A single observable audit event in an agent's runtime trace \u2014 the canonical event shape that producers (open-agent-audit) emit and that maps onto aep-record."
     }
   ]
 }

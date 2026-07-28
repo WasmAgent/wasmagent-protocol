@@ -32,6 +32,100 @@ export const schemas: Record<string, unknown>;
 export function getSchema(id: string): unknown;
 
 // ---------------------------------------------------------------------------
+// AEP record type (mirrors schemas/aep/aep-record.schema.json).
+//
+// The schema is additive/evolving: it does not set additionalProperties: false,
+// so validated records may carry fields not listed here. The interfaces below
+// model the documented fields; retrieve the authoritative shape with
+// `getSchema('aep-record')`.
+// ---------------------------------------------------------------------------
+
+/** Allowed `schema_version` values for an AEP record. */
+export type AepSchemaVersion = 'aep/v0.1' | 'aep/v0.2' | 'aep/v0.3';
+
+/** A recorded capability decision (allow / deny / ask_user / dry_run). */
+export interface AepCapabilityDecision {
+  capability: string;
+  subject: string;
+  resource: string;
+  decision: 'allow' | 'deny' | 'ask_user' | 'dry_run';
+  reason_code?: string;
+}
+
+/** A single runtime action captured as evidence. */
+export interface AepAction {
+  action_id: string;
+  tool_name: string;
+  state_changing: boolean;
+  timestamp_ms: number;
+  precondition_digest?: string;
+  result_digest?: string;
+  evidence_refs?: string[];
+  parent_action_id?: string;
+  causal_chain_id?: string;
+  tool_descriptor_digest?: string;
+  server_card_digest?: string;
+  scope_lease_id?: string;
+  approval_context_hash?: string;
+  input_taint_labels?: string[];
+  output_taint_labels?: string[];
+  memory_read_refs?: string[];
+  memory_write_refs?: string[];
+  pre_state_digest?: string;
+  post_state_digest?: string;
+}
+
+/** Result of a verifier run over the record. */
+export interface AepVerifierResult {
+  verifier_id: string;
+  passed: boolean;
+  score?: number;
+  claim_ids?: string[];
+}
+
+/** Optional tamper-evident signature over the record. */
+export interface AepSignature {
+  alg: string;
+  key_id: string;
+  sig: string;
+  bundle?: unknown;
+  transparency_log_ref?: string;
+}
+
+/**
+ * Agent Evidence Protocol record — runtime action evidence and run provenance.
+ * Mirrors `schemas/aep/aep-record.schema.json` (`aep/v0.3`). Only
+ * `schema_version`, `run_id`, and `created_at_ms` are required; every other
+ * field is optional and additive.
+ */
+export interface AepRecord {
+  schema_version: AepSchemaVersion;
+  run_id: string;
+  created_at_ms: number;
+  trace_id?: string;
+  parent_trace_id?: string | null;
+  repo_commit?: string;
+  runtime_version?: string;
+  model_provider?: string;
+  model_id?: string;
+  policy_bundle_digest?: string;
+  tool_manifest_digest?: string;
+  mcp_server_card_digest?: string | null;
+  capability_decisions?: AepCapabilityDecision[];
+  actions?: AepAction[];
+  verifier_results?: AepVerifierResult[];
+  budget_ledger?: Record<string, unknown>;
+  run_context?: Record<string, unknown>;
+  user_id?: string;
+  subject_id?: string;
+  side_effect_class?: 'read' | 'mutate-local' | 'mutate-external' | 'network-egress' | 'unknown';
+  run_side_effect_class_max?: 'read' | 'mutate-local' | 'mutate-external' | 'network-egress' | 'unknown';
+  recording_mode?: 'full' | 'delta' | 'validation';
+  argument_drift?: Record<string, unknown>;
+  signature?: AepSignature;
+}
+
+// ---------------------------------------------------------------------------
 // Cross-repo schema drift detection.
 // ---------------------------------------------------------------------------
 
