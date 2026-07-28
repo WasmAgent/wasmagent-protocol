@@ -1,0 +1,38 @@
+{
+  "schema_version": "sla-metrics/v1",
+  "pipeline_id": "trace-pipeline",
+  "window": {
+    "start_ms": 1722000000000,
+    "end_ms": 1722000060000
+  },
+  "end_to_end_latency_ms": {
+    "p50": 120.0,
+    "p95": 480.0,
+    "p99": 950.0,
+    "min": 40.0,
+    "max": 1200.0,
+    "mean": 180.0,
+    "count": 10000
+  },
+  "per_stage": [
+    {
+      "stage": "ingest",
+      "success_count": 10000,
+      "failure_count": 0,
+      "success_rate": 1.0,
+      "latency_ms": {
+        "p50": 10.0,
+        "p95": 25.0,
+        "p99": 60.0,
+        "count": 10000
+      }
+    },
+    {
+      "stage": "validation",
+      "success_count": 9960,
+      "failure_count": 40,
+      "success_rate": 0.996
+    }
+  ],
+  "throughput_per_second": 1666.7
+}

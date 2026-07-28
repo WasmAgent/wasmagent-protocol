@@ -1,0 +1,4 @@
+{
+  "schema_version": "sla-metrics/v2",
+  "pipeline_id": "trace-pipeline"
+}

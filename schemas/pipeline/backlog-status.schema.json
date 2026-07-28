@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/pipeline/backlog-status.schema.json",
+  "title": "BacklogStatus",
+  "description": "Point-in-time backlog state for a single pipeline queue (backlog-status/v1). Drives alerting on backlog buildup: when depth or oldest-item age breaches a threshold, or arrival exceeds drain, the queue is accumulating work faster than it can drain. Emitted by trace-pipeline and consumed by wasmagent-ops; rolled up into pipeline-health-record alerts as backlog_buildup.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pipeline_id",
+    "queue",
+    "measured_at_ms",
+    "depth",
+    "arrival_rate_per_second",
+    "drain_rate_per_second",
+    "breaches_threshold"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "backlog-status/v1",
+      "description": "Schema version identifier. Always 'backlog-status/v1'."
+    },
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "queue": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name of the queue/stage this backlog describes (e.g. 'validation', 'ingest')."
+    },
+    "measured_at_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current number of unprocessed items in the queue."
+    },
+    "oldest_item_age_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Age of the oldest unprocessed item in milliseconds."
+    },
+    "arrival_rate_per_second": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Mean rate at which items are entering the queue."
+    },
+    "drain_rate_per_second": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Mean rate at which items are leaving the queue (processed or dropped)."
+    },
+    "growth_rate_per_second": {
+      "type": "number",
+      "description": "arrival_rate_per_second - drain_rate_per_second. Positive values indicate buildup."
+    },
+    "high_watermark": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum observed depth over the measurement window."
+    },
+    "threshold_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Alert threshold for depth; depth above this triggers backlog_buildup alerting."
+    },
+    "threshold_age_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Alert threshold for oldest_item_age_ms."
+    },
+    "breaches_threshold": {
+      "type": "boolean",
+      "description": "True iff depth > threshold_depth OR oldest_item_age_ms > threshold_age_ms (for whichever thresholds are set). Rolled up into pipeline-health-record alerts."
+    }
+  }
+}

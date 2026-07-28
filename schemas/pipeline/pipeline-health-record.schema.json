@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/pipeline/pipeline-health-record.schema.json",
+  "title": "PipelineHealthRecord",
+  "description": "Composite pipeline health snapshot (pipeline-health-record/v1). Rolls up SLA metrics (end-to-end latency + per-stage success rates), per-queue backlog status, active alerts (validation failures, backlog buildup, latency SLO breaches, canary failures), and the result of automated schema-evolution canary testing against wasmagent-protocol updates. Single source of truth shared by trace-pipeline (emitter) and wasmagent-ops (consumer).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pipeline_id",
+    "recorded_at_ms",
+    "overall_status",
+    "sla",
+    "alerts",
+    "canary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "pipeline-health-record/v1",
+      "description": "Schema version identifier. Always 'pipeline-health-record/v1'."
+    },
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recorded_at_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "degraded",
+        "unhealthy"
+      ],
+      "description": "Derived rollup: healthy = no alerts and SLOs met; degraded = warning alerts or near-breach; unhealthy = critical alert or SLO breach."
+    },
+    "sla": {
+      "$ref": "sla-metrics.schema.json",
+      "description": "Latency and per-stage success-rate measurements for this snapshot's window."
+    },
+    "backlogs": {
+      "type": "array",
+      "description": "Per-queue backlog status. Queues whose breaches_threshold is true SHOULD also appear as backlog_buildup alerts.",
+      "items": {
+        "$ref": "backlog-status.schema.json"
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "description": "Active alerts fired in this snapshot's window. validation_failure covers schema/validation rejections; backlog_buildup covers queue depth/age breaches.",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "severity",
+          "message",
+          "first_observed_at_ms"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "validation_failure",
+              "backlog_buildup",
+              "latency_slo_breach",
+              "canary_failure"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warning",
+              "critical"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "description": "Optional pipeline stage/queue the alert is scoped to."
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "first_observed_at_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of occurrences in the window."
+          }
+        }
+      }
+    },
+    "canary": {
+      "type": "object",
+      "description": "Result of automated canary testing of schema evolution: the pipeline re-runs its validation fixtures against a candidate wasmagent-protocol update before adoption, so a breaking schema change fails here instead of in production.",
+      "required": [
+        "protocol_version",
+        "status",
+        "checked_at_ms"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The wasmagent-protocol package version the canary validated against (e.g. '0.1.7')."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "skipped"
+          ],
+          "description": "pass = all sampled fixtures still validate under the candidate protocol; fail = at least one broke (also surfaces a canary_failure alert); skipped = canary not run."
+        },
+        "schemas_checked": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of canonical schemas exercised by the canary."
+        },
+        "failures": {
+          "type": "array",
+          "description": "Per-fixture canary failures. SHOULD be non-empty iff status is 'fail'.",
+          "items": {
+            "type": "object",
+            "required": [
+              "schema_id",
+              "fixture",
+              "reason"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "schema_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fixture": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Path/id of the fixture that regressed."
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "checked_at_ms": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

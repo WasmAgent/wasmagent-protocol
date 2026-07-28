@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/pipeline/sla-metrics.schema.json",
+  "title": "SlaMetrics",
+  "description": "Latency and per-stage success-rate measurements for one pipeline window (sla-metrics/v1). Emitted by trace-pipeline and consumed by wasmagent-ops for SLA dashboards and SLO-breach alerting. This is the canonical home for end-to-end latency tracking and per-stage success rates shared across the production trace pipeline.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pipeline_id",
+    "window",
+    "end_to_end_latency_ms",
+    "per_stage"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "sla-metrics/v1",
+      "description": "Schema version identifier. Always 'sla-metrics/v1'."
+    },
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the pipeline these metrics describe (e.g. 'trace-pipeline')."
+    },
+    "window": {
+      "type": "object",
+      "description": "Half-open measurement window [start_ms, end_ms).",
+      "required": [
+        "start_ms",
+        "end_ms"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_ms": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "end_to_end_latency_ms": {
+      "$ref": "#/$defs/LatencyHistogram",
+      "description": "End-to-end pipeline latency distribution across the window — the full path from ingest to emitted output."
+    },
+    "per_stage": {
+      "type": "array",
+      "description": "Per-stage breakdown: success/failure counts and success rate for each named pipeline stage.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "stage",
+          "success_count",
+          "failure_count",
+          "success_rate"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "stage": {
+            "type": "string",
+            "minLength": 1
+          },
+          "success_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failure_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "success_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "success_count / (success_count + failure_count), clamped to [0, 1]."
+          },
+          "latency_ms": {
+            "$ref": "#/$defs/LatencyHistogram"
+          }
+        }
+      }
+    },
+    "throughput_per_second": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Optional mean throughput over the window (records completed per second)."
+    }
+  },
+  "$defs": {
+    "LatencyHistogram": {
+      "type": "object",
+      "description": "Latency distribution summary in milliseconds. p50 <= p95 <= p99 by convention.",
+      "required": [
+        "p50",
+        "p95",
+        "p99",
+        "count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p95": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p99": {
+          "type": "number",
+          "minimum": 0
+        },
+        "min": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mean": {
+          "type": "number",
+          "minimum": 0
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

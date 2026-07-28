@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "protocol": "AEP",
-  "description": "Registry of canonical WasmAgent protocol schemas \u2014 the single source of truth for every cross-repository contract. Downstream repos consume via @wasmagent/protocol (npm) and wasmagent-protocol (PyPI). Covers: AEP, compliance, AgentBOM, MCP Posture, Trust Passport.",
+  "description": "Registry of canonical WasmAgent protocol schemas \u2014 the single source of truth for every cross-repository contract. Downstream repos consume via @wasmagent/protocol (npm) and wasmagent-protocol (PyPI). Covers: AEP, compliance, AgentBOM, MCP Posture, Trust Passport, Pipeline health.",
   "canonical_host": "https://wasmagent.dev/schemas/",
   "schemas": [
     {
@@ -184,6 +184,54 @@
         "open-agent-audit"
       ],
       "summary": "Trust Passport \u2014 signed, expiring, verifiable trust-state artifact for AI agents."
+    },
+    {
+      "id": "pipeline-health-record",
+      "title": "PipelineHealthRecord",
+      "path": "schemas/pipeline/pipeline-health-record.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/pipeline/pipeline-health-record.schema.json",
+      "version": "pipeline-health-record/v1",
+      "stability": "evolving",
+      "owners": [
+        "trace-pipeline"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "wasmagent-ops"
+      ],
+      "summary": "Composite pipeline health snapshot \u2014 rolls up end-to-end latency, per-stage success rates, backlog/alert status, and the schema-evolution canary result shared across the production trace pipeline."
+    },
+    {
+      "id": "sla-metrics",
+      "title": "SlaMetrics",
+      "path": "schemas/pipeline/sla-metrics.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/pipeline/sla-metrics.schema.json",
+      "version": "sla-metrics/v1",
+      "stability": "evolving",
+      "owners": [
+        "trace-pipeline"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "wasmagent-ops"
+      ],
+      "summary": "Latency and per-stage success-rate measurements for a pipeline window \u2014 end-to-end latency tracking and per-stage success rates."
+    },
+    {
+      "id": "backlog-status",
+      "title": "BacklogStatus",
+      "path": "schemas/pipeline/backlog-status.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/pipeline/backlog-status.schema.json",
+      "version": "backlog-status/v1",
+      "stability": "evolving",
+      "owners": [
+        "trace-pipeline"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "wasmagent-ops"
+      ],
+      "summary": "Point-in-time backlog state for a single pipeline queue \u2014 drives alerting on backlog buildup (depth/age threshold breaches)."
     }
   ]
 }

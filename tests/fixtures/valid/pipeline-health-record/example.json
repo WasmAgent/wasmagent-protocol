@@ -1,0 +1,62 @@
+{
+  "schema_version": "pipeline-health-record/v1",
+  "pipeline_id": "trace-pipeline",
+  "recorded_at_ms": 1722000060000,
+  "overall_status": "degraded",
+  "sla": {
+    "schema_version": "sla-metrics/v1",
+    "pipeline_id": "trace-pipeline",
+    "window": {
+      "start_ms": 1722000000000,
+      "end_ms": 1722000060000
+    },
+    "end_to_end_latency_ms": {
+      "p50": 120.0,
+      "p95": 480.0,
+      "p99": 950.0,
+      "count": 10000
+    },
+    "per_stage": [
+      {
+        "stage": "ingest",
+        "success_count": 10000,
+        "failure_count": 0,
+        "success_rate": 1.0
+      },
+      {
+        "stage": "validation",
+        "success_count": 9960,
+        "failure_count": 40,
+        "success_rate": 0.996
+      }
+    ]
+  },
+  "backlogs": [
+    {
+      "schema_version": "backlog-status/v1",
+      "pipeline_id": "trace-pipeline",
+      "queue": "validation",
+      "measured_at_ms": 1722000060000,
+      "depth": 128,
+      "arrival_rate_per_second": 50.0,
+      "drain_rate_per_second": 48.0,
+      "breaches_threshold": false
+    }
+  ],
+  "alerts": [
+    {
+      "kind": "validation_failure",
+      "severity": "warning",
+      "stage": "validation",
+      "message": "40 records failed schema validation in the window",
+      "first_observed_at_ms": 1722000010000,
+      "count": 40
+    }
+  ],
+  "canary": {
+    "protocol_version": "0.1.7",
+    "status": "pass",
+    "schemas_checked": 3,
+    "checked_at_ms": 1722000050000
+  }
+}

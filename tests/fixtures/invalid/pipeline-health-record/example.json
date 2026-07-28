@@ -1,0 +1,9 @@
+{
+  "schema_version": "pipeline-health-record/v9",
+  "pipeline_id": "trace-pipeline",
+  "recorded_at_ms": 1722000060000,
+  "overall_status": "broken",
+  "sla": {},
+  "alerts": [],
+  "canary": {}
+}

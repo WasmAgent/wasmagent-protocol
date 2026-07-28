@@ -1,0 +1,10 @@
+{
+  "schema_version": "backlog-status/v1",
+  "pipeline_id": "trace-pipeline",
+  "queue": "validation",
+  "measured_at_ms": 1722000060000,
+  "depth": -5,
+  "arrival_rate_per_second": 50.0,
+  "drain_rate_per_second": 48.0,
+  "breaches_threshold": false
+}

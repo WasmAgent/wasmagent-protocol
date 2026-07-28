@@ -1,0 +1,15 @@
+{
+  "schema_version": "backlog-status/v1",
+  "pipeline_id": "trace-pipeline",
+  "queue": "validation",
+  "measured_at_ms": 1722000060000,
+  "depth": 128,
+  "oldest_item_age_ms": 4200.0,
+  "arrival_rate_per_second": 50.0,
+  "drain_rate_per_second": 48.0,
+  "growth_rate_per_second": 2.0,
+  "high_watermark": 250,
+  "threshold_depth": 1000,
+  "threshold_age_ms": 30000.0,
+  "breaches_threshold": false
+}
