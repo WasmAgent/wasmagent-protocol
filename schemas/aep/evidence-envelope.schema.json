@@ -2,11 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/evidence-envelope.schema.json",
   "title": "EvidenceEnvelope",
-  "description": "Shared base fields for all AEP evidence records \u2014 schema_version, trace_id, created_at_ms, and optional signature. Every evidence type $refs this schema for its envelope fields.",
+  "description": "Shared envelope base for all AEP evidence records. Every evidence type wraps its payload in this envelope, which carries schema_version, trace_id, created_at_ms, evidence_type, payload, metadata, and an optional signature.",
   "type": "object",
   "required": [
     "schema_version",
-    "created_at_ms"
+    "created_at_ms",
+    "evidence_type",
+    "payload"
   ],
   "properties": {
     "schema_version": {
@@ -19,7 +21,28 @@
     },
     "created_at_ms": {
       "type": "number",
-      "description": "UTC epoch milliseconds when the record was created"
+      "description": "UTC epoch milliseconds when the record was created (envelope timestamp)"
+    },
+    "evidence_type": {
+      "type": "string",
+      "description": "Discriminator for the kind of evidence enclosed, e.g. 'execution', 'artifact', 'checkpoint', 'replay', 'memory'"
+    },
+    "payload": {
+      "description": "The evidence content \u2014 structure depends on evidence_type",
+      "type": "object",
+      "properties": {
+        "contents": {
+          "description": "The primary evidence payload (opaque per evidence_type)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional key-value metadata about the evidence record",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean", "null", "array", "object"]
+      }
     },
     "signature": {
       "type": "object",

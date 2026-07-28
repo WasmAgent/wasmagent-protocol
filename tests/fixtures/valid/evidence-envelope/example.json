@@ -2,6 +2,14 @@
   "schema_version": "aep/v0.1",
   "trace_id": "trace-abc123",
   "created_at_ms": 1737600000000,
+  "evidence_type": "artifact",
+  "payload": {
+    "contents": "artifact-evidence-data"
+  },
+  "metadata": {
+    "source": "wasmagent-js",
+    "correlation_tag": "run-42"
+  },
   "signature": {
     "alg": "ed25519",
     "key_id": "key-001",
