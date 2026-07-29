@@ -69,3 +69,9 @@ export function scan(root: string, options?: { allowCanonicalSource?: boolean })
 
 /** True if any finding in the list is an error. */
 export function hasDrift(findings: DriftFinding[]): boolean;
+
+/** Return the parsed AgentBOM JSON Schema. Equivalent to getSchema("agentbom"). */
+export function loadAgentBOMSchema(): unknown;
+
+/** Return the parsed MCP Posture JSON Schema. Equivalent to getSchema("mcp-posture"). */
+export function loadMCPPostureSchema(): unknown;
