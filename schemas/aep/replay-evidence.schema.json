@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/replay-evidence.schema.json",
+  "title": "ReplayEvidence",
+  "description": "Deterministic-replay attestation — records that a run was replayed from a fixed seed and produced a matching output, proving determinism. Carries the AEP envelope fields (schema_version, created_at_ms) plus replay-specific keys.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "created_at_ms",
+    "run_id",
+    "seed",
+    "input_digests",
+    "output_digest",
+    "engine_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver-like schema identifier, e.g. aep/v0.1"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Optional correlation ID linking related evidence records"
+    },
+    "created_at_ms": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the record was created"
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Identifier of the run being attested for deterministic replay"
+    },
+    "seed": {
+      "type": "string",
+      "description": "The deterministic seed the run was replayed with"
+    },
+    "input_digests": {
+      "type": "array",
+      "description": "Content digests of every input consumed by the replayed run, in a stable order",
+      "items": {
+        "type": "string"
+      }
+    },
+    "output_digest": {
+      "type": "string",
+      "description": "Content digest of the replayed run's output; a match across replays proves determinism"
+    },
+    "engine_version": {
+      "type": "string",
+      "description": "Version of the execution engine/runtime that performed the replay"
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional tamper-evident signature over the record content",
+      "required": [
+        "alg",
+        "key_id",
+        "sig"
+      ],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "description": "Signature algorithm, e.g. ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "description": "Identifier of the signing key"
+        },
+        "sig": {
+          "type": "string",
+          "description": "Base64-encoded signature bytes"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
