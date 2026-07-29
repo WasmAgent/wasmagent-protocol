@@ -12,11 +12,22 @@ export interface SchemaIndexEntry {
   summary: string;
 }
 
+export interface SchemaFamily {
+  title: string;
+  description: string;
+  /** Registry id of the base/reference schema every member extends. */
+  base: string;
+  /** Registry ids of the concrete member schemas in the family. */
+  members: string[];
+}
+
 export interface SchemaIndex {
   protocol: string;
   description: string;
   canonical_host: string;
   schemas: SchemaIndexEntry[];
+  /** Grouped schema families (e.g. "aep") for cross-cutting discovery. */
+  families?: Record<string, SchemaFamily>;
 }
 
 /** Machine-readable registry of every canonical schema. */
@@ -30,6 +41,12 @@ export const schemas: Record<string, unknown>;
  * (e.g. "aep-record", "constraint-ir"). Throws on unknown id.
  */
 export function getSchema(id: string): unknown;
+
+/** Grouped schema families (e.g. "aep") for cross-cutting discovery. */
+export const families: Record<string, SchemaFamily>;
+
+/** Registry ids of the concrete member schemas in a family, or [] if unknown. */
+export function familyMembers(family: string): string[];
 
 // ---------------------------------------------------------------------------
 // Cross-repo schema drift detection.

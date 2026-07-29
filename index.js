@@ -53,6 +53,15 @@ export function loadMCPPostureSchema() {
 }
 
 
+/** Grouped schema families (e.g. "aep") for cross-cutting discovery. */
+export const families = index.families ?? {};
+
+/** Registry ids of the concrete member schemas in a family, or [] if unknown. */
+export function familyMembers(family) {
+  const fam = (index.families || {})[family];
+  return Array.isArray(fam && fam.members) ? [...fam.members] : [];
+}
+
 // ---------------------------------------------------------------------------
 // Cross-repo schema drift detection.
 //

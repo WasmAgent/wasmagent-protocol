@@ -17,7 +17,14 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
-__all__ = ["INDEX", "get_schema", "schema_path", "schema_ids"]
+__all__ = [
+    "INDEX",
+    "get_schema",
+    "schema_path",
+    "schema_ids",
+    "schema_families",
+    "family_members",
+]
 
 _SCHEMAS_PKG = "wasmagent_protocol.schemas"
 # Editable / source-checkout fallback: the canonical schemas live at the repo
@@ -70,6 +77,25 @@ _PATHS: dict[str, str] = {
 def schema_ids() -> list[str]:
     """Return the ids of every registered canonical schema."""
     return list(_PATHS)
+
+
+def schema_families() -> dict[str, Any]:
+    """Return the grouped schema families declared in the registry (e.g. ``aep``).
+
+    Each family maps to ``{"title", "description", "base", "members"}`` where
+    ``base`` is the registry id of the shared base schema every member extends
+    and ``members`` lists the concrete member schema ids.
+    """
+    families = INDEX.get("families")
+    return dict(families) if isinstance(families, dict) else {}
+
+
+def family_members(family: str) -> list[str]:
+    """Return the member schema ids for ``family`` (e.g. ``"aep"``), or ``[]``
+    if the family is not declared in the registry."""
+    fam = schema_families().get(family)
+    members = fam.get("members") if isinstance(fam, dict) else None
+    return list(members) if isinstance(members, list) else []
 
 
 @lru_cache(maxsize=None)

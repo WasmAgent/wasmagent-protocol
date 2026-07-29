@@ -1,0 +1,12 @@
+{
+  "schema_version": "aep/v0.4",
+  "evidence_type": "artifact-attestation",
+  "trace_id": "trace-abc123",
+  "produced_by_run_id": "run-001",
+  "created_at_ms": 1737600000000,
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "key-001",
+    "sig": "base64sigexample=="
+  }
+}
