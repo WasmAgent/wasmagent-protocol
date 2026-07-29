@@ -5,7 +5,10 @@
 version: 1
 
 setup:
-  - python3 -m pip install --quiet --upgrade jsonschema referencing build
+  # --break-system-packages keeps this robust under PEP 668 externally-managed
+  # environments (the Debian/Ubuntu Python the merge gate runs in). In a normal
+  # or venv-managed environment the flag is a harmless no-op.
+  - python3 -m pip install --quiet --upgrade --break-system-packages jsonschema referencing build
 
 steps:
   - name: schema-conformance
@@ -15,5 +18,5 @@ steps:
   - name: python-wheel-import
     run: |
       python3 -m build --wheel
-      python3 -m pip install --quiet --force-reinstall dist/*.whl
+      python3 -m pip install --quiet --force-reinstall --break-system-packages dist/*.whl
       python3 -c "from wasmagent_protocol import get_schema; assert get_schema('aep-record')['title']=='AEPRecord'"
