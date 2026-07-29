@@ -1,0 +1,38 @@
+{
+  "schema_version": "canonical-event/v0.1",
+  "event_id": "evt-0001",
+  "event_type": "action",
+  "timestamp_ms": 1737600000100,
+  "trace_id": "trace-001",
+  "run_id": "run-abc123",
+  "parent_event_id": "evt-0000",
+  "actor": {
+    "actor_id": "agent-1",
+    "actor_type": "agent",
+    "agent_version": "wasmagent-js@1.20.0"
+  },
+  "subject_id": "user-42",
+  "tool_name": "write_file",
+  "state_changing": true,
+  "data": {
+    "path": "/tmp/out.txt",
+    "bytes_written": 128
+  },
+  "refs": [
+    {
+      "uri": "file:///tmp/out.txt",
+      "digest": "sha256:deadbeef",
+      "relation": "output"
+    }
+  ],
+  "source": {
+    "system": "open-agent-audit",
+    "adapter": "oaa-aep-adapter@0.1",
+    "source_event_type": "tool_call"
+  },
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "k1",
+    "sig": "base64sig=="
+  }
+}

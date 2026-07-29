@@ -77,6 +77,22 @@
       "summary": "Template seed schema establishing the AEP evidence JSON Schema baseline — pinned draft, $id convention, required, properties, additionalProperties:false."
     },
     {
+      "id": "canonical-event",
+      "title": "CanonicalEvent",
+      "path": "schemas/aep/canonical-event.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/canonical-event.schema.json",
+      "version": "canonical-event/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "open-agent-audit",
+        "wasmagent-js"
+      ],
+      "summary": "Foundational normalized event record. Heterogeneous agent evidence is normalized into CanonicalEvents that an adapter maps onto an aep-record."
+    },
+    {
       "id": "constraint-ir",
       "title": "ConstraintIR",
       "path": "schemas/compliance/constraint-ir.schema.json",
