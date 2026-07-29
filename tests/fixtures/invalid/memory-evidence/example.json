@@ -1,0 +1,6 @@
+{
+  "mem_ref": "mem://agent-1/context/window-7",
+  "op": "delete",
+  "digest": "sha256:abc",
+  "timestamp_ms": 1737600000500
+}
