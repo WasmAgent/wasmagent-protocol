@@ -1,0 +1,9 @@
+{
+  "schema_version": "aep/v0.1",
+  "trace_id": "trace-ckpt-001",
+  "created_at_ms": 1737600000000,
+  "checkpoint_id": "ckpt-xyz789",
+  "parent_run_id": "run-abc123",
+  "fork_of": null,
+  "state_digest": "sha256:dddd4444"
+}

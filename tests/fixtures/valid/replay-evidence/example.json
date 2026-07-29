@@ -1,0 +1,18 @@
+{
+  "schema_version": "aep/v0.1",
+  "trace_id": "trace-replay-001",
+  "created_at_ms": 1737600000000,
+  "run_id": "run-abc123",
+  "seed": "42",
+  "input_digests": [
+    "sha256:aaaa1111",
+    "sha256:bbbb2222"
+  ],
+  "output_digest": "sha256:cccc3333",
+  "engine_version": "wasmagent-runtime/1.4.2",
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "key-001",
+    "sig": "base64sigexample=="
+  }
+}
