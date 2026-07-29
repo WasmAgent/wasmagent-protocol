@@ -30,6 +30,28 @@ export function getSchema(id) {
 
 /** All schemas as a plain object keyed by id. */
 export const schemas = Object.fromEntries(index.schemas.map((s) => [s.id, getSchema(s.id)]));
+// ---------------------------------------------------------------------------
+// Named convenience exports for AgentBOM and MCP Posture — the two schemas
+// originally owned by agent-trust-infra that consumers most commonly need.
+// These wrap getSchema() so callers do not have to remember string ids.
+// ---------------------------------------------------------------------------
+
+/**
+ * Return the parsed AgentBOM JSON Schema (id "agentbom").
+ * Equivalent to getSchema("agentbom").
+ */
+export function loadAgentBOMSchema() {
+  return getSchema('agentbom');
+}
+
+/**
+ * Return the parsed MCP Posture JSON Schema (id "mcp-posture").
+ * Equivalent to getSchema("mcp-posture").
+ */
+export function loadMCPPostureSchema() {
+  return getSchema('mcp-posture');
+}
+
 
 // ---------------------------------------------------------------------------
 // Cross-repo schema drift detection.
