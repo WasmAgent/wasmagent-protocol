@@ -49,6 +49,14 @@ The machine-readable registry is [`schemas/index.json`](schemas/index.json).
 `*-training-record` output formats, open-agent-audit's `audit-run`). A schema
 belongs here only when two or more repositories must agree on it.
 
+## Standards alignment
+
+AEP is an **evidence-integrity layer on top of OpenTelemetry GenAI**, not a
+competing telemetry protocol. If your agents already emit OTel GenAI spans,
+[`docs/AEP-OTEL-MAPPING.md`](docs/AEP-OTEL-MAPPING.md) shows field by field what
+AEP reuses from OTel and what it adds (signing, tamper-evidence, capability
+decisions, budget ledgers, side-effect provenance).
+
 ## Consuming the schemas
 
 Downstream repositories **must not** copy schema JSON. Depend on the published
