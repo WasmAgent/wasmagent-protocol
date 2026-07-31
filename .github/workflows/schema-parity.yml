@@ -1,0 +1,56 @@
+name: schema-parity
+
+# Cross-repository schema parity gate.
+# Runs on every PR to main in wasmagent-protocol.
+# Checks out wasmagent-js and trace-pipeline at their latest main,
+# then verifies that their AEP/compliance schema references are a
+# subset of the canonical schemas in this repo.
+#
+# Fails if a downstream consumer:
+#   - references a field name not present in the canonical schema
+#   - uses a schema_version value not listed in the canonical enum
+#   - has a local .schema.json that re-declares a canonical $id
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/**'
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/**'
+  workflow_dispatch:
+
+jobs:
+  parity:
+    name: Schema parity (wasmagent-js + trace-pipeline)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wasmagent-protocol
+        uses: actions/checkout@v4
+        with:
+          path: wasmagent-protocol
+
+      - name: Checkout wasmagent-js
+        uses: actions/checkout@v4
+        with:
+          repository: WasmAgent/wasmagent-js
+          ref: main
+          path: wasmagent-js
+
+      - name: Checkout trace-pipeline
+        uses: actions/checkout@v4
+        with:
+          repository: WasmAgent/trace-pipeline
+          ref: main
+          path: trace-pipeline
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install jsonschema
+        run: python -m pip install --upgrade pip jsonschema
+
+      - name: Run parity check
+        run: python wasmagent-protocol/scripts/check-schema-parity.py
