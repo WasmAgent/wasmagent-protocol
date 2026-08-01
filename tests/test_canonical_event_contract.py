@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
-from referencing import Registry, Resource
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,16 +29,22 @@ def test_canonical_event_is_a_unique_registered_aep_member() -> None:
 
 def _canonical_event_validator() -> Draft202012Validator:
     schema = _load("schemas/aep/canonical-event.schema.json")
-    aep_record_schema = _load("schemas/aep/aep-record.schema.json")
-    registry = Registry().with_resources(
-        [
-            (schema["$id"], Resource.from_contents(schema)),
-            (aep_record_schema["$id"], Resource.from_contents(aep_record_schema)),
-        ]
-    )
 
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, registry=registry)
+    return Draft202012Validator(schema)
+
+
+def test_aep_compatibility_definition_matches_the_authoritative_schema() -> None:
+    canonical_event_schema = _load("schemas/aep/canonical-event.schema.json")
+    compatibility_schema = canonical_event_schema["$defs"]["aep-record"]
+    aep_record_schema = _load("schemas/aep/aep-record.schema.json")
+    expected = {
+        key: value
+        for key, value in aep_record_schema.items()
+        if key not in {"$schema", "$id", "title", "description"}
+    }
+
+    assert compatibility_schema == expected
 
 
 @pytest.mark.parametrize("schema_version", ["aep/v0.1", "aep/v0.2", "aep/v0.3"])
