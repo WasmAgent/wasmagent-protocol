@@ -89,6 +89,11 @@ def test_canonical_event_fixtures_validate_against_canonical_schema() -> None:
     assert list(validator.iter_errors(invalid))
 
 
+@pytest.mark.parametrize("value", [None, "canonical event", []])
+def test_canonical_event_schema_rejects_non_object_values(value: object) -> None:
+    assert list(_canonical_event_validator().iter_errors(value))
+
+
 @pytest.mark.parametrize(
     ("schema_version", "record"),
     [

@@ -6,6 +6,7 @@
   "type": "object",
   "oneOf": [
     {
+      "type": "object",
       "properties": {
         "schema_version": { "const": "canonical-event/v0.1" },
         "event_id": {
