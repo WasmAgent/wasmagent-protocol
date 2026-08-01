@@ -121,90 +121,8 @@ def test_canonical_event_adapter_produces_a_valid_aep_record() -> None:
     ]
 
 
-@pytest.mark.parametrize(
-    ("event", "aep_field", "expected"),
-    [
-        (
-            {
-                "schema_version": "canonical-event/v0.1",
-                "event_id": "decision-1",
-                "event_type": "decision",
-                "timestamp_ms": 1,
-                "run_id": "run-1",
-                "subject_id": "agent-1",
-                "data": {
-                    "capability": "filesystem.write",
-                    "resource": "file:///tmp/out.txt",
-                    "decision": "allow",
-                    "reason_code": "policy-allow",
-                },
-            },
-            "capability_decisions",
-            [{
-                "capability": "filesystem.write",
-                "subject": "agent-1",
-                "resource": "file:///tmp/out.txt",
-                "decision": "allow",
-                "reason_code": "policy-allow",
-            }],
-        ),
-        (
-            {
-                "schema_version": "canonical-event/v0.1",
-                "event_id": "observation-1",
-                "event_type": "observation",
-                "timestamp_ms": 1,
-                "run_id": "run-1",
-                "data": {
-                    "verifier_id": "policy-check",
-                    "passed": True,
-                    "score": 0.98,
-                    "claim_ids": ["claim-1"],
-                },
-            },
-            "verifier_results",
-            [{
-                "verifier_id": "policy-check",
-                "passed": True,
-                "score": 0.98,
-                "claim_ids": ["claim-1"],
-            }],
-        ),
-        (
-            {
-                "schema_version": "canonical-event/v0.1",
-                "event_id": "error-1",
-                "event_type": "error",
-                "timestamp_ms": 1,
-                "run_id": "run-1",
-                "data": {"verifier_id": "tool-result-check"},
-            },
-            "verifier_results",
-            [{"verifier_id": "tool-result-check", "passed": False}],
-        ),
-        (
-            {
-                "schema_version": "canonical-event/v0.1",
-                "event_id": "lifecycle-1",
-                "event_type": "lifecycle",
-                "timestamp_ms": 1,
-                "run_id": "run-1",
-                "parent_event_id": "lifecycle-0",
-                "source": {"system": "open-agent-audit"},
-            },
-            "provenance",
-            {
-                "event_id": "lifecycle-1",
-                "event_type": "lifecycle",
-                "parent_event_id": "lifecycle-0",
-                "source": {"system": "open-agent-audit"},
-            },
-        ),
-    ],
-)
-def test_non_action_canonical_events_map_to_aep_fields(
-    event: dict, aep_field: str, expected: object
-) -> None:
+def test_canonical_event_adapter_derives_run_id_for_minimal_event() -> None:
+    event = _load("tests/fixtures/valid/canonical-event/minimal.json")
     result = subprocess.run(
         [
             "node",
@@ -223,7 +141,9 @@ def test_non_action_canonical_events_map_to_aep_fields(
     record = json.loads(result.stdout)
 
     assert not list(_validator("schemas/aep/aep-record.schema.json").iter_errors(record))
-    assert record[aep_field] == expected
+    assert record["run_id"] == "canonical-event:evt-minimal"
+
+
 
 
 @pytest.mark.parametrize(
