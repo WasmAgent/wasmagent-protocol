@@ -30,6 +30,32 @@ jobs:
       - name: getSchema round-trips every registered id
         run: node --test
 
+  consumer-version-bands:
+    name: Consumer protocol version bands
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wasmagent-protocol
+        uses: actions/checkout@v4
+        with:
+          path: wasmagent-protocol
+      - name: Checkout wasmagent-js
+        uses: actions/checkout@v4
+        with:
+          repository: WasmAgent/wasmagent-js
+          ref: main
+          path: wasmagent-js
+      - name: Checkout trace-pipeline
+        uses: actions/checkout@v4
+        with:
+          repository: WasmAgent/trace-pipeline
+          ref: main
+          path: trace-pipeline
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify consumer protocol dependency bands
+        run: node wasmagent-protocol/scripts/check-consumer-versions.mjs wasmagent-js trace-pipeline
+
   python-loader:
     name: Python loader smoke test
     runs-on: ubuntu-latest
