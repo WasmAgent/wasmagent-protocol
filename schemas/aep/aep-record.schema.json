@@ -41,6 +41,11 @@
         }
       }
     },
+    "evidence_refs": {
+      "type": "array",
+      "description": "Evidence artifacts associated with a record-level event, including non-action canonical events.",
+      "items": { "type": "string" }
+    },
     "capability_decisions": {
       "type": "array",
       "items": {

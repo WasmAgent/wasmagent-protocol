@@ -88,6 +88,7 @@ def test_canonical_event_schema_rejects_non_object_values(value: object) -> None
 
 def test_canonical_event_adapter_produces_a_valid_aep_record() -> None:
     event = _load("tests/fixtures/valid/canonical-event/example.json")
+    event["refs"].append({"uri": "urn:evidence:action", "relation": "evidence"})
     result = subprocess.run(
         [
             "node",
@@ -111,14 +112,16 @@ def test_canonical_event_adapter_produces_a_valid_aep_record() -> None:
         {
             "action_id": event["event_id"],
             "tool_name": event["tool_name"],
-            "state_changing": event["state_changing"],
-            "timestamp_ms": event["timestamp_ms"],
-            "parent_action_id": event["parent_event_id"],
-        }
+                "state_changing": event["state_changing"],
+                "timestamp_ms": event["timestamp_ms"],
+                "parent_action_id": event["parent_event_id"],
+                "evidence_refs": ["urn:evidence:action"],
+            }
     ]
     assert record["output_refs"] == [
         {"uri": "file:///tmp/out.txt", "digest": "sha256:deadbeef"}
     ]
+    assert record["actions"][0]["evidence_refs"] == ["urn:evidence:action"]
 
 
 def test_canonical_event_adapter_derives_run_id_for_minimal_event() -> None:
@@ -142,6 +145,37 @@ def test_canonical_event_adapter_derives_run_id_for_minimal_event() -> None:
 
     assert not list(_validator("schemas/aep/aep-record.schema.json").iter_errors(record))
     assert record["run_id"] == "canonical-event:evt-minimal"
+
+
+@pytest.mark.parametrize("event_type", ["decision", "observation", "error", "lifecycle"])
+def test_canonical_event_adapter_routes_non_action_evidence_refs(event_type: str) -> None:
+    event = {
+        "schema_version": "canonical-event/v0.1",
+        "event_id": f"{event_type}-1",
+        "event_type": event_type,
+        "timestamp_ms": 1,
+        "run_id": "run-1",
+        "refs": [{"relation": "evidence", "uri": f"urn:evidence:{event_type}"}],
+    }
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    record = json.loads(result.stdout)
+
+    assert not list(_validator("schemas/aep/aep-record.schema.json").iter_errors(record))
+    assert record["evidence_refs"] == [f"urn:evidence:{event_type}"]
 
 
 @pytest.mark.parametrize(

@@ -59,8 +59,8 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
   }
   const record = {
     schema_version: schemaVersion,
-    // run_id is optional in CanonicalEvent. Retain it when supplied; otherwise
-    // derive a stable single-event run identifier required by AEPRecord.
+    // run_id is optional in CanonicalEvent. AEPRecord requires it, so use the
+    // required event_id to give an anonymous event a deterministic identity.
     run_id: typeof event.run_id === 'string' && event.run_id
       ? event.run_id
       : `canonical-event:${event.event_id}`,
@@ -101,6 +101,7 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
     .map(({ uri, digest }) => (digest === undefined ? { uri } : { uri, digest }));
   const inputRefs = mapRefs('input');
   const outputRefs = mapRefs('output');
+  const evidenceRefs = mapRefs('evidence').map(({ uri }) => uri);
   if (inputRefs.length) record.input_refs = inputRefs;
   if (outputRefs.length) record.output_refs = outputRefs;
 
@@ -117,11 +118,10 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
       timestamp_ms: event.timestamp_ms,
     };
     if (typeof event.parent_event_id === 'string') action.parent_action_id = event.parent_event_id;
-    const evidenceRefs = mapRefs('evidence')
-      .map(({ uri }) => uri)
-      .filter((uri) => typeof uri === 'string');
     if (evidenceRefs.length) action.evidence_refs = evidenceRefs;
     record.actions = [action];
+  } else if (evidenceRefs.length) {
+    record.evidence_refs = evidenceRefs;
   }
 
   const data = event.data && typeof event.data === 'object' && !Array.isArray(event.data)
