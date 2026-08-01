@@ -113,6 +113,55 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
     record.actions = [action];
   }
 
+  const data = event.data && typeof event.data === 'object' && !Array.isArray(event.data)
+    ? event.data
+    : {};
+  if (event.event_type === 'decision') {
+    const decision = {
+      capability: data.capability,
+      subject: data.subject ?? event.subject_id ?? event.actor?.actor_id,
+      resource: data.resource,
+      decision: data.decision,
+    };
+    if (typeof data.reason_code === 'string') decision.reason_code = data.reason_code;
+    if (
+      typeof decision.capability === 'string'
+      && typeof decision.subject === 'string'
+      && typeof decision.resource === 'string'
+      && ['allow', 'deny', 'ask_user', 'dry_run'].includes(decision.decision)
+    ) {
+      record.capability_decisions = [decision];
+    }
+  }
+
+  if (event.event_type === 'observation' || event.event_type === 'error') {
+    const verifierResult = {
+      verifier_id: data.verifier_id,
+      passed: data.passed,
+    };
+    if (event.event_type === 'error' && verifierResult.passed === undefined) {
+      verifierResult.passed = false;
+    }
+    if (typeof data.score === 'number') verifierResult.score = data.score;
+    if (Array.isArray(data.claim_ids) && data.claim_ids.every((id) => typeof id === 'string')) {
+      verifierResult.claim_ids = data.claim_ids;
+    }
+    if (typeof verifierResult.verifier_id === 'string' && typeof verifierResult.passed === 'boolean') {
+      record.verifier_results = [verifierResult];
+    }
+  }
+
+  if (event.event_type === 'lifecycle') {
+    record.provenance = {
+      event_id: event.event_id,
+      event_type: event.event_type,
+      ...(typeof event.parent_event_id === 'string' ? { parent_event_id: event.parent_event_id } : {}),
+      ...(event.source && typeof event.source === 'object' && !Array.isArray(event.source)
+        ? { source: event.source }
+        : {}),
+    };
+  }
+
   return record;
 }
 
