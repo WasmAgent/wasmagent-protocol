@@ -283,6 +283,22 @@
         "open-agent-audit"
       ],
       "summary": "Signed checkpoint/fork record — checkpoint_id, parent_run_id, fork_of, state_digest, created_at_ms."
+    },
+    {
+      "id": "artifact-attestation",
+      "title": "ArtifactAttestation",
+      "path": "schemas/aep/artifact-attestation.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/artifact-attestation.schema.json",
+      "version": "aep/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js",
+        "open-agent-audit"
+      ],
+      "summary": "Signed produced-artifact provenance — artifact_uri, digest, produced_by_run_id, tool_name, signature."
     }
   ],
   "families": {

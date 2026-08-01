@@ -23,3 +23,13 @@ test('schemas map is keyed by id', () => {
 test('getSchema throws on unknown id', () => {
   assert.throws(() => getSchema('does-not-exist'), /unknown schema id/);
 });
+
+test('artifact attestation declares its provenance contract', () => {
+  const schema = getSchema('artifact-attestation');
+
+  for (const field of ['artifact_uri', 'digest', 'produced_by_run_id', 'tool_name', 'signature']) {
+    assert.ok(schema.required.includes(field), `${field} must be required`);
+    assert.ok(schema.properties[field], `${field} must be declared`);
+  }
+  assert.equal(schema.properties.evidence_type.const, 'artifact-attestation');
+});

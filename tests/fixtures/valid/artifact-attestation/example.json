@@ -1,0 +1,15 @@
+{
+  "schema_version": "aep/v0.1",
+  "evidence_type": "artifact-attestation",
+  "trace_id": "trace-artifact-001",
+  "created_at_ms": 1737600000000,
+  "produced_by_run_id": "run-abc123",
+  "artifact_uri": "s3://evidence-bucket/runs/run-abc123/result.wasm",
+  "digest": "sha256:7e6a30f4c0a1",
+  "tool_name": "wasm-pack",
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "key-001",
+    "sig": "base64sigexample=="
+  }
+}

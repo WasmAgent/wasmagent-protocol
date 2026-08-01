@@ -32,6 +32,7 @@
     "schemas/"
   ],
   "scripts": {
+    "build": "node --check index.js && node --check bin/cli.js",
     "test": "node --test",
     "drift": "node ./bin/cli.js check --scan --root ."
   },

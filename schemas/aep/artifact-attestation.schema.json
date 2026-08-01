@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/artifact-attestation.schema.json",
+  "title": "ArtifactAttestation",
+  "description": "Signed provenance record for an artifact produced by an agent run. It binds the artifact URI and content digest to the producing run and tool.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "_base.schema.json"
+    }
+  ],
+  "required": [
+    "artifact_uri",
+    "digest",
+    "produced_by_run_id",
+    "tool_name",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/schema_version"
+    },
+    "evidence_type": {
+      "const": "artifact-attestation",
+      "description": "Discriminator for produced-artifact provenance evidence"
+    },
+    "trace_id": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/trace_id"
+    },
+    "parent_trace_id": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/parent_trace_id"
+    },
+    "created_at_ms": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/created_at_ms"
+    },
+    "produced_by_run_id": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/produced_by_run_id"
+    },
+    "artifact_uri": {
+      "type": "string",
+      "minLength": 1,
+      "description": "URI identifying the artifact whose provenance is attested"
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Content digest of the produced artifact"
+    },
+    "tool_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name of the tool that produced the artifact"
+    },
+    "signature": {
+      "$ref": "https://wasmagent.dev/schemas/aep/_base.schema.json#/$defs/signature"
+    }
+  },
+  "additionalProperties": false
+}
