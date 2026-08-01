@@ -1,25 +1,25 @@
 # Bot State
 
-_Last updated: 2026-07-31 06:15 UTC by patrol_
+_Last updated: 2026-08-01 00:19 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 2 |
-| Active (running/reviewing) | 1 |
+| Pending | 0 |
+| Active (running/reviewing) | 0 |
 | Blocked | 0 |
-| Completed/Merged (all time) | 159 |
+| Completed/Merged (all time) | 160 |
 
 ## Recent Activity (last 5)
 
 | Issue | Title | Outcome | Date |
 |---|---|---|---|
+| #149 | [milestone Milestone 5 ] Pipeline health and SLA monitori... | completed/maintenance_done | 2026-07-31 |
 | #131 | Create @wasmagent/protocol package with aep-record type d... | completed/maintenance_done | 2026-07-31 |
 | #149 | [milestone Milestone 5 ] Pipeline health and SLA monitori... | completed/maintenance_done | 2026-07-31 |
 | #132 | Fix WasmAgent/wasmagent-protocol#120 (Establish AEP schem... | completed/maintenance_done | 2026-07-31 |
 | #131 | Create @wasmagent/protocol package with aep-record type d... | completed/maintenance_done | 2026-07-28 |
-| #147 | [milestone Milestone 4] Fix verify-first to handle 'new f... | completed/retry_split | 2026-07-28 |
 
 ## Waiting for Human
 
