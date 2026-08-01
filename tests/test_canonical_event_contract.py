@@ -56,6 +56,17 @@ def test_supported_aep_records_validate_against_canonical_schema(
     assert not errors, "; ".join(error.message for error in errors)
 
 
+def test_aep_compatibility_does_not_apply_canonical_event_constraints() -> None:
+    sample = _load("tests/fixtures/valid/aep-record/example.json")
+    sample["event_type"] = "native.audit.event"
+    errors = sorted(
+        _canonical_event_validator().iter_errors(sample),
+        key=lambda error: error.path,
+    )
+
+    assert not errors, "; ".join(error.message for error in errors)
+
+
 @pytest.mark.parametrize(
     ("schema_version", "record"),
     [
@@ -85,6 +96,21 @@ def test_supported_aep_records_validate_against_canonical_schema(
                 "timestamp_ms": 1737600000000,
             },
             id="v0.3-canonical-shaped-but-missing-aep-envelope",
+        ),
+        pytest.param(
+            "aep/v0.3",
+            {
+                "run_id": "run-1",
+                "created_at_ms": 1737600000000,
+                "actions": [
+                    {
+                        "action_id": "action-1",
+                        "tool_name": "write_file",
+                        "state_changing": True,
+                    }
+                ],
+            },
+            id="v0.3-aep-record-with-malformed-action",
         ),
         pytest.param(
             "aep/v0.4",
