@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json",
+  "title": "Checkpoint",
+  "description": "Immutable snapshot of execution state at a point in time, addressable for resume or as the source of a fork.",
+  "type": "object",
+  "required": [
+    "checkpoint_id",
+    "state_digest",
+    "created_at"
+  ],
+  "properties": {
+    "checkpoint_id": {
+      "$ref": "#/$defs/checkpoint_id"
+    },
+    "parent_run_id": {
+      "$ref": "#/$defs/parent_run_id"
+    },
+    "fork_of": {
+      "$ref": "#/$defs/fork_reference"
+    },
+    "state_digest": {
+      "$ref": "#/$defs/state_digest"
+    },
+    "created_at": {
+      "$ref": "#/$defs/created_at"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional non-authoritative producer or storage metadata; it is not covered by the state digest unless explicitly included in the canonical state.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "checkpoint_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for a checkpoint. Implementations should use the ckpt-<sha256-hex> format defined by the architecture document."
+    },
+    "parent_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the execution run that produced this checkpoint."
+    },
+    "state_digest": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Content digest of the complete resumable state, conventionally encoded as algorithm:digest."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 date-time at which the checkpoint was captured."
+    },
+    "fork_reference": {
+      "description": "Optional source checkpoint reference. A string is a checkpoint_id; an object carries the referenced checkpoint_id and may include a producer-supplied snapshot of that checkpoint.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/checkpoint_id"
+        },
+        {
+          "type": "object",
+          "required": [
+            "checkpoint_id"
+          ],
+          "properties": {
+            "checkpoint_id": {
+              "$ref": "#/$defs/checkpoint_id"
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

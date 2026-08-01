@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+  "title": "Fork",
+  "description": "Lineage record created when a new execution run starts from an existing checkpoint.",
+  "type": "object",
+  "required": [
+    "fork_id",
+    "source_checkpoint_id",
+    "fork_reason",
+    "created_at"
+  ],
+  "properties": {
+    "fork_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this fork relationship."
+    },
+    "source_checkpoint_id": {
+      "$ref": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json#/$defs/checkpoint_id",
+      "description": "Identifier of the checkpoint used to initialize the new lineage."
+    },
+    "fork_reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human- or machine-readable reason for creating the fork."
+    },
+    "fork_kind": {
+      "type": "string",
+      "enum": [
+        "alternative",
+        "recovery",
+        "debug",
+        "policy",
+        "other"
+      ],
+      "description": "Optional machine-readable classification of the fork."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 date-time at which the new lineage was created."
+    },
+    "new_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional identifier assigned to the newly created execution run."
+    },
+    "target_branch": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional logical branch or lineage name for the new run."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional non-authoritative lineage metadata.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

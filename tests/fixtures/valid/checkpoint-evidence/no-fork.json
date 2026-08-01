@@ -1,0 +1,7 @@
+{
+  "schema_version": "aep/v0.1",
+  "created_at_ms": 1737600000001,
+  "checkpoint_id": "ckpt-9a8b7c6d",
+  "parent_run_id": "run-abc123",
+  "state_digest": "sha256:aaaa1111"
+}

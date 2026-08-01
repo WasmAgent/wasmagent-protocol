@@ -1,0 +1,5 @@
+{
+  "checkpoint_id": "ckpt-4f4d5c1d",
+  "parent_run_id": "run-abc123",
+  "state_digest": "sha256:dddd4444"
+}
