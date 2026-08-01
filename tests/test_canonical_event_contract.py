@@ -67,6 +67,39 @@ def test_aep_compatibility_does_not_apply_canonical_event_constraints() -> None:
     assert not errors, "; ".join(error.message for error in errors)
 
 
+def test_versionless_legacy_aep_record_validates_against_canonical_schema() -> None:
+    record = {
+        "run_id": "legacy-run-1",
+        "created_at_ms": 1737600000000,
+        "actions": [
+            {
+                "action_id": "action-1",
+                "tool_name": "write_file",
+                "state_changing": True,
+                "timestamp_ms": 1737600000001,
+            }
+        ],
+    }
+
+    assert not list(_canonical_event_validator().iter_errors(record))
+
+
+def test_malformed_versionless_aep_record_is_rejected_by_canonical_schema() -> None:
+    record = {
+        "run_id": "legacy-run-1",
+        "created_at_ms": 1737600000000,
+        "actions": [
+            {
+                "action_id": "action-1",
+                "tool_name": "write_file",
+                "state_changing": True,
+            }
+        ],
+    }
+
+    assert list(_canonical_event_validator().iter_errors(record))
+
+
 @pytest.mark.parametrize(
     ("event_type", "data", "expected_field"),
     [
