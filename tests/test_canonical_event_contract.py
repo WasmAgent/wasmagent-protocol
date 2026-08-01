@@ -67,6 +67,23 @@ def test_aep_compatibility_does_not_apply_canonical_event_constraints() -> None:
     assert not errors, "; ".join(error.message for error in errors)
 
 
+def test_canonical_event_fixtures_validate_against_canonical_schema() -> None:
+    validator = _canonical_event_validator()
+
+    for fixture_name in ("minimal.json", "example.json"):
+        errors = list(
+            validator.iter_errors(
+                _load(f"tests/fixtures/valid/canonical-event/{fixture_name}")
+            )
+        )
+        assert not errors, f"{fixture_name}: " + "; ".join(
+            error.message for error in errors
+        )
+
+    invalid = _load("tests/fixtures/invalid/canonical-event/example.json")
+    assert list(validator.iter_errors(invalid))
+
+
 @pytest.mark.parametrize(
     ("schema_version", "record"),
     [
