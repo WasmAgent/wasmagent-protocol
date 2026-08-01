@@ -57,25 +57,53 @@ def test_supported_aep_records_validate_against_canonical_schema(
 
 
 @pytest.mark.parametrize(
-    "record",
+    ("schema_version", "record"),
     [
-        {"schema_version": "aep/v0.1", "run_id": "run-1"},
-        {
-            "schema_version": "aep/v0.2",
-            "event_id": "evt-1",
-            "event_type": "action",
-            "timestamp_ms": 1737600000000,
-        },
-        {
-            "schema_version": "aep/v0.4",
-            "run_id": "run-1",
-            "created_at_ms": 1737600000000,
-        },
+        pytest.param(
+            "aep/v0.1",
+            {
+                "event_id": "evt-1",
+                "event_type": "action",
+                "timestamp_ms": 1737600000000,
+            },
+            id="v0.1-canonical-shaped-but-missing-aep-envelope",
+        ),
+        pytest.param(
+            "aep/v0.2",
+            {
+                "event_id": "evt-1",
+                "event_type": "action",
+                "timestamp_ms": 1737600000000,
+            },
+            id="v0.2-canonical-shaped-but-missing-aep-envelope",
+        ),
+        pytest.param(
+            "aep/v0.3",
+            {
+                "event_id": "evt-1",
+                "event_type": "action",
+                "timestamp_ms": 1737600000000,
+            },
+            id="v0.3-canonical-shaped-but-missing-aep-envelope",
+        ),
+        pytest.param(
+            "aep/v0.4",
+            {
+                "run_id": "run-1",
+                "created_at_ms": 1737600000000,
+            },
+            id="unsupported-aep-version",
+        ),
     ],
 )
 def test_malformed_or_unsupported_aep_records_are_rejected_by_canonical_schema(
+    schema_version: str,
     record: dict,
 ) -> None:
-    errors = list(_canonical_event_validator().iter_errors(copy.deepcopy(record)))
+    errors = list(
+        _canonical_event_validator().iter_errors(
+            {"schema_version": schema_version, **copy.deepcopy(record)}
+        )
+    )
 
     assert errors
