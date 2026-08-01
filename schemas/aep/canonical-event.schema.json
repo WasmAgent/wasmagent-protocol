@@ -4,8 +4,11 @@
   "title": "CanonicalEvent",
   "description": "Foundational, normalized event record for the WasmAgent evidence stream. Heterogeneous agent evidence (e.g. an open-agent-audit run) is normalized into one or more CanonicalEvents, which an adapter maps onto an aep-record. Field names deliberately mirror aep-record (trace_id, run_id, tool_name, state_changing, refs, signature) so the mapping is mechanical rather than lossy. For version-skew compatibility, this schema also accepts a valid AEP record.",
   "type": "object",
-  "anyOf": [
+  "oneOf": [
     {
+      "properties": {
+        "schema_version": { "const": "canonical-event/v0.1" }
+      },
       "required": ["schema_version", "event_id", "event_type", "timestamp_ms"]
     },
     {
