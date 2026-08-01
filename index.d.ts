@@ -42,6 +42,15 @@ export const schemas: Record<string, unknown>;
  */
 export function getSchema(id: string): unknown;
 
+/**
+ * Map a canonical event to an AEP record while retaining the source event
+ * under `canonical_event` for lossless handling of non-action event kinds.
+ */
+export function canonicalEventToAEPRecord(
+  event: CanonicalEvent,
+  options?: { schemaVersion?: 'aep/v0.1' | 'aep/v0.2' | 'aep/v0.3' },
+): AEPRecord;
+
 /** Grouped schema families (e.g. "aep") for cross-cutting discovery. */
 export const families: Record<string, SchemaFamily>;
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -83,3 +84,38 @@ def test_canonical_event_schema_rejects_non_object_values(value: object) -> None
     assert list(
         _validator("schemas/aep/canonical-event.schema.json").iter_errors(value)
     )
+
+
+def test_canonical_event_adapter_produces_a_valid_aep_record() -> None:
+    event = _load("tests/fixtures/valid/canonical-event/example.json")
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    record = json.loads(result.stdout)
+    errors = list(_validator("schemas/aep/aep-record.schema.json").iter_errors(record))
+
+    assert not errors, "; ".join(error.message for error in errors)
+    assert record["actions"] == [
+        {
+            "action_id": event["event_id"],
+            "tool_name": event["tool_name"],
+            "state_changing": event["state_changing"],
+            "timestamp_ms": event["timestamp_ms"],
+            "parent_action_id": event["parent_event_id"],
+        }
+    ]
+    assert record["output_refs"] == [
+        {"uri": "file:///tmp/out.txt", "digest": "sha256:deadbeef"}
+    ]

@@ -28,6 +28,94 @@ export function getSchema(id) {
   return JSON.parse(readFileSync(join(here, entry.path), 'utf8'));
 }
 
+/**
+ * Map a normalized canonical event into an AEP record.
+ *
+ * The canonical event is retained under `canonical_event` so event kinds that
+ * do not have a one-to-one AEP field remain lossless. Action events are
+ * represented as the corresponding single AEP action; input, output, and
+ * evidence references are routed to their AEP destinations.
+ */
+export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } = {}) {
+  if (!event || typeof event !== 'object' || Array.isArray(event)) {
+    throw new TypeError('@wasmagent/protocol: canonical event must be an object');
+  }
+  if (event.schema_version !== 'canonical-event/v0.1') {
+    throw new TypeError(
+      '@wasmagent/protocol: canonical event requires schema_version "canonical-event/v0.1"',
+    );
+  }
+  if (typeof event.event_id !== 'string' || !event.event_id) {
+    throw new TypeError('@wasmagent/protocol: canonical event requires a non-empty event_id');
+  }
+  if (!['action', 'decision', 'observation', 'error', 'lifecycle'].includes(event.event_type)) {
+    throw new TypeError('@wasmagent/protocol: canonical event has an unsupported event_type');
+  }
+  if (!Number.isFinite(event.timestamp_ms)) {
+    throw new TypeError('@wasmagent/protocol: canonical event requires numeric timestamp_ms');
+  }
+  if (!['aep/v0.1', 'aep/v0.2', 'aep/v0.3'].includes(schemaVersion)) {
+    throw new TypeError(`@wasmagent/protocol: unsupported AEP schema version ${JSON.stringify(schemaVersion)}`);
+  }
+  if (typeof event.run_id !== 'string' || !event.run_id) {
+    throw new TypeError('@wasmagent/protocol: canonical event requires a non-empty run_id');
+  }
+
+  const record = {
+    schema_version: schemaVersion,
+    run_id: event.run_id,
+    created_at_ms: event.timestamp_ms,
+    canonical_event: event,
+  };
+
+  if (typeof event.trace_id === 'string') record.trace_id = event.trace_id;
+  if (typeof event.subject_id === 'string') record.subject_id = event.subject_id;
+  if (event.signature && typeof event.signature === 'object' && !Array.isArray(event.signature)) {
+    record.signature = event.signature;
+  }
+
+  if (event.actor && typeof event.actor === 'object' && !Array.isArray(event.actor)) {
+    const runContext = {};
+    if (typeof event.actor.actor_id === 'string') runContext.agent_id = event.actor.actor_id;
+    if (typeof event.actor.agent_version === 'string') {
+      runContext.agent_version = event.actor.agent_version;
+      record.runtime_version = event.actor.agent_version;
+    }
+    if (Object.keys(runContext).length) record.run_context = runContext;
+  }
+
+  const refs = Array.isArray(event.refs) ? event.refs : [];
+  const mapRefs = (relation) => refs
+    .filter((ref) => ref && typeof ref === 'object' && ref.relation === relation)
+    .map(({ uri, digest }) => (digest === undefined ? { uri } : { uri, digest }));
+  const inputRefs = mapRefs('input');
+  const outputRefs = mapRefs('output');
+  if (inputRefs.length) record.input_refs = inputRefs;
+  if (outputRefs.length) record.output_refs = outputRefs;
+
+  if (event.event_type === 'action') {
+    if (typeof event.tool_name !== 'string' || typeof event.state_changing !== 'boolean') {
+      throw new TypeError(
+        '@wasmagent/protocol: action canonical events require tool_name and state_changing',
+      );
+    }
+    const action = {
+      action_id: event.event_id,
+      tool_name: event.tool_name,
+      state_changing: event.state_changing,
+      timestamp_ms: event.timestamp_ms,
+    };
+    if (typeof event.parent_event_id === 'string') action.parent_action_id = event.parent_event_id;
+    const evidenceRefs = mapRefs('evidence')
+      .map(({ uri }) => uri)
+      .filter((uri) => typeof uri === 'string');
+    if (evidenceRefs.length) action.evidence_refs = evidenceRefs;
+    record.actions = [action];
+  }
+
+  return record;
+}
+
 /** All schemas as a plain object keyed by id. */
 export const schemas = Object.fromEntries(index.schemas.map((s) => [s.id, getSchema(s.id)]));
 // ---------------------------------------------------------------------------
@@ -302,4 +390,3 @@ export function scan(root, { allowCanonicalSource = false } = {}) {
 export function hasDrift(findings) {
   return findings.some((f) => !f.ok);
 }
-
