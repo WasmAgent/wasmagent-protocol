@@ -270,3 +270,38 @@ def test_canonical_event_adapter_derives_run_id_for_empty_run_id() -> None:
     record = json.loads(result.stdout)
 
     assert record["run_id"] == "canonical-event:evt-minimal"
+
+
+def test_canonical_event_adapter_discards_malformed_references() -> None:
+    event = _load("tests/fixtures/valid/canonical-event/minimal.json")
+    event["refs"] = [
+        {"relation": "input", "uri": "file:///tmp/input.txt"},
+        {"relation": "input", "uri": 42},
+        {"relation": "output", "uri": "file:///tmp/output.txt", "digest": "sha256:ok"},
+        {"relation": "output", "uri": "file:///tmp/bad-digest.txt", "digest": 42},
+        {"relation": "output", "uri": None},
+    ]
+    event["signature"] = {"alg": "ed25519", "key_id": "test-key"}
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    record = json.loads(result.stdout)
+
+    assert not list(_validator("schemas/aep/aep-record.schema.json").iter_errors(record))
+    assert record["input_refs"] == [{"uri": "file:///tmp/input.txt"}]
+    assert record["output_refs"] == [
+        {"uri": "file:///tmp/output.txt", "digest": "sha256:ok"}
+    ]
+    assert "signature" not in record

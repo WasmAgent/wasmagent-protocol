@@ -70,7 +70,12 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
 
   if (typeof event.trace_id === 'string') record.trace_id = event.trace_id;
   if (typeof event.subject_id === 'string') record.subject_id = event.subject_id;
-  if (event.signature && typeof event.signature === 'object' && !Array.isArray(event.signature)) {
+  if (
+    event.signature
+    && typeof event.signature === 'object'
+    && !Array.isArray(event.signature)
+    && ['alg', 'key_id', 'sig'].every((field) => typeof event.signature[field] === 'string')
+  ) {
     record.signature = event.signature;
   }
 
@@ -86,7 +91,13 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
 
   const refs = Array.isArray(event.refs) ? event.refs : [];
   const mapRefs = (relation) => refs
-    .filter((ref) => ref && typeof ref === 'object' && ref.relation === relation)
+    .filter(
+      (ref) => ref
+        && typeof ref === 'object'
+        && ref.relation === relation
+        && typeof ref.uri === 'string'
+        && (ref.digest === undefined || typeof ref.digest === 'string'),
+    )
     .map(({ uri, digest }) => (digest === undefined ? { uri } : { uri, digest }));
   const inputRefs = mapRefs('input');
   const outputRefs = mapRefs('output');
