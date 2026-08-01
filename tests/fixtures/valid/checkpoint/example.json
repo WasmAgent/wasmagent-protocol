@@ -1,0 +1,9 @@
+{
+  "checkpoint_id": "ckpt-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "parent_run_id": "run-abc123",
+  "state_digest": "sha256:dddd444444444444444444444444444444444444444444444444444444444444",
+  "created_at_ms": 1737600000000,
+  "metadata": {
+    "storage": "memory"
+  }
+}

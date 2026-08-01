@@ -1,0 +1,7 @@
+{
+  "fork_id": "fork-bad",
+  "fork_of": "ckpt-not-a-sha256-id",
+  "new_run_id": "run-fork456",
+  "reason": "Evaluate an alternative plan",
+  "created_at_ms": 1737600001000
+}

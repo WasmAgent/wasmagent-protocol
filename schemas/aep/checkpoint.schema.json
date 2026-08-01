@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json",
+  "title": "Checkpoint",
+  "description": "Immutable snapshot of an execution run's resumable state. A checkpoint can resume the producing run or initialize a forked run.",
+  "type": "object",
+  "required": [
+    "checkpoint_id",
+    "parent_run_id",
+    "state_digest",
+    "created_at_ms"
+  ],
+  "properties": {
+    "checkpoint_id": {
+      "$ref": "#/$defs/checkpoint_id"
+    },
+    "parent_run_id": {
+      "$ref": "#/$defs/parent_run_id"
+    },
+    "fork_of": {
+      "$ref": "#/$defs/fork_reference"
+    },
+    "state_digest": {
+      "$ref": "#/$defs/state_digest"
+    },
+    "created_at_ms": {
+      "$ref": "#/$defs/created_at_ms"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional non-authoritative storage or producer metadata; it is not included in state_digest unless explicitly part of covered state.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "checkpoint_id": {
+      "type": "string",
+      "pattern": "^ckpt-[0-9a-f]{64}$",
+      "description": "Stable snapshot identifier: ckpt- followed by the lowercase SHA-256 hex digest of (parent_run_id, state_digest, nonce)."
+    },
+    "parent_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque non-empty identifier in the same namespace as aep-record.run_id for the run that produced this checkpoint."
+    },
+    "state_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA-256 digest of the canonical UTF-8 JSON representation of the complete resumable state, encoded as sha256:<lowercase-hex>."
+    },
+    "created_at_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "UTC epoch milliseconds when the checkpoint was captured."
+    },
+    "fork_reference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^ckpt-[0-9a-f]{64}$",
+      "description": "Source checkpoint_id for derived state, or null. Omitted on an ordinary checkpoint."
+    }
+  },
+  "additionalProperties": false
+}

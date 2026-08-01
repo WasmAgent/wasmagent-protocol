@@ -1,0 +1,8 @@
+{
+  "fork_id": "fork-abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "fork_of": "ckpt-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "new_run_id": "run-fork456",
+  "reason": "Evaluate an alternative plan",
+  "fork_kind": "alternative",
+  "created_at_ms": 1737600001000
+}

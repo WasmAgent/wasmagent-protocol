@@ -1,0 +1,6 @@
+{
+  "checkpoint_id": "ckpt-not-a-sha256-id",
+  "parent_run_id": "run-abc123",
+  "state_digest": "sha256:dddd4444",
+  "created_at_ms": 1737600000000
+}

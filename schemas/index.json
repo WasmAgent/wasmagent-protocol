@@ -283,6 +283,38 @@
         "open-agent-audit"
       ],
       "summary": "Signed checkpoint/fork record — checkpoint_id, parent_run_id, fork_of, state_digest, created_at_ms."
+    },
+    {
+      "id": "checkpoint",
+      "title": "Checkpoint",
+      "path": "schemas/aep/checkpoint.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json",
+      "version": "aep/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js",
+        "open-agent-audit"
+      ],
+      "summary": "Immutable execution-state snapshot — checkpoint_id, parent_run_id, fork_of, state_digest, and created_at_ms."
+    },
+    {
+      "id": "fork",
+      "title": "Fork",
+      "path": "schemas/aep/fork.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+      "version": "aep/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "wasmagent-js",
+        "open-agent-audit"
+      ],
+      "summary": "Execution-lineage relationship — fork_id, fork_of, new_run_id, reason, and created_at_ms."
     }
   ],
   "families": {

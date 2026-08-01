@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+  "title": "Fork",
+  "description": "Execution-lineage relationship created when a new run starts from an existing checkpoint.",
+  "type": "object",
+  "required": [
+    "fork_id",
+    "fork_of",
+    "new_run_id",
+    "reason",
+    "created_at_ms"
+  ],
+  "properties": {
+    "fork_id": {
+      "type": "string",
+      "pattern": "^fork-[0-9a-f]{64}$",
+      "description": "Stable relationship identifier: fork- followed by lowercase SHA-256 hex."
+    },
+    "fork_of": {
+      "$ref": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json#/$defs/checkpoint_id",
+      "description": "Source checkpoint_id used to initialize the new run."
+    },
+    "new_run_id": {
+      "$ref": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json#/$defs/parent_run_id",
+      "description": "Identifier of the newly created execution run."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human- or machine-readable reason for creating the new lineage."
+    },
+    "fork_kind": {
+      "type": "string",
+      "enum": [
+        "alternative",
+        "recovery",
+        "debug",
+        "policy",
+        "other"
+      ],
+      "description": "Optional machine-readable classification of the fork."
+    },
+    "created_at_ms": {
+      "$ref": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json#/$defs/created_at_ms"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional non-authoritative lineage metadata.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

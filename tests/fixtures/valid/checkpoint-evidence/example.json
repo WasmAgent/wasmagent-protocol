@@ -2,8 +2,8 @@
   "schema_version": "aep/v0.1",
   "trace_id": "trace-ckpt-001",
   "created_at_ms": 1737600000000,
-  "checkpoint_id": "ckpt-xyz789",
+  "checkpoint_id": "ckpt-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "parent_run_id": "run-abc123",
   "fork_of": null,
-  "state_digest": "sha256:dddd4444"
+  "state_digest": "sha256:dddd444444444444444444444444444444444444444444444444444444444444"
 }
