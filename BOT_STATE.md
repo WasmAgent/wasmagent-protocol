@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-08-01 00:25 UTC by patrol_
+_Last updated: 2026-08-01 01:40 UTC by patrol_
 
 ## Queue
 
@@ -8,7 +8,7 @@ _Last updated: 2026-08-01 00:25 UTC by patrol_
 |---|---|
 | Pending | 0 |
 | Active (running/reviewing) | 0 |
-| Blocked | 0 |
+| Blocked | 2 |
 | Completed/Merged (all time) | 160 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,8 @@ _Last updated: 2026-08-01 00:25 UTC by patrol_
 
 ## Waiting for Human
 
+- #166: docs: GOVERNANCE.md references non-existent scripts/check-consumer-versions.mjs
+- #165: code-review: Incomplete schema family definitions in schemas/index.json registry
 - #149: [milestone Milestone 5 ] Pipeline health and SLA monitoring — add end-to-end latency tracking, per-stag...
 - #141: [milestone Milestone 4] Define checkpoint/fork architecture model and core data structures
 - #132: Fix WasmAgent/wasmagent-protocol#120 (Establish AEP schema scaffolding: schemas/index.json registry, schemas/aep/ direct
