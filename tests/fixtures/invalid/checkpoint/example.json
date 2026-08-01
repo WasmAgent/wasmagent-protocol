@@ -1,0 +1,6 @@
+{
+  "checkpoint_id": "ckpt-xyz789",
+  "parent_run_id": "run-abc123",
+  "state_digest": "sha256:dddd4444",
+  "timestamp": 1737600000000
+}

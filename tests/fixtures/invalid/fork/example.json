@@ -1,0 +1,6 @@
+{
+  "fork_of": "run-abc123",
+  "new_run_id": "run-fork-456",
+  "checkpoint_id": "ckpt-xyz789",
+  "timestamp": 1737600000100
+}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/checkpoint-evidence.schema.json",
   "title": "CheckpointEvidence",
-  "description": "Signed checkpoint/fork record — attests that a run's state was checkpointed (and optionally forked from a parent run), enabling verifiable resume and branch provenance. Carries the AEP envelope fields (schema_version, created_at_ms) plus checkpoint-specific keys.",
+  "description": "Signed checkpoint/fork evidence envelope. Its checkpoint fields correspond to checkpoint.schema.json; created_at_ms is the AEP envelope timestamp equivalent of the core checkpoint timestamp. When present, fork_of identifies the parent run and new_run_id identifies the branch, as defined by fork.schema.json.",
   "type": "object",
   "required": [
     "schema_version",
@@ -37,11 +37,22 @@
         "string",
         "null"
       ],
-      "description": "Checkpoint_id this run was forked from, or null if this is not a fork"
+      "description": "Identifier of the parent run from which a new run was forked, or null if this is not a fork"
+    },
+    "new_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the newly created run when this evidence records a fork"
     },
     "state_digest": {
       "type": "string",
+      "minLength": 1,
       "description": "Content digest of the checkpointed run state, for tamper-evident resume"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional non-authoritative producer context for the checkpoint",
+      "additionalProperties": true
     },
     "signature": {
       "type": "object",

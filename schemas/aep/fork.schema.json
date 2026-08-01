@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+  "title": "Fork",
+  "description": "Relationship record created when a new execution run starts from an existing checkpoint, preserving the provenance of the new branch.",
+  "type": "object",
+  "required": [
+    "fork_of",
+    "new_run_id",
+    "checkpoint_id",
+    "reason",
+    "timestamp"
+  ],
+  "properties": {
+    "fork_of": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the existing run from which the new run branches. This corresponds to the checkpoint's parent_run_id."
+    },
+    "new_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier assigned to the newly created execution run."
+    },
+    "checkpoint_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the checkpoint from which the new run starts."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human- or machine-readable reason for creating the fork."
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the forked run was created."
+    }
+  },
+  "additionalProperties": false
+}

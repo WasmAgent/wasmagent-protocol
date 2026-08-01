@@ -5,5 +5,8 @@
   "checkpoint_id": "ckpt-xyz789",
   "parent_run_id": "run-abc123",
   "fork_of": null,
-  "state_digest": "sha256:dddd4444"
+  "state_digest": "sha256:dddd4444",
+  "metadata": {
+    "storage": "memory"
+  }
 }
