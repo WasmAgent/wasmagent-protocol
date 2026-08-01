@@ -59,13 +59,16 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
       `@wasmagent/protocol: unsupported AEP schema version ${JSON.stringify(schemaVersion)}`,
     );
   }
-  if (typeof event.run_id !== 'string' || !event.run_id) {
-    throw new TypeError('@wasmagent/protocol: canonical event requires a non-empty run_id');
-  }
+  // Canonical events are valid without run_id. Preserve an explicit run ID
+  // where supplied; otherwise derive one deterministically from the required,
+  // globally unique event ID so the resulting AEP envelope remains valid.
+  const runId = typeof event.run_id === 'string' && event.run_id
+    ? event.run_id
+    : `canonical-event:${event.event_id}`;
 
   const record = {
     schema_version: schemaVersion,
-    run_id: event.run_id,
+    run_id: runId,
     created_at_ms: event.timestamp_ms,
     canonical_event: event,
   };

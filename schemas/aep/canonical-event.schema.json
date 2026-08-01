@@ -2,335 +2,111 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/canonical-event.schema.json",
   "title": "CanonicalEvent",
-  "description": "Foundational, normalized event record for the WasmAgent evidence stream. Heterogeneous agent evidence (e.g. an open-agent-audit run) is normalized into one or more CanonicalEvents, which an adapter maps onto an aep-record. Field names deliberately mirror aep-record (trace_id, run_id, tool_name, state_changing, refs, signature) so the mapping is mechanical rather than lossy. For version-skew compatibility, this schema also accepts a valid AEP record.",
+  "description": "Foundational, normalized event record for the WasmAgent evidence stream. Heterogeneous agent evidence (e.g. an open-agent-audit run) is normalized into one or more CanonicalEvents, which an adapter then maps onto an aep-record. Field names deliberately mirror aep-record (trace_id, run_id, tool_name, state_changing, refs, signature) so the mapping is mechanical rather than lossy.",
   "type": "object",
-  "oneOf": [
-    { "$ref": "#/$defs/canonical_event" },
-    { "$ref": "#/$defs/aep_record" },
-    { "$ref": "#/$defs/legacy_aep_record" }
-  ],
-  "$defs": {
-    "aep_record": {
+  "required": ["schema_version", "event_id", "event_type", "timestamp_ms"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["canonical-event/v0.1"],
+      "description": "Version of the canonical-event schema this record conforms to."
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Globally-unique identifier for this event within its trace."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["action", "decision", "observation", "error", "lifecycle"],
+      "description": "Kind of event. 'action' maps to an aep-record action; 'decision' to a capability_decision; 'observation'/'error'/'lifecycle' to verifier_results or provenance."
+    },
+    "timestamp_ms": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the event occurred."
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Correlation id linking related events; maps to aep-record.trace_id."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Identifier of the run this event belongs to; maps to aep-record.run_id."
+    },
+    "parent_event_id": {
+      "type": ["string", "null"],
+      "description": "Event id of the causally-preceding event, enabling causal-chain reconstruction; maps to aep-record.actions[].parent_action_id."
+    },
+    "actor": {
       "type": "object",
-      "required": ["schema_version", "run_id", "created_at_ms"],
+      "description": "The agent/tool/human/system that produced the event.",
+      "required": ["actor_id"],
       "properties": {
-        "schema_version": { "type": "string", "enum": ["aep/v0.1", "aep/v0.2", "aep/v0.3"] },
-        "run_id": { "type": "string" },
-        "trace_id": { "type": "string" },
-        "parent_trace_id": { "type": ["string", "null"] },
-        "repo_commit": { "type": "string" },
-        "runtime_version": { "type": "string" },
-        "model_provider": { "type": "string" },
-        "model_id": { "type": "string" },
-        "policy_bundle_digest": { "type": "string" },
-        "tool_manifest_digest": { "type": "string" },
-        "mcp_server_card_digest": { "type": ["string", "null"] },
-        "input_refs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["uri"],
-            "properties": {
-              "uri": { "type": "string" },
-              "digest": { "type": "string" },
-              "taint_labels": { "type": "array", "items": { "type": "string" } }
-            }
-          }
-        },
-        "output_refs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["uri"],
-            "properties": {
-              "uri": { "type": "string" },
-              "digest": { "type": "string" },
-              "redaction_profile": { "type": "string" }
-            }
-          }
-        },
-        "capability_decisions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["capability", "subject", "resource", "decision"],
-            "properties": {
-              "capability": { "type": "string" },
-              "subject": { "type": "string" },
-              "resource": { "type": "string" },
-              "decision": { "type": "string", "enum": ["allow", "deny", "ask_user", "dry_run"] },
-              "reason_code": { "type": "string" }
-            }
-          }
-        },
-        "actions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["action_id", "tool_name", "state_changing", "timestamp_ms"],
-            "properties": {
-              "action_id": { "type": "string" },
-              "tool_name": { "type": "string" },
-              "state_changing": { "type": "boolean" },
-              "precondition_digest": { "type": "string" },
-              "result_digest": { "type": "string" },
-              "evidence_refs": { "type": "array", "items": { "type": "string" } },
-              "timestamp_ms": { "type": "number" },
-              "parent_action_id": { "type": "string" },
-              "causal_chain_id": { "type": "string" },
-              "tool_descriptor_digest": { "type": "string" },
-              "server_card_digest": { "type": "string" },
-              "scope_lease_id": { "type": "string" },
-              "approval_context_hash": { "type": "string" },
-              "input_taint_labels": { "type": "array", "items": { "type": "string" } },
-              "output_taint_labels": { "type": "array", "items": { "type": "string" } },
-              "memory_read_refs": { "type": "array", "items": { "type": "string" } },
-              "memory_write_refs": { "type": "array", "items": { "type": "string" } },
-              "pre_state_digest": { "type": "string" },
-              "post_state_digest": { "type": "string" }
-            }
-          }
-        },
-        "verifier_results": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["verifier_id", "passed"],
-            "properties": {
-              "verifier_id": { "type": "string" },
-              "passed": { "type": "boolean" },
-              "score": { "type": "number" },
-              "claim_ids": { "type": "array", "items": { "type": "string" } }
-            }
-          }
-        },
-        "budget_ledger": {
-          "type": "object",
-          "description": "Per-run budget consumption vs limits",
-          "properties": {
-            "token_budget": {
-              "type": "object",
-              "required": ["spent"],
-              "properties": { "limit": { "type": "number" }, "spent": { "type": "number" } }
-            },
-            "latency_budget": {
-              "type": "object",
-              "required": ["actual_ms"],
-              "properties": { "limit_ms": { "type": "number" }, "actual_ms": { "type": "number" } }
-            },
-            "tool_budget": {
-              "type": "object",
-              "required": ["spent"],
-              "properties": { "limit": { "type": "number" }, "spent": { "type": "number" } }
-            },
-            "risk_budget": {
-              "type": "object",
-              "required": ["spent"],
-              "properties": { "limit": { "type": "number" }, "spent": { "type": "number" } }
-            },
-            "retry_budget": {
-              "type": "object",
-              "required": ["spent"],
-              "properties": { "limit": { "type": "number" }, "spent": { "type": "number" } }
-            },
-            "human_approval_budget": {
-              "type": "object",
-              "required": ["spent"],
-              "properties": { "limit": { "type": "number" }, "spent": { "type": "number" } }
-            }
-          }
-        },
-        "created_at_ms": { "type": "number" },
-        "run_context": {
-          "type": "object",
-          "properties": {
-            "agent_id": { "type": "string" },
-            "agent_version": { "type": "string" },
-            "subagent_id": { "type": "string" },
-            "delegation_chain": { "type": "array", "items": { "type": "string" } },
-            "environment_digest": { "type": "string" },
-            "dependency_lock_digest": { "type": "string" }
-          }
-        },
-        "user_id": {
+        "actor_id": { "type": "string", "description": "Stable identifier for the actor." },
+        "actor_type": {
           "type": "string",
-          "description": "Optional end-user / principal the run acted on behalf of (additive, aep/v0.3+)."
+          "enum": ["agent", "tool", "human", "system"],
+          "description": "Category of actor."
         },
-        "subject_id": {
-          "type": "string",
-          "description": "Optional agent subject identity for the run (additive, aep/v0.3+)."
-        },
-        "side_effect_class": {
-          "type": "string",
-          "enum": ["read", "mutate-local", "mutate-external", "network-egress", "unknown"],
-          "description": "Per-record side-effect classification (additive, aep/v0.3+). Shares one vocabulary with run_side_effect_class_max; reconciles wasmagent-js and trace-pipeline forks."
-        },
-        "run_side_effect_class_max": {
-          "type": "string",
-          "enum": ["read", "mutate-local", "mutate-external", "network-egress", "unknown"],
-          "description": "Per-run aggregate: the highest side-effect class observed across the whole run (additive, aep/v0.3+). Shares the side_effect_class vocabulary."
-        },
-        "recording_mode": {
-          "type": "string",
-          "enum": ["full", "delta", "validation"],
-          "description": "How this run's evidence was captured (additive, aep/v0.3+)."
-        },
-        "argument_drift": {
-          "type": "object",
-          "description": "Detected drift between an action's declared arguments and the arguments used at runtime (additive, aep/v0.3+).",
-          "properties": {
-            "tool_name": { "type": "string" },
-            "declared_digest": { "type": "string" },
-            "actual_digest": { "type": "string" },
-            "diff_summary": { "type": "string" },
-            "drifted_args": { "type": "array", "items": { "type": "string" } }
-          },
-          "additionalProperties": true
-        },
-        "signature": {
-          "type": "object",
-          "description": "Optional tamper-evident signature. Stays OPTIONAL in aep/v0.3; tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
-          "required": ["alg", "key_id", "sig"],
-          "properties": {
-            "alg": { "type": "string" },
-            "key_id": { "type": "string" },
-            "sig": { "type": "string" },
-            "bundle": { "type": "object" },
-            "transparency_log_ref": { "type": "string" }
+        "agent_version": { "type": "string", "description": "Agent/runtime version, e.g. wasmagent-js@1.20.0; maps to aep-record.runtime_version / run_context.agent_version." }
+      },
+      "additionalProperties": true
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Optional principal the event was performed on behalf of; maps to aep-record.subject_id / user_id."
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "For action events, the tool invoked; maps to aep-record.actions[].tool_name."
+    },
+    "state_changing": {
+      "type": "boolean",
+      "description": "Whether the event mutates external state; maps to aep-record.actions[].state_changing and side_effect_class."
+    },
+    "data": {
+      "type": "object",
+      "description": "Type-specific payload for the event. Free-form; consumers narrow it by event_type. May carry tool arguments/results, decision rationale, verifier scores, etc.",
+      "additionalProperties": true
+    },
+    "refs": {
+      "type": "array",
+      "description": "Input/output/evidence artifacts referenced by the event; maps to aep-record.input_refs / output_refs / evidence_refs.",
+      "items": {
+        "type": "object",
+        "required": ["uri"],
+        "properties": {
+          "uri": { "type": "string", "description": "Location of the referenced artifact." },
+          "digest": { "type": "string", "description": "Content digest of the referenced artifact." },
+          "relation": {
+            "type": "string",
+            "enum": ["input", "output", "evidence", "memory"],
+            "description": "How the artifact relates to the event."
           }
-        }
+        },
+        "additionalProperties": true
       }
     },
-    "legacy_aep_record": {
+    "source": {
       "type": "object",
-      "description": "Compatibility shape for pre-versioned AEP records. Once schema_version is present, the authoritative aep_record branch is the only compatibility path.",
-      "not": { "required": ["schema_version"] },
-      "required": ["run_id", "created_at_ms"],
+      "description": "Provenance of the event for adapter traceability.",
       "properties": {
-        "run_id": { "type": "string" },
-        "created_at_ms": { "type": "number" },
-        "actions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["action_id", "tool_name", "state_changing", "timestamp_ms"],
-            "properties": {
-              "action_id": { "type": "string" },
-              "tool_name": { "type": "string" },
-              "state_changing": { "type": "boolean" },
-              "timestamp_ms": { "type": "number" }
-            }
-          }
-        }
-      }
+        "system": { "type": "string", "description": "Originating system, e.g. open-agent-audit, wasmagent-js." },
+        "adapter": { "type": "string", "description": "Name/version of the adapter that produced this canonical event." },
+        "source_event_type": { "type": "string", "description": "The native event type this was normalized from." }
+      },
+      "additionalProperties": true
     },
-    "canonical_event": {
+    "signature": {
       "type": "object",
-      "required": ["schema_version", "event_id", "event_type", "timestamp_ms"],
+      "description": "Optional tamper-evident signature over the event content; maps to aep-record.signature.",
+      "required": ["alg", "key_id", "sig"],
       "properties": {
-        "schema_version": {
-          "type": "string",
-          "enum": ["canonical-event/v0.1"],
-          "description": "Version of the canonical-event schema this record conforms to."
-        },
-        "event_id": {
-          "type": "string",
-          "description": "Globally-unique identifier for this event within its trace."
-        },
-        "event_type": {
-          "type": "string",
-          "enum": ["action", "decision", "observation", "error", "lifecycle"],
-          "description": "Kind of event. 'action' maps to an aep-record action; 'decision' to a capability_decision; 'observation'/'error'/'lifecycle' to verifier_results or provenance."
-        },
-        "timestamp_ms": {
-          "type": "number",
-          "description": "UTC epoch milliseconds when the event occurred."
-        },
-        "trace_id": {
-          "type": "string",
-          "description": "Correlation id linking related events; maps to aep-record.trace_id."
-        },
-        "run_id": {
-          "type": "string",
-          "description": "Identifier of the run this event belongs to; maps to aep-record.run_id."
-        },
-        "parent_event_id": {
-          "type": ["string", "null"],
-          "description": "Event id of the causally-preceding event, enabling causal-chain reconstruction; maps to aep-record.actions[].parent_action_id."
-        },
-        "actor": {
-          "type": "object",
-          "description": "The agent/tool/human/system that produced the event.",
-          "required": ["actor_id"],
-          "properties": {
-            "actor_id": { "type": "string", "description": "Stable identifier for the actor." },
-            "actor_type": {
-              "type": "string",
-              "enum": ["agent", "tool", "human", "system"],
-              "description": "Category of actor."
-            },
-            "agent_version": { "type": "string", "description": "Agent/runtime version, e.g. wasmagent-js@1.20.0; maps to aep-record.runtime_version / run_context.agent_version." }
-          },
-          "additionalProperties": true
-        },
-        "subject_id": {
-          "type": "string",
-          "description": "Optional principal the event was performed on behalf of; maps to aep-record.subject_id / user_id."
-        },
-        "tool_name": {
-          "type": "string",
-          "description": "For action events, the tool invoked; maps to aep-record.actions[].tool_name."
-        },
-        "state_changing": {
-          "type": "boolean",
-          "description": "Whether the event mutates external state; maps to aep-record.actions[].state_changing and side_effect_class."
-        },
-        "data": {
-          "type": "object",
-          "description": "Type-specific payload for the event. Free-form; consumers narrow it by event_type. May carry tool arguments/results, decision rationale, verifier scores, etc.",
-          "additionalProperties": true
-        },
-        "refs": {
-          "type": "array",
-          "description": "Input/output/evidence artifacts referenced by the event; maps to aep-record.input_refs / output_refs / evidence_refs.",
-          "items": {
-            "type": "object",
-            "required": ["uri"],
-            "properties": {
-              "uri": { "type": "string", "description": "Location of the referenced artifact." },
-              "digest": { "type": "string", "description": "Content digest of the referenced artifact." },
-              "relation": {
-                "type": "string",
-                "enum": ["input", "output", "evidence", "memory"],
-                "description": "How the artifact relates to the event."
-              }
-            },
-            "additionalProperties": true
-          }
-        },
-        "source": {
-          "type": "object",
-          "description": "Provenance of the event for adapter traceability.",
-          "properties": {
-            "system": { "type": "string", "description": "Originating system, e.g. open-agent-audit, wasmagent-js." },
-            "adapter": { "type": "string", "description": "Name/version of the adapter that produced this canonical event." },
-            "source_event_type": { "type": "string", "description": "The native event type this was normalized from." }
-          },
-          "additionalProperties": true
-        },
-        "signature": {
-          "type": "object",
-          "description": "Optional tamper-evident signature over the event content; maps to aep-record.signature.",
-          "required": ["alg", "key_id", "sig"],
-          "properties": {
-            "alg": { "type": "string", "description": "Signature algorithm, e.g. ed25519." },
-            "key_id": { "type": "string", "description": "Identifier of the signing key." },
-            "sig": { "type": "string", "description": "Base64-encoded signature bytes." }
-          },
-          "additionalProperties": true
-        }
+        "alg": { "type": "string", "description": "Signature algorithm, e.g. ed25519." },
+        "key_id": { "type": "string", "description": "Identifier of the signing key." },
+        "sig": { "type": "string", "description": "Base64-encoded signature bytes." }
       },
       "additionalProperties": true
     }
-  }
+  },
+  "additionalProperties": true
 }

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 import subprocess
@@ -18,86 +17,18 @@ def _load(relative_path: str) -> dict:
     return json.loads((ROOT / relative_path).read_text(encoding="utf-8"))
 
 
-def _canonical_event_validator() -> Draft202012Validator:
-    schema = _load("schemas/aep/canonical-event.schema.json")
-    Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema)
-
-
 def _aep_record_validator() -> Draft202012Validator:
     schema = _load("schemas/aep/aep-record.schema.json")
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
 
-def test_embedded_aep_branch_matches_aep_record_schema() -> None:
-    canonical_schema = _load("schemas/aep/canonical-event.schema.json")
-    aep_record_schema = _load("schemas/aep/aep-record.schema.json")
-    expected = {
-        key: value
-        for key, value in aep_record_schema.items()
-        if key not in {"$schema", "$id", "title", "description"}
-    }
-
-    assert canonical_schema["$defs"]["aep_record"] == expected
-
-
-@pytest.mark.parametrize("schema_version", ["aep/v0.1", "aep/v0.2", "aep/v0.3"])
-def test_supported_aep_records_validate_against_canonical_schema(
-    schema_version: str,
-) -> None:
+def test_canonical_event_schema_does_not_accept_aep_records() -> None:
+    schema = _load("schemas/aep/canonical-event.schema.json")
+    validator = Draft202012Validator(schema)
     sample = _load("tests/fixtures/valid/aep-record/example.json")
-    sample["schema_version"] = schema_version
-    errors = sorted(
-        _canonical_event_validator().iter_errors(sample),
-        key=lambda error: error.path,
-    )
 
-    assert not errors, "; ".join(error.message for error in errors)
-
-
-def test_aep_compatibility_does_not_apply_canonical_event_constraints() -> None:
-    sample = _load("tests/fixtures/valid/aep-record/example.json")
-    sample["event_type"] = "native.audit.event"
-    errors = sorted(
-        _canonical_event_validator().iter_errors(sample),
-        key=lambda error: error.path,
-    )
-
-    assert not errors, "; ".join(error.message for error in errors)
-
-
-def test_versionless_legacy_aep_record_validates_against_canonical_schema() -> None:
-    record = {
-        "run_id": "legacy-run-1",
-        "created_at_ms": 1737600000000,
-        "actions": [
-            {
-                "action_id": "action-1",
-                "tool_name": "write_file",
-                "state_changing": True,
-                "timestamp_ms": 1737600000001,
-            }
-        ],
-    }
-
-    assert not list(_canonical_event_validator().iter_errors(record))
-
-
-def test_malformed_versionless_aep_record_is_rejected_by_canonical_schema() -> None:
-    record = {
-        "run_id": "legacy-run-1",
-        "created_at_ms": 1737600000000,
-        "actions": [
-            {
-                "action_id": "action-1",
-                "tool_name": "write_file",
-                "state_changing": True,
-            }
-        ],
-    }
-
-    assert list(_canonical_event_validator().iter_errors(record))
+    assert list(validator.iter_errors(sample))
 
 
 @pytest.mark.parametrize(
@@ -191,69 +122,25 @@ def test_adapter_maps_sample_action_event_to_aep_record() -> None:
     ]
 
 
-@pytest.mark.parametrize(
-    ("schema_version", "record"),
-    [
-        pytest.param(
-            "aep/v0.1",
-            {
-                "event_id": "evt-1",
-                "event_type": "action",
-                "timestamp_ms": 1737600000000,
-            },
-            id="v0.1-canonical-shaped-but-missing-aep-envelope",
-        ),
-        pytest.param(
-            "aep/v0.2",
-            {
-                "event_id": "evt-1",
-                "event_type": "action",
-                "timestamp_ms": 1737600000000,
-            },
-            id="v0.2-canonical-shaped-but-missing-aep-envelope",
-        ),
-        pytest.param(
-            "aep/v0.3",
-            {
-                "event_id": "evt-1",
-                "event_type": "action",
-                "timestamp_ms": 1737600000000,
-            },
-            id="v0.3-canonical-shaped-but-missing-aep-envelope",
-        ),
-        pytest.param(
-            "aep/v0.3",
-            {
-                "run_id": "run-1",
-                "created_at_ms": 1737600000000,
-                "actions": [
-                    {
-                        "action_id": "action-1",
-                        "tool_name": "write_file",
-                        "state_changing": True,
-                    }
-                ],
-            },
-            id="v0.3-aep-record-with-malformed-action",
-        ),
-        pytest.param(
-            "aep/v0.4",
-            {
-                "run_id": "run-1",
-                "created_at_ms": 1737600000000,
-            },
-            id="unsupported-aep-version",
-        ),
-    ],
-)
-def test_malformed_or_unsupported_aep_records_are_rejected_by_canonical_schema(
-    schema_version: str,
-    record: dict,
-) -> None:
-    errors = list(
-        _canonical_event_validator().iter_errors(
-            {"schema_version": schema_version, **copy.deepcopy(record)}
-        )
+def test_adapter_maps_minimal_canonical_event_to_valid_aep_record() -> None:
+    event = _load("tests/fixtures/valid/canonical-event/minimal.json")
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
     )
+    record = json.loads(result.stdout)
 
-    assert errors
+    errors = list(_aep_record_validator().iter_errors(record))
+    assert not errors, "; ".join(error.message for error in errors)
+    assert record["run_id"] == "canonical-event:evt-minimal"

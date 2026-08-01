@@ -292,8 +292,7 @@
       "base": "aep-base",
       "members": [
         "aep-record",
-        "evidence-envelope",
-        "canonical-event"
+        "evidence-envelope"
       ]
     }
   }
