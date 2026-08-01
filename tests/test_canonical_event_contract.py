@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,10 +27,20 @@ def test_canonical_event_is_a_unique_registered_aep_member() -> None:
 
 
 def test_sample_aep_record_validates_against_canonical_schema() -> None:
-    schema = _load("schemas/aep/aep-record.schema.json")
+    schema = _load("schemas/aep/canonical-event.schema.json")
+    aep_record_schema = _load("schemas/aep/aep-record.schema.json")
     sample = _load("tests/fixtures/valid/aep-record/example.json")
+    registry = Registry().with_resources(
+        [
+            (schema["$id"], Resource.from_contents(schema)),
+            (aep_record_schema["$id"], Resource.from_contents(aep_record_schema)),
+        ]
+    )
 
     Draft202012Validator.check_schema(schema)
-    errors = sorted(Draft202012Validator(schema).iter_errors(sample), key=lambda error: error.path)
+    errors = sorted(
+        Draft202012Validator(schema, registry=registry).iter_errors(sample),
+        key=lambda error: error.path,
+    )
 
     assert not errors, "; ".join(error.message for error in errors)
