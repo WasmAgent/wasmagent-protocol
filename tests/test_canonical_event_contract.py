@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 from pathlib import Path
+import subprocess
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -19,6 +20,12 @@ def _load(relative_path: str) -> dict:
 
 def _canonical_event_validator() -> Draft202012Validator:
     schema = _load("schemas/aep/canonical-event.schema.json")
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema)
+
+
+def _aep_record_validator() -> Draft202012Validator:
+    schema = _load("schemas/aep/aep-record.schema.json")
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
@@ -58,6 +65,97 @@ def test_aep_compatibility_does_not_apply_canonical_event_constraints() -> None:
     )
 
     assert not errors, "; ".join(error.message for error in errors)
+
+
+@pytest.mark.parametrize(
+    ("event_type", "data", "expected_field"),
+    [
+        (
+            "decision",
+            {
+                "capability": "filesystem.write",
+                "subject": "agent-1",
+                "resource": "file:///tmp/out.txt",
+                "decision": "allow",
+                "reason_code": "policy-allow",
+            },
+            "capability_decisions",
+        ),
+        (
+            "observation",
+            {"verifier_id": "policy-check", "passed": True, "score": 0.98},
+            "verifier_results",
+        ),
+        ("error", {"verifier_id": "tool-check"}, "verifier_results"),
+        ("lifecycle", {}, "provenance"),
+    ],
+)
+def test_adapter_maps_non_action_events_to_aep_fields(
+    event_type: str, data: dict, expected_field: str
+) -> None:
+    event = {
+        "schema_version": "canonical-event/v0.1",
+        "event_id": f"{event_type}-1",
+        "event_type": event_type,
+        "timestamp_ms": 1737600000000,
+        "run_id": "run-1",
+        "data": data,
+    }
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    record = json.loads(result.stdout)
+
+    errors = list(_aep_record_validator().iter_errors(record))
+    assert not errors, "; ".join(error.message for error in errors)
+    assert expected_field in record
+
+
+def test_adapter_maps_sample_action_event_to_aep_record() -> None:
+    event = _load("tests/fixtures/valid/canonical-event/example.json")
+    result = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { canonicalEventToAEPRecord } from './index.js'; "
+            "process.stdout.write(JSON.stringify(canonicalEventToAEPRecord("
+            "JSON.parse(process.argv[1]))));",
+            json.dumps(event),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    record = json.loads(result.stdout)
+
+    errors = list(_aep_record_validator().iter_errors(record))
+    assert not errors, "; ".join(error.message for error in errors)
+    assert record["actions"] == [
+        {
+            "action_id": event["event_id"],
+            "tool_name": event["tool_name"],
+            "state_changing": event["state_changing"],
+            "timestamp_ms": event["timestamp_ms"],
+            "parent_action_id": event["parent_event_id"],
+        }
+    ]
+    assert record["output_refs"] == [
+        {"uri": "file:///tmp/out.txt", "digest": "sha256:deadbeef"}
+    ]
 
 
 @pytest.mark.parametrize(
