@@ -61,7 +61,9 @@ export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } 
     schema_version: schemaVersion,
     // run_id is optional in CanonicalEvent. Retain it when supplied; otherwise
     // derive a stable single-event run identifier required by AEPRecord.
-    run_id: typeof event.run_id === 'string' ? event.run_id : `canonical-event:${event.event_id}`,
+    run_id: typeof event.run_id === 'string' && event.run_id
+      ? event.run_id
+      : `canonical-event:${event.event_id}`,
     created_at_ms: event.timestamp_ms,
     canonical_event: event,
   };
