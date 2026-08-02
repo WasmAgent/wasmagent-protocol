@@ -1,14 +1,14 @@
 # Bot State
 
-_Last updated: 2026-08-02 06:11 UTC by patrol_
+_Last updated: 2026-08-02 13:29 UTC by patrol_
 
 ## Queue
 
 | State | Count |
 |---|---|
-| Pending | 5 |
+| Pending | 3 |
 | Active (running/reviewing) | 0 |
-| Blocked | 0 |
+| Blocked | 5 |
 | Completed/Merged (all time) | 167 |
 
 ## Recent Activity (last 5)
@@ -23,6 +23,8 @@ _Last updated: 2026-08-02 06:11 UTC by patrol_
 
 ## Waiting for Human
 
+- #199: [milestone Milestone 4 ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/wri...
+- #198: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 - #169: Implement checkpoint/fork architecture docs and core data structure schemas
 - #166: docs: GOVERNANCE.md references non-existent scripts/check-consumer-versions.mjs
 - #165: code-review: Incomplete schema family definitions in schemas/index.json registry
