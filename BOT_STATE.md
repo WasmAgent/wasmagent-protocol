@@ -1,6 +1,6 @@
 # Bot State
 
-_Last updated: 2026-08-02 00:25 UTC by patrol_
+_Last updated: 2026-08-02 02:25 UTC by patrol_
 
 ## Queue
 
@@ -29,7 +29,6 @@ _Last updated: 2026-08-02 00:25 UTC by patrol_
 - #149: [milestone Milestone 5 ] Pipeline health and SLA monitoring — add end-to-end latency tracking, per-stag...
 - #141: [milestone Milestone 4] Define checkpoint/fork architecture model and core data structures
 - #132: Fix WasmAgent/wasmagent-protocol#120 (Establish AEP schema scaffolding: schemas/index.json registry, schemas/aep/ direct
-- #128: [milestone Milestone 4 ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provena...
 - #126: [milestone Milestone 4] Create AEP base directory structure and infrastructure
 - #100: [milestone Milestone 2 ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.sche...
 
