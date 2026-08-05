@@ -28,6 +28,147 @@ export function getSchema(id) {
   return JSON.parse(readFileSync(join(here, entry.path), 'utf8'));
 }
 
+/**
+ * Map a normalized canonical event into an AEP record.
+ *
+ * The canonical event is retained under `canonical_event` so the adapter is
+ * lossless even where AEP has no one-to-one field. Event kinds that do have a
+ * corresponding AEP collection are also projected into that collection:
+ * actions, capability decisions, verifier results, and lifecycle provenance.
+ */
+export function canonicalEventToAEPRecord(event, { schemaVersion = 'aep/v0.3' } = {}) {
+  if (!event || typeof event !== 'object' || Array.isArray(event)) {
+    throw new TypeError('@wasmagent/protocol: canonical event must be an object');
+  }
+  if (event.schema_version !== 'canonical-event/v0.1') {
+    throw new TypeError(
+      '@wasmagent/protocol: canonical event requires schema_version "canonical-event/v0.1"',
+    );
+  }
+  if (typeof event.event_id !== 'string' || !event.event_id) {
+    throw new TypeError('@wasmagent/protocol: canonical event requires a non-empty event_id');
+  }
+  if (!['action', 'decision', 'observation', 'error', 'lifecycle'].includes(event.event_type)) {
+    throw new TypeError('@wasmagent/protocol: canonical event has an unsupported event_type');
+  }
+  if (!Number.isFinite(event.timestamp_ms)) {
+    throw new TypeError('@wasmagent/protocol: canonical event requires numeric timestamp_ms');
+  }
+  if (!['aep/v0.1', 'aep/v0.2', 'aep/v0.3'].includes(schemaVersion)) {
+    throw new TypeError(
+      `@wasmagent/protocol: unsupported AEP schema version ${JSON.stringify(schemaVersion)}`,
+    );
+  }
+  // Canonical events are valid without run_id. Preserve an explicit run ID
+  // where supplied; otherwise derive one deterministically from the required,
+  // globally unique event ID so the resulting AEP envelope remains valid.
+  const runId = typeof event.run_id === 'string' && event.run_id
+    ? event.run_id
+    : `canonical-event:${event.event_id}`;
+
+  const record = {
+    schema_version: schemaVersion,
+    run_id: runId,
+    created_at_ms: event.timestamp_ms,
+    canonical_event: event,
+  };
+
+  if (typeof event.trace_id === 'string') record.trace_id = event.trace_id;
+  if (typeof event.subject_id === 'string') record.subject_id = event.subject_id;
+  if (event.signature && typeof event.signature === 'object' && !Array.isArray(event.signature)) {
+    record.signature = event.signature;
+  }
+
+  if (event.actor && typeof event.actor === 'object' && !Array.isArray(event.actor)) {
+    const runContext = {};
+    if (typeof event.actor.actor_id === 'string') runContext.agent_id = event.actor.actor_id;
+    if (typeof event.actor.agent_version === 'string') {
+      runContext.agent_version = event.actor.agent_version;
+      record.runtime_version = event.actor.agent_version;
+    }
+    if (Object.keys(runContext).length) record.run_context = runContext;
+  }
+
+  const refs = Array.isArray(event.refs) ? event.refs : [];
+  const refsFor = (relation) => refs
+    .filter((ref) => ref && typeof ref === 'object' && ref.relation === relation)
+    .map(({ uri, digest }) => (digest === undefined ? { uri } : { uri, digest }));
+  const inputRefs = refsFor('input');
+  const outputRefs = refsFor('output');
+  if (inputRefs.length) record.input_refs = inputRefs;
+  if (outputRefs.length) record.output_refs = outputRefs;
+
+  if (event.event_type === 'action') {
+    if (typeof event.tool_name !== 'string' || typeof event.state_changing !== 'boolean') {
+      throw new TypeError(
+        '@wasmagent/protocol: action canonical events require tool_name and state_changing',
+      );
+    }
+    const action = {
+      action_id: event.event_id,
+      tool_name: event.tool_name,
+      state_changing: event.state_changing,
+      timestamp_ms: event.timestamp_ms,
+    };
+    if (typeof event.parent_event_id === 'string') action.parent_action_id = event.parent_event_id;
+    const evidenceRefs = refsFor('evidence')
+      .map(({ uri }) => uri)
+      .filter((uri) => typeof uri === 'string');
+    if (evidenceRefs.length) action.evidence_refs = evidenceRefs;
+    record.actions = [action];
+  }
+
+  const data = event.data && typeof event.data === 'object' && !Array.isArray(event.data)
+    ? event.data
+    : {};
+
+  if (event.event_type === 'decision') {
+    const decision = {
+      capability: data.capability,
+      subject: data.subject ?? event.subject_id ?? event.actor?.actor_id,
+      resource: data.resource,
+      decision: data.decision,
+    };
+    if (typeof data.reason_code === 'string') decision.reason_code = data.reason_code;
+    if (
+      typeof decision.capability !== 'string'
+      || typeof decision.subject !== 'string'
+      || typeof decision.resource !== 'string'
+      || !['allow', 'deny', 'ask_user', 'dry_run'].includes(decision.decision)
+    ) {
+      throw new TypeError(
+        '@wasmagent/protocol: decision canonical events require capability, subject, resource, and decision',
+      );
+    }
+    record.capability_decisions = [decision];
+  }
+
+  if (event.event_type === 'observation' || event.event_type === 'error') {
+    const verifierResult = {
+      verifier_id: typeof data.verifier_id === 'string' ? data.verifier_id : event.event_id,
+      passed: typeof data.passed === 'boolean' ? data.passed : event.event_type !== 'error',
+    };
+    if (typeof data.score === 'number') verifierResult.score = data.score;
+    if (Array.isArray(data.claim_ids) && data.claim_ids.every((id) => typeof id === 'string')) {
+      verifierResult.claim_ids = data.claim_ids;
+    }
+    record.verifier_results = [verifierResult];
+  }
+
+  if (event.event_type === 'lifecycle') {
+    record.provenance = {
+      event_id: event.event_id,
+      event_type: event.event_type,
+      ...(typeof event.parent_event_id === 'string' ? { parent_event_id: event.parent_event_id } : {}),
+      ...(event.source && typeof event.source === 'object' && !Array.isArray(event.source)
+        ? { source: event.source }
+        : {}),
+    };
+  }
+
+  return record;
+}
+
 /** All schemas as a plain object keyed by id. */
 export const schemas = Object.fromEntries(index.schemas.map((s) => [s.id, getSchema(s.id)]));
 // ---------------------------------------------------------------------------
@@ -302,4 +443,3 @@ export function scan(root, { allowCanonicalSource = false } = {}) {
 export function hasDrift(findings) {
   return findings.some((f) => !f.ok);
 }
-
