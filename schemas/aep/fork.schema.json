@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+  "title": "Fork",
+  "description": "A new execution lineage derived from an existing checkpoint. Records the provenance link from a fork back to its source, enabling full execution lineage reconstruction.",
+  "type": "object",
+  "required": ["fork_id", "source_checkpoint_id", "fork_reason", "created_at"],
+  "properties": {
+    "fork_id": {
+      "type": "string",
+      "description": "Globally-unique identifier for this fork. Recommended format: fork-<source_checkpoint_id>-<nonce>."
+    },
+    "source_checkpoint_id": {
+      "type": "string",
+      "description": "checkpoint_id of the parent checkpoint this fork was created from."
+    },
+    "fork_reason": {
+      "type": "string",
+      "enum": ["retry", "branch", "rollback", "experiment", "recovery", "other"],
+      "description": "Semantic reason for creating this fork."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this fork was created."
+    },
+    "target_branch": {
+      "type": "string",
+      "description": "Optional label identifying the execution branch or environment this fork targets."
+    },
+    "parent_run_id": {
+      "type": "string",
+      "description": "run_id of the execution that produced the source checkpoint, for lineage tracing."
+    }
+  },
+  "additionalProperties": false
+}
