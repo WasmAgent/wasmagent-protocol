@@ -1,0 +1,6 @@
+{
+  "fork_id": "fork-ckpt-abc123-nonce1",
+  "source_checkpoint_id": "ckpt-abc123",
+  "fork_reason": "retry",
+  "created_at": "2026-01-01T00:05:00Z"
+}

@@ -1,0 +1,7 @@
+{
+  "checkpoint_id": "ckpt-run001-nonce42",
+  "state_digest": "sha256:ddee001122334455",
+  "created_at": "2026-06-15T12:00:00Z",
+  "parent_run_id": "run-abc123",
+  "fork_of": "ckpt-parent-99"
+}

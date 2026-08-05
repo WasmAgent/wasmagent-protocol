@@ -1,0 +1,8 @@
+{
+  "fork_id": "fork-ckpt-run001-nonce42-01",
+  "source_checkpoint_id": "ckpt-run001-nonce42",
+  "fork_reason": "experiment",
+  "created_at": "2026-06-15T12:05:00Z",
+  "target_branch": "alt-strategy-v2",
+  "parent_run_id": "run-abc123"
+}
