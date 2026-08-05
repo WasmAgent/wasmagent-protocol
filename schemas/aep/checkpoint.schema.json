@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json",
+  "title": "Checkpoint",
+  "description": "A snapshot of agent or execution state at a specific point in time. Checkpoints enable verifiable resume and form the basis for fork provenance.",
+  "type": "object",
+  "required": ["checkpoint_id", "state_digest", "created_at"],
+  "properties": {
+    "checkpoint_id": {
+      "type": "string",
+      "description": "Globally-unique identifier for this checkpoint. Recommended format: <run_id>-<nonce> or <run_id>-<state_digest_prefix>."
+    },
+    "state_digest": {
+      "type": "string",
+      "description": "Deterministic content digest of the checkpointed execution state. Used for tamper-evident resume verification."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this checkpoint was created."
+    },
+    "parent_run_id": {
+      "type": "string",
+      "description": "Identifier of the execution run this checkpoint belongs to."
+    },
+    "fork_of": {
+      "oneOf": [
+        {"type": "string", "description": "checkpoint_id of the parent checkpoint this run was forked from."},
+        {"type": "object", "required": ["checkpoint_id"], "properties": {"checkpoint_id": {"type": "string"}, "run_id": {"type": "string"}}, "additionalProperties": false, "description": "Structured reference to the parent checkpoint."}
+      ],
+      "description": "When present, indicates this checkpoint was derived from an existing checkpoint (i.e. this is a fork). Omit for non-fork checkpoints."
+    }
+  },
+  "additionalProperties": false
+}

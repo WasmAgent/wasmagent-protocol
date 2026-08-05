@@ -283,6 +283,40 @@
         "open-agent-audit"
       ],
       "summary": "Signed checkpoint/fork record \u2014 checkpoint_id, parent_run_id, fork_of, state_digest, created_at_ms."
+    },
+    {
+      "id": "checkpoint",
+      "title": "Checkpoint",
+      "path": "schemas/aep/checkpoint.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/checkpoint.schema.json",
+      "version": "checkpoint/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "wasmagent-train-replay",
+        "open-agent-audit"
+      ],
+      "summary": "Snapshot of agent execution state at a point in time. Carries checkpoint_id, state_digest, created_at, and optional parent_run_id and fork_of for lineage."
+    },
+    {
+      "id": "fork",
+      "title": "Fork",
+      "path": "schemas/aep/fork.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/fork.schema.json",
+      "version": "fork/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "wasmagent-train-replay",
+        "open-agent-audit"
+      ],
+      "summary": "New execution lineage derived from an existing checkpoint. Records fork_id, source_checkpoint_id, fork_reason, and created_at for full provenance."
     }
   ],
   "families": {
