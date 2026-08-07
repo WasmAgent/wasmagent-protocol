@@ -77,7 +77,7 @@ wasn't tampered with".
 |---|---|
 | `verifier_results[]` (`verifier_id`, `passed`, `score`, `claim_ids`) | Outcome of formal/heuristic verifiers over the run — the "was it correct" evidence. |
 | `argument_drift` (`declared_digest`, `actual_digest`, `drifted_args`) | Detected drift between declared and runtime tool arguments. |
-| `recording_mode` (`full` / `delta` / `validation`) | How the evidence itself was captured. |
+| `recording_mode` (`full` / `delta` / `validation`) | **Retention depth** of captured evidence — how much of what was observed the producer kept. `full` = complete provenance; `delta` = before/after state digests; `validation` = action metadata only. This is a retention dial, not a coverage claim: it describes depth, not observation scope. Observation scope (what the monitor could see) is conveyed via `configSource` and `tracePolicy`. |
 
 ### 2.5 Budgets beyond token usage
 
