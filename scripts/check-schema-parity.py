@@ -77,6 +77,9 @@ def find_ts_schema_version_refs(root: Path):
     hits = []
     for ext in ["*.ts", "*.py", "*.json"]:
         for f in root.rglob(ext):
+            # skip test files — they intentionally use invalid/future versions
+            if f.name.startswith("test_") or ".test." in f.name:
+                continue
             try:
                 text = f.read_text(errors="ignore")
             except Exception:

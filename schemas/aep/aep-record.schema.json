@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
   "title": "AEPRecord",
-  "description": "Agent Evidence Protocol record \u2014 runtime action evidence and run provenance. Canonical source for wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, and open-agent-audit.",
+  "description": "Agent Evidence Protocol record — runtime action evidence and run provenance. Canonical source for wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, and open-agent-audit.",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,8 @@
       "enum": [
         "aep/v0.1",
         "aep/v0.2",
-        "aep/v0.3"
+        "aep/v0.3",
+        "aep/v0.4"
       ]
     },
     "run_id": {
@@ -401,7 +402,7 @@
         "delta",
         "validation"
       ],
-      "description": "Retention depth of captured evidence for this run (additive, aep/v0.3+). Controls how much of what was observed the producer chose to keep \u2014 NOT a claim about observation scope or coverage. full = complete provenance (all observed data retained); delta = before/after state digests only; validation = action metadata only (minimum retention). A narrow-scope monitor and a wide-scope monitor produce identical recording_mode values; observation scope is conveyed separately via configSource and tracePolicy, not this field."
+      "description": "Retention depth of captured evidence for this run (additive, aep/v0.3+). Controls how much of what was observed the producer chose to keep — NOT a claim about observation scope or coverage. full = complete provenance (all observed data retained); delta = before/after state digests only; validation = action metadata only (minimum retention). A narrow-scope monitor and a wide-scope monitor produce identical recording_mode values; observation scope is conveyed separately via configSource and tracePolicy, not this field."
     },
     "argument_drift": {
       "type": "object",
