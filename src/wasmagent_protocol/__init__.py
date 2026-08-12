@@ -26,7 +26,7 @@ __all__ = [
     "family_members",
 ]
 
-_SCHEMAS_PKG = "wasmagent_protocol.schemas"
+_PACKAGE = "wasmagent_protocol"
 # Editable / source-checkout fallback: the canonical schemas live at the repo
 # root under schemas/, which is two directories above this file
 # (src/wasmagent_protocol/__init__.py -> <repo>/schemas). Built wheels ship the
@@ -44,7 +44,11 @@ def _schemas_root():
     mapping, so fall back to the repo-root ``schemas/`` directory.
     """
     try:
-        root = resources.files(_SCHEMAS_PKG)
+        # ``schemas`` is package data, not an import package. Resolving it
+        # through the regular parent package works on Python 3.9 as well as
+        # newer importlib.resources implementations that accept namespace
+        # package directories directly.
+        root = resources.files(_PACKAGE).joinpath("schemas")
         if root.joinpath("index.json").is_file():
             return root
     except Exception:  # pragma: no cover - depends on install layout
