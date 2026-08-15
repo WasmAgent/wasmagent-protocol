@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/artifact-attestation.schema.json",
+  "title": "ArtifactAttestation",
+  "description": "Produced-artifact provenance record — links an artifact to the run and tool that produced it.",
+  "type": "object",
+  "required": ["artifact_uri", "digest", "produced_by_run_id", "tool_name"],
+  "properties": {
+    "artifact_uri": {
+      "type": "string",
+      "description": "URI identifying the produced artifact."
+    },
+    "digest": {
+      "type": "string",
+      "description": "Content digest of the artifact (e.g. sha256:<hex>)."
+    },
+    "produced_by_run_id": {
+      "type": "string",
+      "description": "run_id of the AEP record that produced this artifact."
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "Name of the tool that produced the artifact."
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional tamper-evident signature over the attestation.",
+      "required": ["alg", "key_id", "sig"],
+      "properties": {
+        "alg": { "type": "string" },
+        "key_id": { "type": "string" },
+        "sig": { "type": "string" },
+        "transparency_log_ref": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

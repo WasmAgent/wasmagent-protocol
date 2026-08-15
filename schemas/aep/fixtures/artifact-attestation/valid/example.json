@@ -1,0 +1,6 @@
+{
+  "artifact_uri": "file:///workspace/output/model.onnx",
+  "digest": "sha256:abc123def456",
+  "produced_by_run_id": "run-abc123",
+  "tool_name": "export_model"
+}

@@ -24,6 +24,22 @@
       "summary": "Common envelope every AEP evidence schema extends \u2014 schema_version, evidence_type, created_at_ms, trace_id, and produced_by_run_id (string, non-empty) reused by downstream evidence schemas."
     },
     {
+      "id": "artifact-attestation",
+      "title": "ArtifactAttestation",
+      "path": "schemas/aep/artifact-attestation.schema.json",
+      "canonical_id": "https://wasmagent.dev/schemas/aep/artifact-attestation.schema.json",
+      "version": "artifact-attestation/v0.1",
+      "stability": "evolving",
+      "owners": [
+        "wasmagent-protocol"
+      ],
+      "consumers": [
+        "trace-pipeline",
+        "open-agent-audit"
+      ],
+      "summary": "Produced-artifact provenance: links artifact_uri and digest to the run and tool that produced it."
+    },
+    {
       "id": "aep-record",
       "title": "AEPRecord",
       "path": "schemas/aep/aep-record.schema.json",
