@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/artifact-attestation.schema.json",
+  "title": "ArtifactAttestation",
+  "description": "Produced-artifact provenance — attests which run and tool produced an artifact (file, bundle, model, report) along with its content digest, enabling verifiable artifact lineage. Carries the AEP envelope fields (schema_version, created_at_ms) plus attestation-specific keys.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "created_at_ms",
+    "artifact_uri",
+    "digest",
+    "produced_by_run_id",
+    "tool_name"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver-like schema identifier, e.g. aep/v0.1"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Optional correlation ID linking related evidence records"
+    },
+    "created_at_ms": {
+      "type": "number",
+      "description": "UTC epoch milliseconds when the record was created (attestation time)"
+    },
+    "artifact_uri": {
+      "type": "string",
+      "description": "URI or path identifying the produced artifact"
+    },
+    "digest": {
+      "type": "string",
+      "description": "Content digest of the artifact, e.g. sha256:..., for tamper-evident provenance"
+    },
+    "produced_by_run_id": {
+      "type": "string",
+      "description": "Identifier of the run that produced this artifact"
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "Name of the tool or agent that produced the artifact"
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional tamper-evident signature over the record content",
+      "required": [
+        "alg",
+        "key_id",
+        "sig"
+      ],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "description": "Signature algorithm, e.g. ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "description": "Identifier of the signing key"
+        },
+        "sig": {
+          "type": "string",
+          "description": "Base64-encoded signature bytes"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -47,5 +47,5 @@ feature it describes is real (protocol is sedimented, not designed up front).
 - [ ] Add `schemas/aep/memory-evidence.schema.json` — tamper-evident memory read/write record (keys: mem_ref, op enum[read,write], digest, prior_digest, timestamp_ms); register in index + valid/invalid fixtures.
 - [ ] Add `schemas/aep/replay-evidence.schema.json` — deterministic-replay attestation (keys: run_id, seed, input_digests[], output_digest, engine_version); register in index + valid/invalid fixtures.
 - [ ] Add `schemas/aep/checkpoint-evidence.schema.json` — signed checkpoint/fork record (keys: checkpoint_id, parent_run_id, fork_of, state_digest, created_at_ms); register in index + valid/invalid fixtures.
-- [ ] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provenance (keys: artifact_uri, digest, produced_by_run_id, tool_name, signature); register in index + valid/invalid fixtures.
+- [x] Add `schemas/aep/artifact-attestation.schema.json` — produced-artifact provenance (keys: artifact_uri, digest, produced_by_run_id, tool_name, signature); register in index + valid/invalid fixtures.
 - [ ] Update README + `docs/CONTRACT-CHANGE-PROCESS.md` to list the new evidence types and their consumer repos once each ships.

@@ -1,0 +1,9 @@
+{
+  "schema_version": "aep/v0.1",
+  "trace_id": "trace-artifact-001",
+  "created_at_ms": 1737600000000,
+  "artifact_uri": "artifacts/run-abc123/report.tar.gz",
+  "digest": "sha256:c0ffee1111222233445566778899aabbccddeeff00112233445566778899aabb",
+  "produced_by_run_id": "run-abc123",
+  "tool_name": "wasmagent-js"
+}
