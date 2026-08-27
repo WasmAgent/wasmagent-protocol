@@ -429,6 +429,43 @@
       },
       "additionalProperties": true
     },
+    "dsse_envelope": {
+      "description": "DSSE envelope (aep/v0.4+). Present when the producer signed via DSSE PAE; the legacy signature field is derived from the envelope's signatures[0] for backward compatibility. payload is base64-encoded; payloadType uses DSSE PayloadType format.",
+      "type": "object",
+      "required": [
+        "payloadType",
+        "payload",
+        "signatures"
+      ],
+      "properties": {
+        "payloadType": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string",
+          "contentEncoding": "base64"
+        },
+        "signatures": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "keyid",
+              "sig"
+            ],
+            "properties": {
+              "keyid": {
+                "type": "string"
+              },
+              "sig": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "signature": {
       "type": "object",
       "description": "Optional tamper-evident signature. Stays OPTIONAL in aep/v0.3; tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
