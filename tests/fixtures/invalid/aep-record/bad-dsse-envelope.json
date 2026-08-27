@@ -1,0 +1,15 @@
+{
+  "schema_version": "aep/v0.4",
+  "run_id": "run-v04-dsse-bad",
+  "created_at_ms": 1754000000001,
+  "actions": [],
+  "dsse_envelope": {
+    "payloadType": "application/vnd.wasmagent.aep+json",
+    "signatures": []
+  },
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "aep-signing-key-1",
+    "sig": "Zm9v"
+  }
+}
