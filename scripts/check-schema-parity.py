@@ -20,31 +20,14 @@ CONSUMERS = {
     "trace-pipeline": Path("trace-pipeline"),
 }
 
-# Canonical schema files to extract allowed field names and version enums from
-CANONICAL_SCHEMAS = [
-    "aep/aep-record.schema.json",
-    "aep/evidence-envelope.schema.json",
-    "aep/canonical-event.schema.json",
-    "aep/checkpoint-evidence.schema.json",
-    "aep/memory-evidence.schema.json",
-    "aep/replay-evidence.schema.json",
-    "aep/seed.schema.json",
-    "compliance/compliance-eval-record.schema.json",
-    "compliance/constraint-ir.schema.json",
-    "compliance/constraint-violation.schema.json",
-    "compliance/repair-trace.schema.json",
-    "compliance/rollout-wire.schema.json",
-    "compliance/task-spec.schema.json",
-]
-
+# Every *.schema.json under schemas/ is canonical — enumerate instead of
+# maintaining a hand-written list, which silently rots as schemas are added.
 CANONICAL_IDS = set()
 CANONICAL_VERSIONS = set()
-CANONICAL_TOP_LEVEL_FIELDS: dict[str, set] = {}  # schema file -> set of top-level property names
 
 
 def load_canonical():
-    for rel in CANONICAL_SCHEMAS:
-        path = PROTOCOL_ROOT / rel
+    for path in sorted(PROTOCOL_ROOT.rglob("*.schema.json")):
         if not path.exists():
             continue
         with open(path) as f:
@@ -57,8 +40,6 @@ def load_canonical():
         sv = props.get("schema_version", {})
         for v in sv.get("enum", []):
             CANONICAL_VERSIONS.add(v)
-        # Collect top-level property names
-        CANONICAL_TOP_LEVEL_FIELDS[rel] = set(props.keys())
 
 
 def find_schema_files(root: Path):

@@ -140,6 +140,16 @@ def test_scan_ignores_non_canonical_schemas(tmp_path):
     assert not drift.has_drift(findings)
 
 
+def test_scan_still_scans_when_root_path_contains_ignored_dir_name(tmp_path):
+    # Regression: the ignore list applies to path components *below* the scan
+    # root only. A repo checked out under .../tests/myrepo must not be skipped.
+    repo = tmp_path / "tests" / "my-consumer-repo"
+    _consumer_with_vendored(repo, get_schema("aep-record"), dep=True)
+    findings = drift.scan(repo)
+    assert not drift.has_drift(findings)
+    assert any(f.code == "match" for f in findings)
+
+
 # --- cli -------------------------------------------------------------------
 
 def test_cli_explicit_match_returns_zero(tmp_path, capsys):

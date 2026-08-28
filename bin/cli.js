@@ -28,9 +28,19 @@ function parseArgs(argv) {
     else if (a === 'check') out.command = 'check';
     else if (a === '--scan') out.scan = true;
     else if (a === '--allow-canonical-source') out.allowCanonicalSource = true;
-    else if (a === '--id') out.schemaId = args[++i];
-    else if (a === '--root') out.root = args[++i];
-    else if (a.startsWith('--')) {
+    else if (a === '--id') {
+      if (i + 1 >= args.length) {
+        console.error('error: --id requires a value');
+        process.exit(2);
+      }
+      out.schemaId = args[++i];
+    } else if (a === '--root') {
+      if (i + 1 >= args.length) {
+        console.error('error: --root requires a value');
+        process.exit(2);
+      }
+      out.root = args[++i];
+    } else if (a.startsWith('--')) {
       console.error(`error: unknown option ${a}`);
       process.exit(2);
     } else if (out.command === 'check' && out.path === null) out.path = a;
@@ -58,13 +68,13 @@ Exits non-zero on any drift or violation.`);
 
 function main() {
   const args = parseArgs(process.argv);
-  if (args.help || args.command === null) {
-    printHelp();
-    return args.command === null ? 1 : 0;
-  }
   if (args.version) {
     console.log('@wasmagent/protocol drift gate');
     return 0;
+  }
+  if (args.help || args.command === null) {
+    printHelp();
+    return args.command === null ? 1 : 0;
   }
   if (args.command !== 'check') {
     console.error(`error: unknown command ${args.command}`);
@@ -76,7 +86,13 @@ function main() {
       console.error('error: --id is required when checking an explicit path');
       return 2;
     }
-    const finding = checkFile(args.path, args.schemaId);
+    let finding;
+    try {
+      finding = checkFile(args.path, args.schemaId);
+    } catch (err) {
+      console.error(`error: cannot check ${args.path}: ${err.message}`);
+      return 2;
+    }
     console.log(format(finding));
     return finding.ok ? 0 : 1;
   }

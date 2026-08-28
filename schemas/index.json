@@ -28,7 +28,7 @@
       "title": "AEPRecord",
       "path": "schemas/aep/aep-record.schema.json",
       "canonical_id": "https://wasmagent.dev/schemas/aep/aep-record.schema.json",
-      "version": "aep/v0.3",
+      "version": "aep/v0.4",
       "stability": "evolving",
       "owners": [
         "wasmagent-protocol"

@@ -129,9 +129,23 @@ def check_file(path: str | Path, schema_id: str) -> Finding:
     )
 
 
+def _is_ignored(path: Path, root: Path) -> bool:
+    """True if any path component *below* ``root`` is an ignored dir name.
+
+    Only the relative path counts: a repo checked out under e.g.
+    ``/home/user/tests/myrepo`` or ``/env/repo`` must still be scanned —
+    matching full-path parts would silently skip every file (false green).
+    """
+    try:
+        rel = path.relative_to(root)
+    except ValueError:
+        rel = path
+    return any(part in _SCAN_IGNORE_DIRS for part in rel.parts)
+
+
 def _iter_files(root: Path, suffix: str):
     for path in root.rglob(f"*{suffix}"):
-        if any(part in _SCAN_IGNORE_DIRS for part in path.parts):
+        if _is_ignored(path, root):
             continue
         yield path
 
@@ -251,8 +265,8 @@ def scan(
 
     # Registry guard: only wasmagent-protocol may ship a canonical registry.
     if not treat_as_source:
-        for idx_path in root.rglob("index.json"):
-            if any(part in _SCAN_IGNORE_DIRS for part in idx_path.parts):
+        for idx_path in _iter_files(root, "index.json"):
+            if idx_path.name != "index.json":
                 continue
             try:
                 idx = json.loads(idx_path.read_text(encoding="utf-8"))

@@ -64,7 +64,7 @@ export function familyMembers(family: string): string[];
  * getSchema('aep-record') → schemas/aep/aep-record.schema.json.
  */
 export interface AEPRecord {
-  /** Schema version, one of `aep/v0.1` | `aep/v0.2` | `aep/v0.3`. */
+  /** Schema version, one of `aep/v0.1` | `aep/v0.2` | `aep/v0.3` | `aep/v0.4`. */
   schema_version: string;
   /** Identifier of the run this record captures. */
   run_id: string;

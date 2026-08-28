@@ -198,3 +198,37 @@ test('bin: explicit drift exits 1', () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('bin: --version prints the version line and exits 0', () => {
+  const res = runBin(['--version']);
+  assert.equal(res.status, 0, `stderr: ${res.stderr}`);
+  assert.match(res.stdout, /drift gate/);
+});
+
+test('bin: missing file exits 2 with a clean error, not a stack trace', () => {
+  const res = runBin(['check', join(mkTree(), 'nope.schema.json'), '--id', 'aep-record']);
+  assert.equal(res.status, 2);
+  assert.match(res.stderr, /^error:/);
+  assert.ok(!res.stderr.includes('    at '), 'must not print a raw stack trace');
+});
+
+test('bin: --id without a value exits 2', () => {
+  const res = runBin(['check', join(REPO_ROOT, 'schemas', 'aep', 'aep-record.schema.json'), '--id']);
+  assert.equal(res.status, 2);
+  assert.match(res.stderr, /--id requires a value/);
+});
+
+// Regression: a consumer repo checked out under a path that itself contains an
+// ignored directory name (e.g. .../tests/myrepo) must still be fully scanned.
+test('scan still scans when the repo root path contains an ignored dir name', () => {
+  const outer = mkTree();
+  const dir = join(outer, 'tests', 'my-consumer-repo');
+  try {
+    vendorAep(dir, getSchema('aep-record'), { dep: true });
+    const findings = scan(dir);
+    assert.equal(hasDrift(findings), false, findings.map((f) => f.message).join('; '));
+    assert.ok(findings.some((f) => f.code === 'match'), 'vendored schema must be found');
+  } finally {
+    rmSync(outer, { recursive: true, force: true });
+  }
+});

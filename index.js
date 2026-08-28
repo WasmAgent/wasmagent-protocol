@@ -28,8 +28,20 @@ export function getSchema(id) {
   return JSON.parse(readFileSync(join(here, entry.path), 'utf8'));
 }
 
-/** All schemas as a plain object keyed by id. */
-export const schemas = Object.fromEntries(index.schemas.map((s) => [s.id, getSchema(s.id)]));
+/**
+ * All schemas as a plain object keyed by id. Values load lazily on first
+ * access, so importing the package does not parse every schema file.
+ */
+export const schemas = {};
+for (const entry of index.schemas) {
+  Object.defineProperty(schemas, entry.id, {
+    enumerable: true,
+    configurable: true,
+    get() {
+      return getSchema(entry.id);
+    },
+  });
+}
 // ---------------------------------------------------------------------------
 // Named convenience exports for AgentBOM and MCP Posture — the two schemas
 // originally owned by agent-trust-infra that consumers most commonly need.

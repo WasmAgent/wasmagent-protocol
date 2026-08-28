@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/_base.schema.json",
   "title": "AEPBase",
-  "description": "Common envelope that every AEP (Agent Evidence Provenance) schema extends. Defines the shared provenance/timestamp fields and produced_by_run_id (string, non-empty) that downstream evidence schemas reuse via the $defs block. This is a base/reference schema, not a concrete evidence record: concrete schemas (aep-record, evidence-envelope, and the planned artifact-attestation / replay-evidence / checkpoint-evidence records) build on it.",
+  "description": "Common envelope that every AEP (Agent Evidence Provenance) schema extends. Defines the shared provenance/timestamp fields and produced_by_run_id (string, non-empty) that downstream evidence schemas reuse via the $defs block. This is a base/reference schema, not a concrete evidence record: concrete schemas (aep-record, evidence-envelope, artifact-attestation, replay-evidence, checkpoint-evidence) build on it.",
   "type": "object",
   "required": [
     "schema_version",
