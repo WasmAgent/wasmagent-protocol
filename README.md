@@ -34,14 +34,24 @@ Only contracts that genuinely cross a repository boundary:
 
 | Schema | Version | Consumers |
 | --- | --- | --- |
-| `aep-record` | `aep/v0.3` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `aep-record` | `aep/v0.4` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `evidence-envelope` | `aep/v0.1` | wasmagent-js, trace-pipeline, open-agent-audit |
 | `canonical-event` | `canonical-event/v0.1` | open-agent-audit, wasmagent-js |
+| `memory-evidence` | `aep/v0.1` | wasmagent-js, trace-pipeline |
+| `replay-evidence` | `aep/v0.1` | wasmagent-js, open-agent-audit |
+| `checkpoint-evidence` | `aep/v0.1` | wasmagent-js, open-agent-audit |
+| `artifact-attestation` | `aep/v0.1` | wasmagent-js, open-agent-audit |
+| `checkpoint` | `checkpoint/v0.1` | trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `fork` | `fork/v0.1` | trace-pipeline, wasmagent-train-replay, open-agent-audit |
 | `constraint-ir` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `constraint-violation` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `repair-trace` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `task-spec` | `compliance/v1` | wasmagent-js, trace-pipeline |
 | `compliance-eval-record` | `compliance-eval-record/v1` | wasmagent-js, trace-pipeline |
 | `rollout-wire` | `rollout-wire/v1` | wasmagent-js, trace-pipeline |
+| `agentbom` | `agentbom/v0.1` | agent-trust-infra, open-agent-audit |
+| `mcp-posture` | `mcp-posture/v0.1` | agent-trust-infra, open-agent-audit |
+| `trust-passport` | `trust-passport/v0.1` | agent-trust-infra, open-agent-audit |
 
 The machine-readable registry is [`schemas/index.json`](schemas/index.json).
 
@@ -152,6 +162,7 @@ python3 -m wasmagent_protocol check --scan --root .
 Published to npm and PyPI from CI via OIDC trusted publishing on `v*` tags — no
 tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROCESS.md).
 
+- **0.1.8** — AEP evidence types beyond execution: `memory-evidence`, `replay-evidence`, `checkpoint-evidence`, and `artifact-attestation` join the registry, alongside `canonical-event`, `checkpoint`, `fork`, and the shared `evidence-envelope`/`_base` scaffolding. `aep-record` widens `schema_version` to `aep/v0.4` with an optional `dsse_envelope` (DSSE PAE, matching `@wasmagent/aep` `useDsse` emission; legacy `signature` stays optional and accepted). Python wheel loader fixed for Python 3.9; parity gate now enumerates all canonical schemas automatically.
 - **0.1.7** — `aep-record` unified to `aep/v0.3`: reconciles the wasmagent-js and trace-pipeline forks into one canonical record. Additive optional fields `user_id`, `subject_id`, `side_effect_class` (per-record) + `run_side_effect_class_max` (per-run) sharing one enum, `recording_mode`, `argument_drift`. `aep/v0.1`/`aep/v0.2` stay accepted; `signature` stays optional.
 - **0.1.6** — cross-repo schema-drift gate: `wasmagent-protocol check` CLI (npm + PyPI) and the reusable `.github/workflows/schema-drift.yml` workflow.
 - **0.1.5** — first successful npm OIDC publish (trusted publisher now registered on npmjs).

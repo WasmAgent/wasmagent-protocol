@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/seed.schema.json",
   "title": "SeedEvidence",
-  "description": "Template seed schema establishing the AEP evidence JSON Schema baseline. Demonstrates the pinned-draft, $id, title, type, required, properties, and additionalProperties:false convention for all AEP evidence schemas. Future Milestone 4 evidence schemas (e.g. checkpoint-evidence) mirror this structure.",
+  "description": "Template seed schema establishing the AEP evidence JSON Schema baseline. Demonstrates the pinned-draft, $id, title, type, required, properties, and additionalProperties:false convention for all AEP evidence schemas. Milestone 4 evidence schemas (checkpoint-evidence, replay-evidence, artifact-attestation) mirror this structure.",
   "type": "object",
   "required": ["schema_version", "seed_id", "created_at_ms"],
   "properties": {

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wasmagent.dev/schemas/aep/evidence-envelope.schema.json",
   "title": "EvidenceEnvelope",
-  "description": "Shared base fields for all AEP evidence records \u2014 schema_version, trace_id, created_at_ms, and optional signature. Every evidence type $refs this schema for its envelope fields.",
+  "description": "Shared base fields for all AEP evidence records \u2014 schema_version, trace_id, created_at_ms, and optional signature. Evidence types currently inline these envelope fields; $ref reuse of this schema is the planned consolidation (see docs/15-milestones.md).",
   "type": "object",
   "required": [
     "schema_version",

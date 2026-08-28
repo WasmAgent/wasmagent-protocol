@@ -402,7 +402,7 @@
         "delta",
         "validation"
       ],
-      "description": "Retention depth of captured evidence for this run (additive, aep/v0.3+). Controls how much of what was observed the producer chose to keep — NOT a claim about observation scope or coverage. full = complete provenance (all observed data retained); delta = before/after state digests only; validation = action metadata only (minimum retention). A narrow-scope monitor and a wide-scope monitor produce identical recording_mode values; observation scope is conveyed separately via configSource and tracePolicy, not this field."
+      "description": "Retention depth of captured evidence for this run (additive, aep/v0.3+). Controls how much of what was observed the producer chose to keep — NOT a claim about observation scope or coverage. full = complete provenance (all observed data retained); delta = before/after state digests only; validation = action metadata only (minimum retention). A narrow-scope monitor and a wide-scope monitor produce identical recording_mode values; observation scope is a property of the producing monitor's configuration, not of this record."
     },
     "argument_drift": {
       "type": "object",
@@ -468,7 +468,7 @@
     },
     "signature": {
       "type": "object",
-      "description": "Optional tamper-evident signature. Stays OPTIONAL in aep/v0.3; tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
+      "description": "Optional tamper-evident signature. Stays OPTIONAL in every released schema version (aep/v0.1-v0.4); tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
       "required": [
         "alg",
         "key_id",
