@@ -16,7 +16,8 @@
         "aep/v0.1",
         "aep/v0.2",
         "aep/v0.3",
-        "aep/v0.4"
+        "aep/v0.4",
+        "aep/v0.5"
       ]
     },
     "run_id": {
@@ -373,6 +374,40 @@
       "type": "string",
       "description": "Optional agent subject identity for the run (additive, aep/v0.3+)."
     },
+    "authorized_by": {
+      "type": "string",
+      "description": "Principal that granted or approved the authority this run exercised, when that party differs from user_id (additive, aep/v0.5+). Distinguishes the party who initiated from the party who authorized; omit when the same principal did both. Per-action human-approval evidence continues to live in actions[].approval_context_hash."
+    },
+    "authority_origin": {
+      "type": "string",
+      "enum": [
+        "subject_consented",
+        "admin_assigned",
+        "org_wide",
+        "unknown"
+      ],
+      "description": "How the principal named in user_id obtained the authority this run exercised, as observable at issuance/consent time (additive, aep/v0.5+). subject_consented = the principal interactively approved; admin_assigned = an administrator created the grant and no principal was ever prompted; org_wide = consent granted on behalf of an organization. unknown = the producer observed the attribution but the identity provider does not expose grant origin — the honest state for most current IdPs, and the value that stops a consumer reading user_id as stronger evidence than it is. Absent = the producer makes no claim. Motivating case (OWASP www-project-mcp-top-10 #44/#50): two grants byte-identical in every identity claim, one subject-consented and one admin-assigned — user_id alone cannot separate them; this field can."
+    },
+    "attribution_backing": {
+      "type": "string",
+      "enum": [
+        "operator_asserted",
+        "principal_key_signed",
+        "qualified_signature",
+        "unknown"
+      ],
+      "description": "Machine-checkable statement of what backs the human attribution of this record (additive, aep/v0.5+). Grades the evidence behind the attribution — operator_asserted = operator assertion only, no signature by a key under the principal's control; principal_key_signed = backed by such a signature; qualified_signature = backed by a qualified identity-proofed signature (e.g. QES validated against an EU Trusted List); unknown = attribution present but ungradeable. NOT a claim that the runtime authorization predicate was correctly constrained, and not a scope statement. Producers MUST NOT report a stronger grade than the evidence supports; where ordering matters (run_attribution_backing_floor) unknown is weaker than operator_asserted."
+    },
+    "run_attribution_backing_floor": {
+      "type": "string",
+      "enum": [
+        "operator_asserted",
+        "principal_key_signed",
+        "qualified_signature",
+        "unknown"
+      ],
+      "description": "Per-run aggregate: the weakest attribution backing present across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Total order, weakest to strongest: unknown < operator_asserted < principal_key_signed < qualified_signature. The floor MUST NOT round up — one strong grant must not mask unbacked authorizations inside the same tamper-evident record. Absent = the producer emits no attribution_backing values and makes no grading claim at all."
+    },
     "side_effect_class": {
       "type": "string",
       "enum": [
@@ -468,7 +503,7 @@
     },
     "signature": {
       "type": "object",
-      "description": "Optional tamper-evident signature. Stays OPTIONAL in every released schema version (aep/v0.1-v0.4); tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
+      "description": "Optional tamper-evident signature. Stays OPTIONAL in every released schema version (aep/v0.1-v0.5); tightening it to required is a breaking change (CONTRACT-CHANGE-PROCESS.md section 3) that needs an org RFC before it can land - do not silently add it to the 'required' array.",
       "required": [
         "alg",
         "key_id",

@@ -1,0 +1,7 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "run-bad-origin",
+  "created_at_ms": 1757460000000,
+  "user_id": "user-alice",
+  "authority_origin": "user_prompted"
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "run-bad-backing",
+  "created_at_ms": 1757460000000,
+  "user_id": "user-alice",
+  "attribution_backing": "self_attested"
+}
