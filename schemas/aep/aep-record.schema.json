@@ -382,11 +382,22 @@
       "type": "string",
       "enum": [
         "subject_consented",
-        "admin_assigned",
-        "org_wide",
+        "administrator_assigned",
+        "organization_wide",
         "unknown"
       ],
-      "description": "How the principal named in user_id obtained the authority this run exercised, as observable at issuance/consent time (additive, aep/v0.5+). subject_consented = the principal interactively approved; admin_assigned = an administrator created the grant and no principal was ever prompted; org_wide = consent granted on behalf of an organization. unknown = the producer observed the attribution but the identity provider does not expose grant origin — the honest state for most current IdPs, and the value that stops a consumer reading user_id as stronger evidence than it is. Absent = the producer makes no claim. Motivating case (OWASP www-project-mcp-top-10 #44/#50): two grants byte-identical in every identity claim, one subject-consented and one admin-assigned — user_id alone cannot separate them; this field can."
+      "description": "How the principal named in user_id obtained the authority this run exercised, as observable at issuance/consent time (additive, aep/v0.5+). Authority origin axis of the attribution vocabulary shared with the OWASP 'Verifiable Authorization Lineage' recommended control. subject_consented = the principal interactively approved; administrator_assigned = an administrator created the grant and no principal was ever prompted; organization_wide = consent granted on behalf of an organization. unknown = the producer observed the attribution but the identity provider does not expose grant origin — the honest state for most current IdPs, and the value that stops a consumer reading user_id as stronger evidence than it is. Absent = the producer makes no claim. Motivating case (OWASP www-project-mcp-top-10 #44/#50): two grants byte-identical in every identity claim, one subject-consented and one administrator-assigned — user_id alone cannot separate them; this field can."
+    },
+    "identity_source": {
+      "type": "string",
+      "enum": [
+        "self_asserted",
+        "organization_attested",
+        "notified_eid",
+        "qualified_certificate",
+        "unknown"
+      ],
+      "description": "How the identity behind the backing key was established (additive, aep/v0.5+). Identity source axis of the attribution vocabulary shared with the OWASP 'Verifiable Authorization Lineage' recommended control, alongside attribution_backing (what stands behind the authorization) and authority_origin (how the authority was conferred). self_asserted = the keyholder asserted their own identity; organization_attested = the organization attests the identity; notified_eid = identity established via a notified electronic identity; qualified_certificate = identity established via a qualified certificate. Reported verbatim alongside the grade — NEVER folded into attribution_backing and never rounded up: a device-key signature by a person whose identity was eID-proofed is still principal_key_signed on the backing axis. unknown = the provider does not expose how the identity was established; absent = the producer makes no claim."
     },
     "attribution_backing": {
       "type": "string",
@@ -396,7 +407,7 @@
         "qualified_signature",
         "unknown"
       ],
-      "description": "Machine-checkable statement of what backs the human attribution of this record (additive, aep/v0.5+). Grades the evidence behind the attribution — operator_asserted = operator assertion only, no signature by a key under the principal's control; principal_key_signed = backed by such a signature; qualified_signature = backed by a qualified identity-proofed signature (e.g. QES validated against an EU Trusted List); unknown = attribution present but ungradeable. NOT a claim that the runtime authorization predicate was correctly constrained, and not a scope statement. Producers MUST NOT report a stronger grade than the evidence supports; where ordering matters (run_attribution_backing_floor) unknown is weaker than operator_asserted."
+      "description": "Machine-checkable statement of what backs the human attribution of this record (additive, aep/v0.5+). Attribution backing axis of the attribution vocabulary shared with the OWASP 'Verifiable Authorization Lineage' recommended control. Grades the evidence behind the attribution — operator_asserted = operator assertion only, no signature by a key under the principal's control; principal_key_signed = backed by such a signature; qualified_signature = backed by a qualified identity-proofed signature (e.g. QES validated against an EU Trusted List); unknown = attribution present but ungradeable. NOT a claim that the runtime authorization predicate was correctly constrained, and not a scope statement. Producers MUST NOT report a stronger grade than the evidence supports; where ordering matters (run_attribution_backing_floor) unknown is weaker than operator_asserted."
     },
     "run_attribution_backing_floor": {
       "type": "string",
@@ -406,7 +417,21 @@
         "qualified_signature",
         "unknown"
       ],
-      "description": "Per-run aggregate: the weakest attribution backing present across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Total order, weakest to strongest: unknown < operator_asserted < principal_key_signed < qualified_signature. The floor MUST NOT round up — one strong grant must not mask unbacked authorizations inside the same tamper-evident record. Absent = the producer emits no attribution_backing values and makes no grading claim at all."
+      "description": "Per-run aggregate: the weakest attribution backing present across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Total order, weakest to strongest: unknown < operator_asserted < principal_key_signed < qualified_signature. The floor MUST NOT round up — one strong grant must not mask unbacked authorizations inside the same tamper-evident record. Report together with run_attribution_backing_observed, never instead of it. Absent = the producer emits no attribution_backing values and makes no grading claim at all."
+    },
+    "run_attribution_backing_observed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "operator_asserted",
+          "principal_key_signed",
+          "qualified_signature",
+          "unknown"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Per-run aggregate: every attribution backing grade observed across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Reported alongside run_attribution_backing_floor — the floor alone loses the information that a strong authorization exists anywhere in the run; the itemization alone permits exactly the masking the floor exists to prevent."
     },
     "side_effect_class": {
       "type": "string",
