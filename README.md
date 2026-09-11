@@ -34,7 +34,7 @@ Only contracts that genuinely cross a repository boundary:
 
 | Schema | Version | Consumers |
 | --- | --- | --- |
-| `aep-record` | `aep/v0.4` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
+| `aep-record` | `aep/v0.5` | wasmagent-js, wasmagent-proxy, trace-pipeline, wasmagent-train-replay, open-agent-audit |
 | `evidence-envelope` | `aep/v0.1` | wasmagent-js, trace-pipeline, open-agent-audit |
 | `canonical-event` | `canonical-event/v0.1` | open-agent-audit, wasmagent-js |
 | `memory-evidence` | `aep/v0.1` | wasmagent-js, trace-pipeline |

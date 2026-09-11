@@ -1,0 +1,17 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "run-v05-attribution",
+  "created_at_ms": 1757460000000,
+  "user_id": "user-alice",
+  "subject_id": "agent-filer-7",
+  "authorized_by": "admin-bob",
+  "authority_origin": "administrator_assigned",
+  "identity_source": "organization_attested",
+  "attribution_backing": "operator_asserted",
+  "run_attribution_backing_floor": "operator_asserted",
+  "run_attribution_backing_observed": [
+    "operator_asserted",
+    "qualified_signature"
+  ],
+  "actions": []
+}
