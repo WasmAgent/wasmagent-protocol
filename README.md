@@ -125,7 +125,7 @@ Consumer repos call the shared gate with one job:
 ```yaml
 jobs:
   schema-drift:
-    uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.6
+    uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.9
 ```
 
 A PR in any consumer that forks or drifts a canonical schema now fails CI

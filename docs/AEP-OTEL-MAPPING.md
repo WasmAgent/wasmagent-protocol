@@ -97,6 +97,7 @@ wasn't tampered with".
    OTel remains your live observability surface; AEP is the durable, provable
    evidence trail that references it.
 
-> The `signature` block is **optional** in `aep/v0.3` and stays optional —
-> tightening it to required is a breaking change (see
+> The `signature` block is **optional** in every released schema version
+> (`aep/v0.1`–`aep/v0.5`) and stays optional — tightening it to required is a
+> breaking change (see
 > [`docs/CONTRACT-CHANGE-PROCESS.md`](CONTRACT-CHANGE-PROCESS.md)).
