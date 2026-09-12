@@ -65,8 +65,12 @@ def resolve_root(schema: dict) -> dict:
 def normalize(node: object) -> object:
     """Reduce a schema node to the semantics this gate compares.
 
-    Anything not listed here (description, title, examples, format hints,
-    minimum/maximum guidance) is presentation, not contract.
+    The keyword set covers every validation keyword the canonical AEP
+    schemas actually use (type/enum/const/required/properties/items/
+    additionalProperties/minimum/uniqueItems/...) — normative constraints
+    such as `minimum: 0` on authorization_evidence_count or
+    `uniqueItems: true` on the observed grades are contract, and dropping
+    them from a consumer schema is drift.
     """
     if node is True:
         return {"type": "anything"}
@@ -76,16 +80,20 @@ def normalize(node: object) -> object:
         return node
 
     out: dict[str, object] = {}
-    if "type" in node:
-        out["type"] = node["type"]
+    scalar_keys = (
+        "type", "const", "additionalProperties",
+        "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
+        "multipleOf", "minLength", "maxLength", "pattern",
+        "minItems", "maxItems", "uniqueItems",
+        "minProperties", "maxProperties",
+    )
+    for key in scalar_keys:
+        if key in node:
+            out[key] = node[key]
     if "enum" in node:
         out["enum"] = sorted(json.dumps(v, sort_keys=True) for v in node["enum"])
-    if "const" in node:
-        out["const"] = node["const"]
     if "required" in node:
         out["required"] = sorted(node["required"])
-    if "additionalProperties" in node:
-        out["additionalProperties"] = node["additionalProperties"]
     if "items" in node:
         out["items"] = normalize(node["items"])
     if "properties" in node:
@@ -101,7 +109,12 @@ def flatten(node: object, path: str = "") -> dict[str, object]:
     if not isinstance(node, dict):
         flat[path] = node
         return flat
-    scalar_keys = ("type", "enum", "const", "additionalProperties")
+    scalar_keys = (
+        "type", "enum", "const", "additionalProperties",
+        "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
+        "multipleOf", "minLength", "maxLength", "pattern",
+        "minItems", "maxItems", "uniqueItems", "minProperties", "maxProperties",
+    )
     scalar = {k: node[k] for k in scalar_keys if k in node}
     if "properties" not in node and scalar:
         flat[path or "<root>"] = scalar
@@ -144,27 +157,104 @@ def load_exceptions(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
     data = json.loads(path.read_text(encoding="utf-8"))
-    return [
-        {"match": rule["match"], "class": rule.get("class", "unclassified"),
-         "reason": rule.get("reason", "")}
-        for rule in data.get("exceptions", [])
-    ]
+    # Exact-fingerprint form: a rule applies only to the drift at that exact
+    # path AND kind. Legacy prefix-form ("match") rules are ignored —
+    # unrelated drift under an excepted subtree must fail strict CI.
+    rules: list[dict[str, str]] = []
+    for rule in data.get("exceptions", []):
+        if rule.get("path") and rule.get("kind"):
+            rules.append(rule)
+    return rules
 
 
 def classify(drifts: list[dict[str, object]],
              rules: list[dict[str, str]]) -> list[dict[str, object]]:
-    """Attach the first matching exception rule to each drift, if any."""
+    """Attach the exception rule matching this drift's exact path AND kind."""
     for d in drifts:
         d["allowlisted"] = False
         d["exception_class"] = None
         d["exception_reason"] = None
         for rule in rules:
-            if str(d["path"]).startswith(rule["match"]):
+            if d["path"] == rule.get("path") and d["kind"] == rule.get("kind"):
                 d["allowlisted"] = True
-                d["exception_class"] = rule["class"]
-                d["exception_reason"] = rule["reason"]
+                d["exception_class"] = rule.get("class")
+                d["exception_reason"] = rule.get("reason")
                 break
     return drifts
+
+
+def self_test() -> int:
+    """Adversarial self-test: every Gate B mutation below MUST be detected.
+
+    Proves the gate is fail-closed on the normative keyword set: a consumer
+    silently dropping a minimum, uniqueItems, or narrowing an enum under a
+    previously-excepted subtree still produces a drift entry (allowlisting
+    is exact path+kind, so mutations at unlisted paths are never covered).
+    """
+    base_consumer = {
+        "properties": {
+            "authorization_evidence_count": {"type": "integer", "minimum": 0},
+            "run_attribution_backing_observed": {
+                "type": "array", "items": {"type": "string"}, "uniqueItems": True,
+            },
+            "actions": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {"tool_name": {"type": "string"}},
+                    "required": ["tool_name"],
+                },
+            },
+        }
+    }
+    canonical = {
+        "properties": {
+            "authorization_evidence_count": {"type": "integer", "minimum": 0},
+            "run_attribution_backing_observed": {
+                "type": "array", "items": {"type": "string"}, "uniqueItems": True,
+            },
+            "actions": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {"tool_name": {"type": "string"}},
+                    "required": ["tool_name"],
+                },
+            },
+        }
+    }
+
+    import copy
+
+    def mutated(label: str, fn) -> tuple[str, bool]:
+        # Baseline must be clean: the base consumer matches the canonical
+        # schema, so any drift after the mutation is caused by it alone.
+        assert not compare(normalize(copy.deepcopy(canonical)), normalize(copy.deepcopy(base_consumer))), \
+            "self-test baseline drifted — fix base_consumer"
+        consumer = copy.deepcopy(base_consumer)
+        fn(consumer)
+        detected = bool(compare(normalize(copy.deepcopy(canonical)), normalize(consumer)))
+        print(("PASS " if detected else "FAIL ") + label)
+        return label, detected
+
+    results = []
+    results.append(mutated("minimum removed from authorization_evidence_count",
+                           lambda c: c["properties"]["authorization_evidence_count"].pop("minimum")))
+    results.append(mutated("uniqueItems removed from run_attribution_backing_observed",
+                           lambda c: c["properties"]["run_attribution_backing_observed"].pop("uniqueItems")))
+    results.append(mutated("enum narrowed on a nested property",
+                           lambda c: c["properties"]["actions"]["items"]["properties"].__setitem__(
+                               "tool_name", {"type": "string", "enum": ["read_only"]})))
+    results.append(mutated("required changed on a nested object",
+                           lambda c: c["properties"]["actions"]["items"]["required"].append("signature")))
+    results.append(mutated("additionalProperties closed on a nested object",
+                           lambda c: c["properties"]["actions"]["items"].__setitem__("additionalProperties", False)))
+    results.append(mutated("nested item type changed",
+                           lambda c: c["properties"]["run_attribution_backing_observed"]["items"].__setitem__("type", "number")))
+
+    detected_all = all(ok for _, ok in results)
+    print("self-test:", "PASS — every mutation detected" if detected_all else "FAIL — a mutation went undetected")
+    return 0 if detected_all else 1
 
 
 def main() -> int:
@@ -182,7 +272,12 @@ def main() -> int:
     parser.add_argument("--strict", action="store_true",
                         help="exit 1 when any UNCLASSIFIED drift is found "
                              "(allowlisted exceptions do not fail the gate)")
+    parser.add_argument("--self-test", action="store_true",
+                        help="run the internal mutation checks and exit")
     args = parser.parse_args()
+
+    if args.self_test:
+        return self_test()
 
     rules = [] if args.no_exceptions else load_exceptions(args.exceptions)
 
