@@ -135,6 +135,10 @@ def flatten(node: object, path: str = "") -> dict[str, object]:
     return flat
 
 
+def _semantics_hash(value: object) -> str:
+    return json.dumps(value, sort_keys=True)
+
+
 def compare(canonical: object, consumer: object) -> list[dict[str, object]]:
     canon_flat = flatten(canonical)
     cons_flat = flatten(consumer)
@@ -143,13 +147,19 @@ def compare(canonical: object, consumer: object) -> list[dict[str, object]]:
         in_c, in_s = path in canon_flat, path in cons_flat
         if in_c and not in_s:
             drifts.append({"path": path, "kind": "missing-in-consumer",
-                           "canonical": canon_flat[path], "consumer": None})
+                           "canonical": canon_flat[path], "consumer": None,
+                           "canonical_hash": _semantics_hash(canon_flat[path]),
+                           "consumer_hash": None})
         elif in_s and not in_c:
             drifts.append({"path": path, "kind": "extra-in-consumer",
-                           "canonical": None, "consumer": cons_flat[path]})
+                           "canonical": None, "consumer": cons_flat[path],
+                           "canonical_hash": None,
+                           "consumer_hash": _semantics_hash(cons_flat[path])})
         elif canon_flat[path] != cons_flat[path]:
             drifts.append({"path": path, "kind": "semantic-drift",
-                           "canonical": canon_flat[path], "consumer": cons_flat[path]})
+                           "canonical": canon_flat[path], "consumer": cons_flat[path],
+                           "canonical_hash": _semantics_hash(canon_flat[path]),
+                           "consumer_hash": _semantics_hash(cons_flat[path])})
     return drifts
 
 
@@ -169,13 +179,23 @@ def load_exceptions(path: Path) -> list[dict[str, str]]:
 
 def classify(drifts: list[dict[str, object]],
              rules: list[dict[str, str]]) -> list[dict[str, object]]:
-    """Attach the exception rule matching this drift's exact path AND kind."""
+    """Attach the exception rule matching this drift's exact fingerprint.
+
+    A rule binds path + kind + the canonical/consumer semantics hashes that
+    were reviewed. If either side's semantics change, the hash no longer
+    matches and the drift is unclassified again — an old exception can never
+    silently cover new content.
+    """
     for d in drifts:
         d["allowlisted"] = False
         d["exception_class"] = None
         d["exception_reason"] = None
         for rule in rules:
-            if d["path"] == rule.get("path") and d["kind"] == rule.get("kind"):
+            hashes_match = (
+                rule.get("canonical_hash") in (None, d.get("canonical_hash"))
+                and rule.get("consumer_hash") in (None, d.get("consumer_hash"))
+            )
+            if d["path"] == rule.get("path") and d["kind"] == rule.get("kind") and hashes_match:
                 d["allowlisted"] = True
                 d["exception_class"] = rule.get("class")
                 d["exception_reason"] = rule.get("reason")
@@ -302,10 +322,13 @@ def main() -> int:
         consumer = resolve_root(json.loads(path.read_text(encoding="utf-8")))
         all_drifts[name] = classify(compare(canonical_norm, normalize(consumer)), rules)
 
+    unclassified = 0
     if args.json:
         print(json.dumps(all_drifts, indent=2, sort_keys=True))
+        unclassified = sum(
+            1 for drifts in all_drifts.values() for d in drifts if not d.get("allowlisted")
+        )
     else:
-        unclassified = 0
         for name, drifts in all_drifts.items():
             print(f"[{name}] {len(drifts)} drift(s) vs {args.canonical.name}")
             for d in drifts:

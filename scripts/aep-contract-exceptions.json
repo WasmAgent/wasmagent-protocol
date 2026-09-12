@@ -1,454 +1,602 @@
 {
   "_readme": [
-    "Exact-fingerprint exceptions for Gate B (check-aep-contract-compatibility.py).",
-    "A rule applies ONLY to a drift with the identical path AND kind. Classes:",
-    "  compatibility-exception / intentional-extension / reconcile",
-    "Any new drift (new path, changed kind, or changed semantics at an unlisted path) fails --strict."
+    "Exact-fingerprint exceptions for Gate B. A rule matches a drift only when",
+    "path, kind, canonical_hash AND consumer_hash all equal - if either side's",
+    "semantics change, the exception stops applying and the drift fails strict CI.",
+    "Classes: compatibility-exception / intentional-extension / reconcile."
   ],
   "exceptions": [
     {
       "path": "<root-container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "signature optionality: canonical keeps signature optional (v0.x additive contract); the consumer requires it and closes the world. Alignment tracked as the JS signed/unsigned split."
+      "reason": "signature optionality: canonical keeps signature optional (v0.x additive contract); the consumer requires it and closes the world. Alignment tracked as the JS signed/unsigned split.",
+      "canonical_hash": "{\"required\": [\"created_at_ms\", \"run_id\", \"schema_version\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"created_at_ms\", \"run_id\", \"schema_version\"]}"
     },
     {
       "path": "actions[].argument_drift.approved_args_digest",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].argument_drift.detected",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"boolean\"}"
     },
     {
       "path": "actions[].argument_drift.observed_args_digest",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].argument_drift.resolution",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"denied\\\"\", \"\\\"matched\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].argument_drift<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"approved_args_digest\", \"detected\", \"observed_args_digest\", \"resolution\"]}"
     },
     {
       "path": "actions[].arguments_digest",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.approval_extension.evidence_digest",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.approval_extension.mode",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.approval_extension.namespace",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.approval_extension<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"evidence_digest\", \"mode\", \"namespace\"]}"
     },
     {
       "path": "actions[].capability_decision.approval_mode",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"bounded-lease\\\"\", \"\\\"none\\\"\", \"\\\"one-shot-payload\\\"\", \"\\\"policy-allow-with-receipt\\\"\", \"\\\"policy-deny-with-evidence\\\"\", \"\\\"re-approval-on-drift\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.capability",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.decision",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"allow\\\"\", \"\\\"ask_user\\\"\", \"\\\"deny\\\"\", \"\\\"dry_run\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.deny_reason_class",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"argument\\\"\", \"\\\"missing-delegation\\\"\", \"\\\"other\\\"\", \"\\\"policy-rule\\\"\", \"\\\"resource-scope\\\"\", \"\\\"tainted-input\\\"\", \"\\\"tool-identity\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.reason_code",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.resource",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision.subject",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].capability_decision<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"capability\", \"decision\", \"resource\", \"subject\"]}"
     },
     {
       "path": "actions[].delta_ref",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].exit_code",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"integer\"}"
     },
     {
       "path": "actions[].outcome",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].permission_gate.decision",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"approved\\\"\", \"\\\"auto_approved\\\"\", \"\\\"denied\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].permission_gate.gate",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].permission_gate.reason",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "actions[].permission_gate<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"decision\", \"gate\"]}"
     },
     {
       "path": "actions[].recording_mode",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"delta\\\"\", \"\\\"full\\\"\", \"\\\"validation\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].side_effect_class",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"mutate-external\\\"\", \"\\\"mutate-local\\\"\", \"\\\"network-egress\\\"\", \"\\\"read\\\"\", \"\\\"unknown\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[].state_digest_coverage",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": {}, \"type\": \"object\"}"
     },
     {
       "path": "actions[].state_digest_kind",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"browser-dom\\\"\", \"\\\"db-rowset\\\"\", \"\\\"git-tree\\\"\", \"\\\"kv-snapshot\\\"\", \"\\\"memory-bag\\\"\", \"\\\"other\\\"\", \"\\\"sandbox-fs\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "actions[]<container>",
       "kind": "semantic-drift",
       "class": "intentional-extension",
-      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates."
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates.",
+      "canonical_hash": "{\"required\": [\"action_id\", \"state_changing\", \"timestamp_ms\", \"tool_name\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"action_id\", \"state_changing\", \"timestamp_ms\", \"tool_name\"]}"
     },
     {
       "path": "argument_drift.actual_digest",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift.declared_digest",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift.diff_summary",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift.drifted_args",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"array\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift.drifted_args[]",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift.tool_name",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "argument_drift<container>",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model."
+      "reason": "divergent modeling of argument drift between canonical and consumer; needs one reconciled model.",
+      "canonical_hash": "{\"additionalProperties\": true}",
+      "consumer_hash": null
     },
     {
       "path": "budget_ledger.human_approval_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"spent\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"spent\"]}"
     },
     {
       "path": "budget_ledger.latency_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"actual_ms\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"actual_ms\"]}"
     },
     {
       "path": "budget_ledger.retry_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"spent\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"spent\"]}"
     },
     {
       "path": "budget_ledger.risk_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"spent\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"spent\"]}"
     },
     {
       "path": "budget_ledger.token_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"spent\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"spent\"]}"
     },
     {
       "path": "budget_ledger.tool_budget<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": "{\"required\": [\"spent\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"spent\"]}"
     },
     {
       "path": "budget_ledger<container>",
       "kind": "extra-in-consumer",
       "class": "compatibility-exception",
-      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match."
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Required sub-keys match.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false}"
     },
     {
       "path": "capability_decisions[].approval_extension.evidence_digest",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "capability_decisions[].approval_extension.mode",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "capability_decisions[].approval_extension.namespace",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "capability_decisions[].approval_extension<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"evidence_digest\", \"mode\", \"namespace\"]}"
     },
     {
       "path": "capability_decisions[].approval_mode",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"bounded-lease\\\"\", \"\\\"none\\\"\", \"\\\"one-shot-payload\\\"\", \"\\\"policy-allow-with-receipt\\\"\", \"\\\"policy-deny-with-evidence\\\"\", \"\\\"re-approval-on-drift\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "capability_decisions[].deny_reason_class",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"enum\": [\"\\\"argument\\\"\", \"\\\"missing-delegation\\\"\", \"\\\"other\\\"\", \"\\\"policy-rule\\\"\", \"\\\"resource-scope\\\"\", \"\\\"tainted-input\\\"\", \"\\\"tool-identity\\\"\"], \"type\": \"string\"}"
     },
     {
       "path": "capability_decisions[]<container>",
       "kind": "semantic-drift",
       "class": "intentional-extension",
-      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions."
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions.",
+      "canonical_hash": "{\"required\": [\"capability\", \"decision\", \"resource\", \"subject\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"capability\", \"decision\", \"resource\", \"subject\"]}"
     },
     {
       "path": "dsse_envelope.signatures",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes envelope/signature records; canonical open. Required keys match."
+      "reason": "consumer closes envelope/signature records; canonical open. Required keys match.",
+      "canonical_hash": "{\"minItems\": 1, \"type\": \"array\"}",
+      "consumer_hash": "{\"type\": \"array\"}"
     },
     {
       "path": "dsse_envelope.signatures[]<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes envelope/signature records; canonical open. Required keys match."
+      "reason": "consumer closes envelope/signature records; canonical open. Required keys match.",
+      "canonical_hash": "{\"required\": [\"keyid\", \"sig\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"keyid\", \"sig\"]}"
     },
     {
       "path": "dsse_envelope<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes envelope/signature records; canonical open. Required keys match."
+      "reason": "consumer closes envelope/signature records; canonical open. Required keys match.",
+      "canonical_hash": "{\"required\": [\"payload\", \"payloadType\", \"signatures\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"payload\", \"payloadType\", \"signatures\"]}"
     },
     {
       "path": "input_refs[]<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes the record; canonical open. Required uri matches."
+      "reason": "consumer closes the record; canonical open. Required uri matches.",
+      "canonical_hash": "{\"required\": [\"uri\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"uri\"]}"
     },
     {
       "path": "output_refs[]<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes the record; canonical open. Required uri matches."
+      "reason": "consumer closes the record; canonical open. Required uri matches.",
+      "canonical_hash": "{\"required\": [\"uri\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"uri\"]}"
     },
     {
       "path": "prev_record_hash",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "chain linkage modeled in consumer; canonical adoption pending (#214)."
+      "reason": "chain linkage modeled in consumer; canonical adoption pending (#214).",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": [\"string\", \"null\"]}"
     },
     {
       "path": "recording_mode",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "placement divergence: canonical run-level vs consumer per-action."
+      "reason": "placement divergence: canonical run-level vs consumer per-action.",
+      "canonical_hash": "{\"enum\": [\"\\\"delta\\\"\", \"\\\"full\\\"\", \"\\\"validation\\\"\"], \"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "run_attribution_backing_observed",
       "kind": "semantic-drift",
       "class": "UNCLASSIFIED",
-      "reason": "no rule matched at conversion time"
+      "reason": "no rule matched at conversion time",
+      "canonical_hash": "{\"type\": \"array\", \"uniqueItems\": true}",
+      "consumer_hash": "{\"type\": \"array\"}"
     },
     {
       "path": "run_context.session_id",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds session_id / turn_index to run_context."
+      "reason": "consumer adds session_id / turn_index to run_context.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "run_context.turn_index",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds session_id / turn_index to run_context."
+      "reason": "consumer adds session_id / turn_index to run_context.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"minimum\": 0, \"type\": \"integer\"}"
     },
     {
       "path": "run_context<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer adds session_id / turn_index to run_context."
+      "reason": "consumer adds session_id / turn_index to run_context.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false}"
     },
     {
       "path": "side_effect_class",
       "kind": "missing-in-consumer",
       "class": "reconcile",
-      "reason": "placement divergence: canonical run-level vs consumer per-action."
+      "reason": "placement divergence: canonical run-level vs consumer per-action.",
+      "canonical_hash": "{\"enum\": [\"\\\"mutate-external\\\"\", \"\\\"mutate-local\\\"\", \"\\\"network-egress\\\"\", \"\\\"read\\\"\", \"\\\"unknown\\\"\"], \"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "signature.alg",
       "kind": "semantic-drift",
       "class": "intentional-extension",
-      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref."
+      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": "{\"const\": \"ed25519\", \"type\": \"string\"}"
     },
     {
       "path": "signature.bundle",
       "kind": "missing-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref."
+      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref.",
+      "canonical_hash": "{\"type\": \"object\"}",
+      "consumer_hash": null
     },
     {
       "path": "signature.transparency_log_ref",
       "kind": "missing-in-consumer",
       "class": "intentional-extension",
-      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref."
+      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref.",
+      "canonical_hash": "{\"type\": \"string\"}",
+      "consumer_hash": null
     },
     {
       "path": "signature<container>",
       "kind": "semantic-drift",
       "class": "intentional-extension",
-      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref."
+      "reason": "consumer narrows alg to const ed25519 and does not yet model canonical-optional signature.bundle / transparency_log_ref.",
+      "canonical_hash": "{\"required\": [\"alg\", \"key_id\", \"sig\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"alg\", \"key_id\", \"sig\"]}"
     },
     {
       "path": "timestamp_proof.authority",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical."
+      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "timestamp_proof.logIndex",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical."
+      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"number\"}"
     },
     {
       "path": "timestamp_proof.proof",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical."
+      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "timestamp_proof.timestamp",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical."
+      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"type\": \"string\"}"
     },
     {
       "path": "timestamp_proof<container>",
       "kind": "extra-in-consumer",
       "class": "intentional-extension",
-      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical."
+      "reason": "RFC-3161-style timestamp proof attached post-signing; modeled in consumer, not yet canonical.",
+      "canonical_hash": null,
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"authority\", \"proof\", \"timestamp\"]}"
     },
     {
       "path": "verifier_results[]<container>",
       "kind": "semantic-drift",
       "class": "compatibility-exception",
-      "reason": "consumer closes the record; canonical open. Required keys match."
+      "reason": "consumer closes the record; canonical open. Required keys match.",
+      "canonical_hash": "{\"required\": [\"passed\", \"verifier_id\"]}",
+      "consumer_hash": "{\"additionalProperties\": false, \"required\": [\"passed\", \"verifier_id\"]}"
     }
   ]
 }
