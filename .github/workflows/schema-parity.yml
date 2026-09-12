@@ -1,15 +1,21 @@
 name: schema-parity
 
-# Cross-repository schema parity gate.
+# Cross-repository contract gates.
 # Runs on every PR to main in wasmagent-protocol.
-# Checks out wasmagent-js and trace-pipeline at their latest main,
-# then verifies that their AEP/compliance schema references are a
-# subset of the canonical schemas in this repo.
+# Checks out wasmagent-js and trace-pipeline at their latest main.
 #
-# Fails if a downstream consumer:
-#   - references a field name not present in the canonical schema
-#   - uses a schema_version value not listed in the canonical enum
-#   - has a local .schema.json that re-declares a canonical $id
+# Gate A (check-schema-parity.py): version / $id reference sanity.
+#   Fails if a downstream consumer:
+#     - uses a schema_version value not listed in the canonical enum
+#     - has a local .schema.json that re-declares a canonical $id
+#
+# Gate B (check-aep-contract-compatibility.py): structural compatibility.
+#   Compares consumer schema exports against the canonical schema
+#   (properties, required, enums, types, additionalProperties).
+#   Currently REPORT-ONLY: it prints the drift inventory so every item can
+#   be classified as bug / intentional extension / compatibility exception.
+#   Once the baseline is allowlisted, flip the job to --strict so new
+#   drift fails CI.
 
 on:
   pull_request:
@@ -23,7 +29,7 @@ on:
 
 jobs:
   parity:
-    name: Schema parity (wasmagent-js + trace-pipeline)
+    name: Gate A — version/$id references (wasmagent-js + trace-pipeline)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout wasmagent-protocol
@@ -54,3 +60,30 @@ jobs:
 
       - name: Run parity check
         run: python wasmagent-protocol/scripts/check-schema-parity.py
+
+  contract-compatibility:
+    name: Gate B — structural contract compatibility (report-only)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wasmagent-protocol
+        uses: actions/checkout@v4
+        with:
+          path: wasmagent-protocol
+
+      - name: Checkout wasmagent-js
+        uses: actions/checkout@v4
+        with:
+          repository: WasmAgent/wasmagent-js
+          ref: main
+          path: wasmagent-js
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # Report-only: prints the drift inventory as a CI log artifact so each
+      # item can be classified. Flip to `--strict` once the baseline is
+      # allowlisted (see the script docstring).
+      - name: Structural contract comparison
+        working-directory: wasmagent-protocol
+        run: python scripts/check-aep-contract-compatibility.py --consumer wasmagent-js=../wasmagent-js/packages/aep/schemas/aep-record.schema.json

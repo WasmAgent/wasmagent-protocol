@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """
-Cross-repository schema parity check.
+Gate A — schema version / $id reference sanity (cross-repository).
 
-Verifies that wasmagent-js and trace-pipeline only reference field names,
-schema_version values, and $id URIs that exist in the canonical
-wasmagent-protocol schemas.
+Scope of THIS script (deliberately narrow): verifies that consumers
+(wasmagent-js, trace-pipeline) only reference schema_version values that
+exist in the canonical enum, and have no local .schema.json re-declaring
+a canonical $id.
 
-Exit 0 = parity OK
-Exit 1 = parity violations found (printed to stdout)
+This script does NOT compare schema structure — missing fields, required
+drift, enum drift, nullability, or additionalProperties differences are
+invisible to it. Structural compatibility is Gate B:
+scripts/check-aep-contract-compatibility.py (report-only by default).
+
+Exit 0 = reference sanity OK
+Exit 1 = reference violations found (printed to stdout)
 """
 import json
 import os
