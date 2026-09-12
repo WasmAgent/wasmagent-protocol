@@ -1,21 +1,70 @@
 name: release
 
-# Publishes wasmagent-protocol to PyPI via Trusted Publishing (OIDC) on version
-# tags. No API token or secret is stored — PyPI verifies this workflow's OIDC
-# identity against the pending/active publisher registered for the project
-# (repo WasmAgent/wasmagent-protocol, workflow release.yml, no environment).
+# Publishes wasmagent-protocol to PyPI + npm via Trusted Publishing (OIDC).
+#
+# Release discipline:
+# - Real publishes happen ONLY on a version tag `vX.Y.Z`.
+# - A preflight job enforces tag == package.json version == pyproject.toml
+#   version, so a tag can never publish a different version than it names.
+# - workflow_dispatch runs are DRY-RUN only (build + verify, no publish).
+# - npm publish depends on the Python build+smoke passing, so the two
+#   distributions of the same version cannot drift apart.
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (build + verify only, no publish)'
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 jobs:
+  preflight:
+    name: Release preflight (tag/version parity)
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
+      dry_run: ${{ steps.versions.outputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse declared versions
+        id: versions
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          PY_VERSION=$(python3 - <<'PY'
+          import re
+          text = open("pyproject.toml", encoding="utf-8").read()
+          print(re.search(r'^version\s*=\s*"([^"]+)"', text, re.M).group(1))
+          PY
+          )
+          echo "package.json: ${PKG_VERSION}"
+          echo "pyproject.toml: ${PY_VERSION}"
+          if [ "$PKG_VERSION" != "$PY_VERSION" ]; then
+            echo "::error::version mismatch: package.json (${PKG_VERSION}) != pyproject.toml (${PY_VERSION})"
+            exit 1
+          fi
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+            case "$TAG" in
+              "v${PKG_VERSION}") ;;
+              *) echo "::error::tag ${TAG} != v${PKG_VERSION} — refusing to publish"; exit 1 ;;
+            esac
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          else
+            # workflow_dispatch is dry-run only — real releases are tag-driven.
+            echo "dry_run=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=${PKG_VERSION}" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build distributions
+    needs: preflight
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +87,8 @@ jobs:
 
   pypi-publish:
     name: Publish to PyPI (Trusted Publishing)
-    needs: build
+    needs: [preflight, build]
+    if: needs.preflight.outputs.dry_run != 'true'
     runs-on: ubuntu-latest
     # No `environment:` — the pending publisher was registered with an empty
     # environment, so this job must also run without one to match.
@@ -54,6 +104,8 @@ jobs:
 
   npm-publish:
     name: Publish to npm (Trusted Publishing / OIDC)
+    needs: [preflight, build]
+    if: needs.preflight.outputs.dry_run != 'true'
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # mandatory for npm OIDC trusted publishing
@@ -76,4 +128,13 @@ jobs:
       - name: Publish to npm (OIDC — no token, provenance auto-generated)
         run: npm publish --access public
 
-
+  dry-run-summary:
+    name: Dry run summary (no publish)
+    needs: [preflight, build]
+    if: needs.preflight.outputs.dry_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report
+        run: |
+          echo "Dry run complete for version ${{ needs.preflight.outputs.version }}."
+          echo "Real publishes are tag-driven: push a tag 'v${{ needs.preflight.outputs.version }}'."
