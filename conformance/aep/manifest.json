@@ -76,7 +76,8 @@
       "semantic": "valid",
       "authenticity": "dsse-valid",
       "chain": "not-checked",
-      "note": "pinned fixture from wasmagent-proxy CI; verifies under the JS verifier."
+      "note": "pinned fixture from wasmagent-proxy CI; verifies under the JS verifier.",
+      "verify_key": "dsse/rust-fixture-verify-key.hex"
     },
     {
       "path": "dsse/tampered-run-id.json",
