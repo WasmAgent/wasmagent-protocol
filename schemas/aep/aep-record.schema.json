@@ -417,7 +417,7 @@
         "qualified_signature",
         "unknown"
       ],
-      "description": "Per-run aggregate: the weakest attribution backing present across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Total order, weakest to strongest: unknown < operator_asserted < principal_key_signed < qualified_signature. The floor MUST NOT round up — one strong grant must not mask unbacked authorizations inside the same tamper-evident record. Report together with run_attribution_backing_observed, never instead of it. Absent = the producer emits no attribution_backing values and makes no grading claim at all."
+      "description": "Per-run aggregate: the weakest attribution backing present across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Total order, weakest to strongest: unknown < operator_asserted < principal_key_signed < qualified_signature. The floor MUST NOT round up — one strong grant must not mask unbacked authorizations inside the same tamper-evident record. When authorization_evidence_count is present, the floor MUST equal the weakest grade across that declared set. Report together with run_attribution_backing_observed, never instead of it. Absent = the producer emits no attribution_backing values and makes no grading claim at all."
     },
     "run_attribution_backing_observed": {
       "type": "array",
@@ -432,6 +432,11 @@
       },
       "uniqueItems": true,
       "description": "Per-run aggregate: every attribution backing grade observed across the authorizations this run relied on (additive, aep/v0.5+). Shares the attribution_backing vocabulary. Reported alongside run_attribution_backing_floor — the floor alone loses the information that a strong authorization exists anywhere in the run; the itemization alone permits exactly the masking the floor exists to prevent."
+    },
+    "authorization_evidence_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of distinct authorization evidence items the run relied on (additive, aep/v0.5+). Selective-omission defense: without this count, a producer can omit a weak authorization entirely and report only the strong ones — the observed set still looks self-consistent. The count commits the producer to a specific evidence population; an auditor who later discovers the true count differs has a tamper indicator. Absent = the producer makes no completeness claim."
     },
     "side_effect_class": {
       "type": "string",
