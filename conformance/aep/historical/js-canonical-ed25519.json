@@ -1,0 +1,27 @@
+{
+  "schema_version": "aep/v0.3",
+  "run_id": "conf-js-legacy",
+  "input_refs": [],
+  "output_refs": [],
+  "capability_decisions": [],
+  "actions": [
+    {
+      "action_id": "action-0",
+      "tool_name": "read_materials",
+      "state_changing": false,
+      "evidence_refs": [],
+      "timestamp_ms": 1789199047188,
+      "recording_mode": "validation",
+      "side_effect_class": "read"
+    }
+  ],
+  "verifier_results": [],
+  "created_at_ms": 1700000000000,
+  "prev_record_hash": null,
+  "run_side_effect_class_max": "read",
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "conformance-seed-key-01",
+    "sig": "L047lvh7NCZYdrcXjPV0rfQ14A1WfOfatyArEOtypwj+dRDwfgXa+C1L4Q2KAYhCE1QwLRcbG/N32iyO10DqAw=="
+  }
+}

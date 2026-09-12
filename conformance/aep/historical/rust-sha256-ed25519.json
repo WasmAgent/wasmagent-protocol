@@ -1,0 +1,11 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "run-minimal",
+  "actions": [],
+  "created_at_ms": 1700000000000,
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "legacy-sample-key",
+    "sig": "fLNY1UGK8EcUjUOZv3SUYJELgEg5ExAOoETsXnAfSIYn47Ug2XDAabUORggC2btY0m7kZEtAIM3b3bKbxDd+Aw=="
+  }
+}

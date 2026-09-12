@@ -1,0 +1,7 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "conf-proto-preserved",
+  "created_at_ms": 1700000000000,
+  "__proto__": { "polluted": true },
+  "actions": []
+}
