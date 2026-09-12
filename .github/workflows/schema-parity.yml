@@ -81,9 +81,9 @@ jobs:
         with:
           python-version: '3.x'
 
-      # Report-only: prints the drift inventory as a CI log artifact so each
-      # item can be classified. Flip to `--strict` once the baseline is
-      # allowlisted (see the script docstring).
-      - name: Structural contract comparison
+      # --strict with the classified exception allowlist
+      # (scripts/aep-contract-exceptions.json): every baseline drift is
+      # classified, so any NEW structural drift fails this gate.
+      - name: Structural contract comparison (strict)
         working-directory: wasmagent-protocol
-        run: python scripts/check-aep-contract-compatibility.py --consumer wasmagent-js=../wasmagent-js/packages/aep/schemas/aep-record.schema.json
+        run: python scripts/check-aep-contract-compatibility.py --strict --consumer wasmagent-js=../wasmagent-js/packages/aep/schemas/aep-record.schema.json

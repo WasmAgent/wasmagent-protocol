@@ -1,0 +1,87 @@
+{
+  "_readme": [
+    "Classified drift exceptions for the structural contract gate (Gate B).",
+    "Each rule matches drift paths by prefix; 'class' is one of:",
+    "  compatibility-exception — canonical intentionally open (v0.x additive policy); the consumer's stricter closed-world model is allowed and MUST NOT force a canonical change.",
+    "  intentional-extension   — the consumer models more structure than canonical v0.x specifies; canonical adoption is evaluated per field, not automatic.",
+    "  reconcile               — the two sides model the same concept differently; needs a tracked reconciliation decision before the gate may fail on it.",
+    "New drift that matches no rule fails --strict. Removing a canonical field, or changing a shared enum, will not match any rule and will fail CI by design."
+  ],
+  "exceptions": [
+    {
+      "match": "<root-container>",
+      "class": "compatibility-exception",
+      "reason": "signature optionality: canonical keeps signature optional (v0.x additive contract); the consumer requires it and closes the world. Optionality alignment is tracked as the JS signed/unsigned record-type split; additionalProperties stays intentionally open canonically."
+    },
+    {
+      "match": "signature",
+      "class": "intentional-extension",
+      "reason": "consumer narrows alg to const ed25519 (stricter is allowed) and does not yet model canonical-optional signature.bundle / transparency_log_ref."
+    },
+    {
+      "match": "actions[]",
+      "class": "intentional-extension",
+      "reason": "consumer models richer per-action structure (capability_decision, permission_gate, argument_drift, side_effect_class, recording_mode, exit_code, outcome, delta_ref, state_digest_*) than canonical v0.x enumerates; canonical adoption evaluated per field."
+    },
+    {
+      "match": "capability_decisions[]",
+      "class": "intentional-extension",
+      "reason": "consumer adds approval_mode / deny_reason_class / approval_extension to top-level capability decisions; canonical underspecified."
+    },
+    {
+      "match": "budget_ledger",
+      "class": "compatibility-exception",
+      "reason": "consumer closes budget sub-objects; canonical keeps them open. Sub-state itself matches (required spent/actual_ms on both sides)."
+    },
+    {
+      "match": "verifier_results[]",
+      "class": "compatibility-exception",
+      "reason": "consumer closes the record; canonical open. Required keys match."
+    },
+    {
+      "match": "input_refs[]",
+      "class": "compatibility-exception",
+      "reason": "consumer closes the record; canonical open. Required uri matches."
+    },
+    {
+      "match": "output_refs[]",
+      "class": "compatibility-exception",
+      "reason": "consumer closes the record; canonical open. Required uri matches."
+    },
+    {
+      "match": "dsse_envelope",
+      "class": "compatibility-exception",
+      "reason": "consumer closes envelope/signature records; canonical open. Required keys match."
+    },
+    {
+      "match": "timestamp_proof",
+      "class": "intentional-extension",
+      "reason": "RFC-3161-style timestamp proof structure attached post-signing; modeled in consumer, not yet canonical."
+    },
+    {
+      "match": "prev_record_hash",
+      "class": "intentional-extension",
+      "reason": "chain linkage modeled in consumer; canonical adoption pending (chain verification semantics tracked in wasmagent-protocol#214)."
+    },
+    {
+      "match": "run_context",
+      "class": "intentional-extension",
+      "reason": "consumer adds session_id / turn_index to run_context."
+    },
+    {
+      "match": "argument_drift",
+      "class": "reconcile",
+      "reason": "divergent modeling of argument drift: canonical models declared vs actual digests + drifted args + diff summary; the consumer models approved vs observed digests + resolution. Needs one reconciled model before either side changes."
+    },
+    {
+      "match": "recording_mode",
+      "class": "reconcile",
+      "reason": "placement divergence: canonical carries it run-level; the consumer carries it per-action. Same vocabulary, different layer."
+    },
+    {
+      "match": "side_effect_class",
+      "class": "reconcile",
+      "reason": "placement divergence: canonical carries it run-level; the consumer carries it per-action. Same vocabulary, different layer."
+    }
+  ]
+}

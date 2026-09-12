@@ -38,6 +38,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CANONICAL = REPO_ROOT / "schemas" / "aep" / "aep-record.schema.json"
+EXCEPTIONS = REPO_ROOT / "scripts" / "aep-contract-exceptions.json"
 
 # Default consumers, compared when no --consumer override is given. Paths are
 # relative to this repository root; they match the sibling checkouts the
@@ -139,6 +140,33 @@ def compare(canonical: object, consumer: object) -> list[dict[str, object]]:
     return drifts
 
 
+def load_exceptions(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return [
+        {"match": rule["match"], "class": rule.get("class", "unclassified"),
+         "reason": rule.get("reason", "")}
+        for rule in data.get("exceptions", [])
+    ]
+
+
+def classify(drifts: list[dict[str, object]],
+             rules: list[dict[str, str]]) -> list[dict[str, object]]:
+    """Attach the first matching exception rule to each drift, if any."""
+    for d in drifts:
+        d["allowlisted"] = False
+        d["exception_class"] = None
+        d["exception_reason"] = None
+        for rule in rules:
+            if str(d["path"]).startswith(rule["match"]):
+                d["allowlisted"] = True
+                d["exception_class"] = rule["class"]
+                d["exception_reason"] = rule["reason"]
+                break
+    return drifts
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--canonical", type=Path, default=CANONICAL)
@@ -146,10 +174,17 @@ def main() -> int:
                         metavar="NAME=PATH",
                         help="consumer schema to compare (repeatable); "
                              "default: " + ", ".join(sorted(DEFAULT_CONSUMERS)))
+    parser.add_argument("--exceptions", type=Path, default=EXCEPTIONS,
+                        help="classified-exception rules (prefix match)")
+    parser.add_argument("--no-exceptions", action="store_true",
+                        help="ignore the exception allowlist entirely")
     parser.add_argument("--json", action="store_true", help="machine-readable output")
     parser.add_argument("--strict", action="store_true",
-                        help="exit 1 when any drift is found (default: report only)")
+                        help="exit 1 when any UNCLASSIFIED drift is found "
+                             "(allowlisted exceptions do not fail the gate)")
     args = parser.parse_args()
+
+    rules = [] if args.no_exceptions else load_exceptions(args.exceptions)
 
     canonical = resolve_root(json.loads(args.canonical.read_text(encoding="utf-8")))
     canonical_norm = normalize(canonical)
@@ -165,33 +200,38 @@ def main() -> int:
     all_drifts: dict[str, list[dict[str, object]]] = {}
     for name, path in sorted(consumers.items()):
         if not path.exists():
-            all_drifts[name] = [{"path": "<file>", "kind": "missing-file",
-                                 "canonical": str(args.canonical), "consumer": str(path)}]
+            all_drifts[name] = classify(
+                [{"path": "<file>", "kind": "missing-file",
+                  "canonical": str(args.canonical), "consumer": str(path)}], rules)
             continue
         consumer = resolve_root(json.loads(path.read_text(encoding="utf-8")))
-        all_drifts[name] = compare(canonical_norm, normalize(consumer))
+        all_drifts[name] = classify(compare(canonical_norm, normalize(consumer)), rules)
 
     if args.json:
         print(json.dumps(all_drifts, indent=2, sort_keys=True))
     else:
-        total = 0
+        unclassified = 0
         for name, drifts in all_drifts.items():
             print(f"[{name}] {len(drifts)} drift(s) vs {args.canonical.name}")
             for d in drifts:
-                total += 1
-                print(f"  DRIFT: {d['path']} ({d['kind']})")
-                if d.get("canonical") is not None:
-                    print(f"    canonical: {json.dumps(d['canonical'], sort_keys=True)}")
-                if d.get("consumer") is not None:
-                    print(f"    consumer:  {json.dumps(d['consumer'], sort_keys=True)}")
-        if total == 0:
-            print("no structural drift found")
+                if d.get("allowlisted"):
+                    print(f"  ALLOWLISTED [{d['exception_class']}]: {d['path']} ({d['kind']})")
+                else:
+                    unclassified += 1
+                    print(f"  DRIFT: {d['path']} ({d['kind']})")
+                    if d.get("canonical") is not None:
+                        print(f"    canonical: {json.dumps(d['canonical'], sort_keys=True)}")
+                    if d.get("consumer") is not None:
+                        print(f"    consumer:  {json.dumps(d['consumer'], sort_keys=True)}")
+        if unclassified == 0:
+            print("no unclassified structural drift — "
+                  f"{sum(len(v) for v in all_drifts.values())} drift(s) covered by exception rules")
         else:
-            print(f"\ntotal: {total} drift(s) — report-only mode; "
-                  f"classify each as bug / intentional extension / compatibility "
-                  f"exception, then allowlist or fix before enabling --strict")
+            print(f"\ntotal unclassified: {unclassified} — classify each as bug / "
+                  f"intentional extension / compatibility exception, then extend "
+                  f"{args.exceptions.name}")
 
-    if args.strict and any(all_drifts.values()):
+    if args.strict and unclassified > 0:
         return 1
     return 0
 
