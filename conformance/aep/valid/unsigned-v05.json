@@ -1,5 +1,5 @@
 {
-  "schema_version": "aep/v0.3",
+  "schema_version": "aep/v0.5",
   "run_id": "conf-unsigned",
   "input_refs": [],
   "output_refs": [],
@@ -10,7 +10,7 @@
       "tool_name": "read_materials",
       "state_changing": false,
       "evidence_refs": [],
-      "timestamp_ms": 1789199047187,
+      "timestamp_ms": 1789203649863,
       "recording_mode": "validation",
       "side_effect_class": "read"
     }

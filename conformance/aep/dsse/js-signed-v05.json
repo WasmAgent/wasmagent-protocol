@@ -1,5 +1,5 @@
 {
-  "schema_version": "aep/v0.4",
+  "schema_version": "aep/v0.5",
   "run_id": "conf-js-dsse",
   "input_refs": [],
   "output_refs": [],
@@ -10,7 +10,7 @@
       "tool_name": "read_materials",
       "state_changing": false,
       "evidence_refs": [],
-      "timestamp_ms": 1789199047198,
+      "timestamp_ms": 1789203649876,
       "recording_mode": "validation",
       "side_effect_class": "read"
     }
@@ -21,17 +21,17 @@
   "run_side_effect_class_max": "read",
   "dsse_envelope": {
     "payloadType": "application/vnd.in-toto+json",
-    "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoidXJuOndhc21hZ2VudDpydW46Y29uZi1qcy1kc3NlIiwiZGlnZXN0Ijp7InNoYTI1NiI6ImIwZGIzYjA2MTllMWYzMTg3M2IwNmZjNWNkYzg3ZjhkZTNiNGEzNWQ4NzMxNzlhNjgzYWZlMDNjYzk1YzA0OWMifX1dLCJwcmVkaWNhdGVUeXBlIjoiaHR0cHM6Ly93YXNtYWdlbnQuZGV2L2F0dGVzdGF0aW9ucy9hZXAvdjAuNCIsInByZWRpY2F0ZSI6eyJzY2hlbWFfdmVyc2lvbiI6ImFlcC92MC40IiwicnVuX2lkIjoiY29uZi1qcy1kc3NlIiwiaW5wdXRfcmVmcyI6W10sIm91dHB1dF9yZWZzIjpbXSwiY2FwYWJpbGl0eV9kZWNpc2lvbnMiOltdLCJhY3Rpb25zIjpbeyJhY3Rpb25faWQiOiJhY3Rpb24tMCIsInRvb2xfbmFtZSI6InJlYWRfbWF0ZXJpYWxzIiwic3RhdGVfY2hhbmdpbmciOmZhbHNlLCJldmlkZW5jZV9yZWZzIjpbXSwidGltZXN0YW1wX21zIjoxNzg5MTk5MDQ3MTk4LCJyZWNvcmRpbmdfbW9kZSI6InZhbGlkYXRpb24iLCJzaWRlX2VmZmVjdF9jbGFzcyI6InJlYWQifV0sInZlcmlmaWVyX3Jlc3VsdHMiOltdLCJjcmVhdGVkX2F0X21zIjoxNzAwMDAwMDAwMDAwLCJwcmV2X3JlY29yZF9oYXNoIjpudWxsLCJydW5fc2lkZV9lZmZlY3RfY2xhc3NfbWF4IjoicmVhZCJ9fQ==",
+    "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoidXJuOndhc21hZ2VudDpydW46Y29uZi1qcy1kc3NlIiwiZGlnZXN0Ijp7InNoYTI1NiI6ImVlYWJkZWMyNWE1NjVjYmE2Y2EyYzBlMTc5YmVjMWFjYTAzNjUyNGY4YWY5ZGE3ZDRlNzU1NjJmYWYyMWY2YzAifX1dLCJwcmVkaWNhdGVUeXBlIjoiaHR0cHM6Ly93YXNtYWdlbnQuZGV2L2F0dGVzdGF0aW9ucy9hZXAvdjAuNCIsInByZWRpY2F0ZSI6eyJzY2hlbWFfdmVyc2lvbiI6ImFlcC92MC41IiwicnVuX2lkIjoiY29uZi1qcy1kc3NlIiwiaW5wdXRfcmVmcyI6W10sIm91dHB1dF9yZWZzIjpbXSwiY2FwYWJpbGl0eV9kZWNpc2lvbnMiOltdLCJhY3Rpb25zIjpbeyJhY3Rpb25faWQiOiJhY3Rpb24tMCIsInRvb2xfbmFtZSI6InJlYWRfbWF0ZXJpYWxzIiwic3RhdGVfY2hhbmdpbmciOmZhbHNlLCJldmlkZW5jZV9yZWZzIjpbXSwidGltZXN0YW1wX21zIjoxNzg5MjAzNjQ5ODc2LCJyZWNvcmRpbmdfbW9kZSI6InZhbGlkYXRpb24iLCJzaWRlX2VmZmVjdF9jbGFzcyI6InJlYWQifV0sInZlcmlmaWVyX3Jlc3VsdHMiOltdLCJjcmVhdGVkX2F0X21zIjoxNzAwMDAwMDAwMDAwLCJwcmV2X3JlY29yZF9oYXNoIjpudWxsLCJydW5fc2lkZV9lZmZlY3RfY2xhc3NfbWF4IjoicmVhZCJ9fQ==",
     "signatures": [
       {
         "keyid": "conformance-seed-key-01",
-        "sig": "pxKEG2Uf8GydbPNVC3NrKkSkmJM4mwp7+LToEmnuDGi/Zjz9NrqzTIQTzbUEDLcAB25tdyB+b6E/HkUW2DyeDw=="
+        "sig": "fWYX7azNEUYpp+gBpiCop/tskMQNI1BsrCNTdEkPo5jMbBQMBVFw1hDVRiVw8G24KUKVY9wZwxyvW6iHZ73FAw=="
       }
     ]
   },
   "signature": {
     "alg": "ed25519",
     "key_id": "conformance-seed-key-01",
-    "sig": "pxKEG2Uf8GydbPNVC3NrKkSkmJM4mwp7+LToEmnuDGi/Zjz9NrqzTIQTzbUEDLcAB25tdyB+b6E/HkUW2DyeDw=="
+    "sig": "fWYX7azNEUYpp+gBpiCop/tskMQNI1BsrCNTdEkPo5jMbBQMBVFw1hDVRiVw8G24KUKVY9wZwxyvW6iHZ73FAw=="
   }
 }

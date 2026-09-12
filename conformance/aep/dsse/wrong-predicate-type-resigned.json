@@ -1,0 +1,37 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "conf-wrong-predicate-type",
+  "input_refs": [],
+  "output_refs": [],
+  "capability_decisions": [],
+  "actions": [
+    {
+      "action_id": "action-0",
+      "tool_name": "read_materials",
+      "state_changing": false,
+      "evidence_refs": [],
+      "timestamp_ms": 1789203649896,
+      "recording_mode": "validation",
+      "side_effect_class": "read"
+    }
+  ],
+  "verifier_results": [],
+  "created_at_ms": 1700000000000,
+  "prev_record_hash": null,
+  "run_side_effect_class_max": "read",
+  "dsse_envelope": {
+    "payloadType": "application/vnd.in-toto+json",
+    "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEiLCJzdWJqZWN0IjpbeyJuYW1lIjoidXJuOndhc21hZ2VudDpydW46Y29uZi13cm9uZy1wcmVkaWNhdGUtdHlwZSIsImRpZ2VzdCI6eyJzaGEyNTYiOiI1ZDExZTk3YjZjYTRkMzdiYmIwMmM3NDMzYTk3OWZkMmZkNGZhZjRmYmM4MWIwMWZjOGY3ODA3NmViNGVkYzI5In19XSwicHJlZGljYXRlVHlwZSI6Imh0dHBzOi8vd2FzbWFnZW50LmRldi9hdHRlc3RhdGlvbnMvYWVwL3YwLjkiLCJwcmVkaWNhdGUiOnsic2NoZW1hX3ZlcnNpb24iOiJhZXAvdjAuNSIsInJ1bl9pZCI6ImNvbmYtd3JvbmctcHJlZGljYXRlLXR5cGUiLCJpbnB1dF9yZWZzIjpbXSwib3V0cHV0X3JlZnMiOltdLCJjYXBhYmlsaXR5X2RlY2lzaW9ucyI6W10sImFjdGlvbnMiOlt7ImFjdGlvbl9pZCI6ImFjdGlvbi0wIiwidG9vbF9uYW1lIjoicmVhZF9tYXRlcmlhbHMiLCJzdGF0ZV9jaGFuZ2luZyI6ZmFsc2UsImV2aWRlbmNlX3JlZnMiOltdLCJ0aW1lc3RhbXBfbXMiOjE3ODkyMDM2NDk4OTYsInJlY29yZGluZ19tb2RlIjoidmFsaWRhdGlvbiIsInNpZGVfZWZmZWN0X2NsYXNzIjoicmVhZCJ9XSwidmVyaWZpZXJfcmVzdWx0cyI6W10sImNyZWF0ZWRfYXRfbXMiOjE3MDAwMDAwMDAwMDAsInByZXZfcmVjb3JkX2hhc2giOm51bGwsInJ1bl9zaWRlX2VmZmVjdF9jbGFzc19tYXgiOiJyZWFkIn19",
+    "signatures": [
+      {
+        "keyid": "conformance-seed-key-01",
+        "sig": "uvm4w1dB5tbBjj8ukore/U9+yK2D4FD4OZlxGOBZn0jsxHPvtkq+Y9raLH3dCn/zviawVLmcLLpB5hzFir5/CA=="
+      }
+    ]
+  },
+  "signature": {
+    "alg": "ed25519",
+    "key_id": "conformance-seed-key-01",
+    "sig": "j3Zkxu52nO0Jiamn8m9TBEbvz1LPUmXc1+Jeu8dn+8kb/R/4/QNdtMqcgtL+X8MdM2VAl4hJ0GEzlwVoBQUQBA=="
+  }
+}

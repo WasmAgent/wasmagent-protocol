@@ -1,0 +1,6 @@
+{
+  "schema_version": "aep/v0.5",
+  "run_id": "conf-negative-count",
+  "created_at_ms": 1700000000000,
+  "authorization_evidence_count": -1
+}

@@ -1,10 +1,10 @@
 {
   "schema_version": "aep/v0.5",
-  "run_id": "conf-floor-not-observed",
+  "run_id": "conf-dup-observed",
   "created_at_ms": 1700000000000,
-  "run_attribution_backing_floor": "unknown",
+  "run_attribution_backing_floor": "operator_asserted",
   "run_attribution_backing_observed": [
     "operator_asserted",
-    "principal_key_signed"
+    "operator_asserted"
   ]
 }

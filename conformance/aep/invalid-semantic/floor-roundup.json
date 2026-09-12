@@ -4,6 +4,9 @@
   "created_at_ms": 1700000000000,
   "attribution_backing": "principal_key_signed",
   "run_attribution_backing_floor": "principal_key_signed",
-  "run_attribution_backing_observed": ["operator_asserted", "principal_key_signed"],
+  "run_attribution_backing_observed": [
+    "operator_asserted",
+    "principal_key_signed"
+  ],
   "authorization_evidence_count": 2
 }
