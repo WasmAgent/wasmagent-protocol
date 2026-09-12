@@ -9,33 +9,178 @@
     "rust": "see wasmagent-proxy cross_language fixtures (seed deadbeef x8)"
   },
   "conformance_target": [
-    { "path": "valid/unsigned-v05.json", "structural": "valid", "semantic": "valid", "authenticity": "unsigned" },
-    { "path": "valid/minimal-v05.json", "structural": "valid", "semantic": "valid", "authenticity": "unsigned" },
-    { "path": "valid/proto-key-preserved.json", "structural": "valid", "semantic": "valid", "authenticity": "unsigned", "note": "__proto__ is an ordinary field for canonical canonicalization; consumers MAY reject it as local admission policy." },
-
-    { "path": "invalid-semantic/floor-roundup.json", "structural": "valid", "semantic": "invalid", "authenticity": "not-checked", "note": "floor stronger than weakest observed." },
-    { "path": "invalid-semantic/floor-not-observed.json", "structural": "valid", "semantic": "invalid", "authenticity": "not-checked", "note": "floor not a member of observed." },
-    { "path": "invalid-semantic/unknown-attribution-grade.json", "structural": "valid", "semantic": "invalid", "authenticity": "not-checked", "note": "attribution_backing outside the canonical vocabulary." },
-    { "path": "invalid-semantic/duplicate-observed-grade.json", "structural": "valid", "semantic": "invalid", "authenticity": "not-checked", "note": "duplicate grade in observed set." },
-    { "path": "invalid-semantic/negative-authorization-evidence-count.json", "structural": "valid", "semantic": "invalid", "authenticity": "not-checked", "note": "authorization_evidence_count < 0 violates minimum: 0." },
-
-    { "path": "dsse/js-signed-v05.json", "structural": "valid", "semantic": "valid", "authenticity": "dsse-valid", "chain": "not-checked" },
-    { "path": "dsse/rust-signed-v05.json", "structural": "valid", "semantic": "valid", "authenticity": "dsse-valid", "chain": "not-checked", "note": "pinned fixture from wasmagent-proxy CI; verifies under the JS verifier." },
-    { "path": "dsse/tampered-run-id.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "inline run_id mutated after signing." },
-    { "path": "dsse/wrong-payload-type-resigned.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "authentic signature, but payloadType is not the in-toto type — not an AEP attestation." },
-    { "path": "dsse/wrong-predicate-type-resigned.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "authentic signature with a future/unrelated AEP predicate type." },
-    { "path": "dsse/wrong-statement-type-resigned.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "authentic signature with a non-in-toto statement _type." },
-    { "path": "dsse/missing-subject-name-resigned.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "subject name absent — cannot bind the attestation to the run." },
-    { "path": "dsse/wrong-subject-name-resigned.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "subject name references a different run." },
-    { "path": "dsse/multiple-signatures.json", "structural": "valid", "semantic": "valid", "authenticity": "invalid", "note": "AEP signature-count policy: exactly one signature; multisig semantics deliberately undefined." },
-
-    { "path": "chain/intact-dsse-3.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "dsse-valid", "chain": "intact" },
-    { "path": "chain/intact-3.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "intact", "note": "chain-only fixture: unsigned records, chain semantics in isolation." },
-    { "path": "chain/missing-all.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "not-present", "note": "no links — vacuous, must not read as tamper-evidence." },
-    { "path": "chain/partial-last.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "partial" },
-    { "path": "chain/partial-middle.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "partial", "note": "middle link recomputed so later links stay consistent — isolated partial, not broken." },
-    { "path": "chain/broken-middle.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "broken", "note": "r3 links to absent r2 — brokenAt=1." },
-    { "path": "chain/singleton-with-prev.jsonl", "structural": "valid", "semantic": "valid", "authenticity": "not-checked", "chain": "orphaned", "note": "single record claiming an unavailable predecessor — not intact." }
+    {
+      "path": "valid/unsigned-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "unsigned"
+    },
+    {
+      "path": "valid/minimal-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "unsigned"
+    },
+    {
+      "path": "valid/proto-key-preserved.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "unsigned",
+      "note": "__proto__ is an ordinary field for canonical canonicalization; consumers MAY reject it as local admission policy."
+    },
+    {
+      "path": "invalid-semantic/floor-roundup.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "floor stronger than weakest observed."
+    },
+    {
+      "path": "invalid-semantic/floor-not-observed.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "floor not a member of observed."
+    },
+    {
+      "path": "invalid-semantic/unknown-attribution-grade.json",
+      "structural": "invalid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "attribution_backing outside the canonical vocabulary. Also structurally invalid: the canonical schema enum/uniqueItems/minimum reject it before semantic checks run."
+    },
+    {
+      "path": "invalid-semantic/duplicate-observed-grade.json",
+      "structural": "invalid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "duplicate grade in observed set. Also structurally invalid: the canonical schema enum/uniqueItems/minimum reject it before semantic checks run."
+    },
+    {
+      "path": "invalid-semantic/negative-authorization-evidence-count.json",
+      "structural": "invalid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "authorization_evidence_count < 0 violates minimum: 0. Also structurally invalid: the canonical schema enum/uniqueItems/minimum reject it before semantic checks run."
+    },
+    {
+      "path": "dsse/js-signed-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "dsse-valid",
+      "chain": "not-checked"
+    },
+    {
+      "path": "dsse/rust-signed-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "dsse-valid",
+      "chain": "not-checked",
+      "note": "pinned fixture from wasmagent-proxy CI; verifies under the JS verifier."
+    },
+    {
+      "path": "dsse/tampered-run-id.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "inline run_id mutated after signing."
+    },
+    {
+      "path": "dsse/wrong-payload-type-resigned.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "authentic signature, but payloadType is not the in-toto type — not an AEP attestation."
+    },
+    {
+      "path": "dsse/wrong-predicate-type-resigned.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "authentic signature with a future/unrelated AEP predicate type."
+    },
+    {
+      "path": "dsse/wrong-statement-type-resigned.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "authentic signature with a non-in-toto statement _type."
+    },
+    {
+      "path": "dsse/missing-subject-name-resigned.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "subject name absent — cannot bind the attestation to the run."
+    },
+    {
+      "path": "dsse/wrong-subject-name-resigned.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "subject name references a different run."
+    },
+    {
+      "path": "dsse/multiple-signatures.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "note": "AEP signature-count policy: exactly one signature; multisig semantics deliberately undefined."
+    },
+    {
+      "path": "chain/intact-dsse-3.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "dsse-valid",
+      "chain": "intact"
+    },
+    {
+      "path": "chain/intact-3.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "intact",
+      "note": "chain-only fixture: unsigned records, chain semantics in isolation."
+    },
+    {
+      "path": "chain/missing-all.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "not-present",
+      "note": "no links — vacuous, must not read as tamper-evidence."
+    },
+    {
+      "path": "chain/partial-last.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "partial"
+    },
+    {
+      "path": "chain/partial-middle.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "partial",
+      "note": "middle link recomputed so later links stay consistent — isolated partial, not broken."
+    },
+    {
+      "path": "chain/broken-middle.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "broken",
+      "note": "r3 links to absent r2 — brokenAt=1."
+    },
+    {
+      "path": "chain/singleton-with-prev.jsonl",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "not-checked",
+      "chain": "orphaned",
+      "note": "single record claiming an unavailable predecessor — not intact."
+    }
   ],
   "historical": [
     {
