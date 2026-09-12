@@ -5,8 +5,8 @@
   "canonical_schema": "schemas/aep/aep-record.schema.json",
   "protocol_version": "0.1.10",
   "verifying_keys": {
-    "js": "dsse/js-verify-key.hex (corpus seed c0ffee00 x8, key id conformance-seed-key-01)",
-    "rust": "see wasmagent-proxy cross_language fixtures (seed deadbeef x8)"
+    "js": "dsse/js-verify-key.hex",
+    "note": "corpus seed c0ffee00 x8, key id conformance-seed-key-01; the pinned rust fixture uses dsse/rust-fixture-verify-key.hex (seed deadbeef x8)."
   },
   "conformance_target": [
     {
