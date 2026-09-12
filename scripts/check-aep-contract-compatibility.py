@@ -191,9 +191,15 @@ def classify(drifts: list[dict[str, object]],
         d["exception_class"] = None
         d["exception_reason"] = None
         for rule in rules:
+            # Strict equality: an exception without both semantics hashes is
+            # malformed and must not match (fail closed on malformed rules).
+            # JSON null (extra/missing side) round-trips as None, so plain
+            # == handles the not-applicable case without a wildcard.
             hashes_match = (
-                rule.get("canonical_hash") in (None, d.get("canonical_hash"))
-                and rule.get("consumer_hash") in (None, d.get("consumer_hash"))
+                "canonical_hash" in rule
+                and "consumer_hash" in rule
+                and rule["canonical_hash"] == d.get("canonical_hash")
+                and rule["consumer_hash"] == d.get("consumer_hash")
             )
             if d["path"] == rule.get("path") and d["kind"] == rule.get("kind") and hashes_match:
                 d["allowlisted"] = True
