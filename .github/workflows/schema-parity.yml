@@ -22,20 +22,8 @@ name: schema-parity
 
 on:
   pull_request:
-    paths:
-      - 'schemas/**'
-      - 'scripts/check-aep-contract-compatibility.py'
-      - 'scripts/check-schema-parity.py'
-      - 'scripts/aep-contract-exceptions.json'
-      - '.github/workflows/schema-parity.yml'
   push:
     branches: [main]
-    paths:
-      - 'schemas/**'
-      - 'scripts/check-aep-contract-compatibility.py'
-      - 'scripts/check-schema-parity.py'
-      - 'scripts/aep-contract-exceptions.json'
-      - '.github/workflows/schema-parity.yml'
   workflow_dispatch:
 
 jobs:
