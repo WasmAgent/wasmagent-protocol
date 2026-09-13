@@ -10,7 +10,7 @@
       "tool_name": "read_materials",
       "state_changing": false,
       "evidence_refs": [],
-      "timestamp_ms": 1789266835301,
+      "timestamp_ms": 1700000000000,
       "recording_mode": "validation",
       "side_effect_class": "read"
     }
