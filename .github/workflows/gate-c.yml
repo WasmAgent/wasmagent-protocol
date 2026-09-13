@@ -22,6 +22,12 @@ name: gate-c
 # every PR to main and every push to main, and detects relevance INSIDE the
 # job (irrelevant PRs resolve SUCCESS as not-applicable instead of hanging
 # as a skipped/missing required check).
+# Least privilege (§6): Gate C reads sources and uploads an artifact —
+# nothing more. actions:write exists solely for the artifact upload API.
+permissions:
+  contents: read
+  actions: write
+
 on:
   pull_request:
     branches: [main]
@@ -119,9 +125,26 @@ jobs:
           bun scripts/verify-corpus.mjs "${{ github.workspace }}/conformance/aep"
 
       # ---- Rust consumer adapter ---------------------------------------------
-      - name: Setup Rust (Rust adapter)
+      - name: Read proxy Rust toolchain pin
+        if: steps.relevance.outputs.relevant == 'true'
+        id: rust-toolchain
+        run: |
+          # The proxy repository pins its own toolchain (rust-toolchain.toml);
+          # the attestation must record the toolchain that ACTUALLY runs
+          # cargo test, not whatever the runner defaults to.
+          CHANNEL=$(python3 -c "
+          import tomllib
+          with open('../wasmagent-proxy/rust-toolchain.toml', 'rb') as f:
+              print(tomllib.load(f)['toolchain']['channel'])
+          ")
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "proxy pins rust channel: $CHANNEL"
+
+      - name: Setup Rust (exact proxy-pinned channel)
         if: steps.relevance.outputs.relevant == 'true'
         uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: ${{ steps.rust-toolchain.outputs.channel }}
 
       - name: Rust corpus adapter (authenticity + chain, locked deps)
         if: steps.relevance.outputs.relevant == 'true'
@@ -139,7 +162,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Trace corpus adapter (structural + semantic + authenticity + chain, constrained deps)
+      - name: Setup uv (Trace adapter)
+        if: steps.relevance.outputs.relevant == 'true'
+        uses: astral-sh/setup-uv@v5
+
+      - name: Trace corpus adapter (structural + semantic + authenticity + chain, frozen uv lock)
         if: steps.relevance.outputs.relevant == 'true'
         id: adapter-trace
         continue-on-error: true
@@ -147,9 +174,10 @@ jobs:
         env:
           AEP_PROTOCOL_CORPUS: ${{ github.workspace }}/conformance/aep
         run: |
-          python -m pip install --upgrade pip
-          pip install -c ci/constraints.txt -e ".[dev]"
-          PYTHONPATH=. pytest tests/test_conformance_corpus.py -q
+          # Full frozen lock (§5): uv.lock pins the ENTIRE dependency graph;
+          # --frozen refuses any drift between pyproject and the lockfile.
+          uv sync --frozen --extra dev
+          uv run pytest tests/test_conformance_corpus.py -q
 
       # ---- Attestation --------------------------------------------------------
       - name: Emit gate-c attestation artifact
@@ -163,6 +191,7 @@ jobs:
           OUTCOME_JS: ${{ steps.adapter-js.outcome }}
           OUTCOME_RUST: ${{ steps.adapter-rust.outcome }}
           OUTCOME_TRACE: ${{ steps.adapter-trace.outcome }}
+          RUST_CHANNEL: ${{ steps.rust-toolchain.outputs.channel }}
         run: |
           python - << 'PY'
           import hashlib, json, os, subprocess
@@ -204,15 +233,26 @@ jobs:
 
           toolchains = {
               "bun": tool_output("bun --version 2>/dev/null || echo not-installed"),
-              "rustc": tool_output("rustc --version 2>/dev/null || echo not-installed"),
-              "cargo": tool_output("cargo --version 2>/dev/null || echo not-installed"),
+              # Recorded from the PROXY working directory: rustup switches to
+              # the repository's pinned channel there, so this is the version
+              # that actually ran cargo test — not the runner default.
+              "rustc": tool_output("cd ../wasmagent-proxy 2>/dev/null && rustc --version 2>/dev/null || echo not-installed"),
+              "cargo": tool_output("cd ../wasmagent-proxy 2>/dev/null && cargo --version 2>/dev/null || echo not-installed"),
               "python": tool_output("python --version 2>/dev/null || echo not-installed"),
+          }
+          try:
+              proxy_channel = open("../wasmagent-proxy/rust-toolchain.toml").read()
+          except OSError:
+              proxy_channel = ""
+          toolchain_pins = {
+              "rust_toolchain_channel": os.environ.get("RUST_CHANNEL") or "unknown",
           }
           locks = {}
           for name, rel in (
               ("js", "../wasmagent-js/bun.lock"),
               ("rust", "../wasmagent-proxy/Cargo.lock"),
-              ("trace", "../trace-pipeline/ci/constraints.txt"),
+              ("rust-toolchain.toml", "../wasmagent-proxy/rust-toolchain.toml"),
+              ("trace", "../trace-pipeline/uv.lock"),
           ):
               locks[name] = sha256_file(rel) if os.path.exists(rel) else "absent"
 
@@ -222,6 +262,7 @@ jobs:
               "verdicts": verdicts,
               "verdict": "pass" if all(v == "pass" for v in verdicts.values()) else "fail",
               "toolchains": toolchains,
+              "toolchain_pins": toolchain_pins,
               "locks": locks,
           }
           with open("gate-c-attestation.json", "w") as f:
