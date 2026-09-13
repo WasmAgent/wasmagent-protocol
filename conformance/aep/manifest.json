@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "signing_profile": "DSSE-only (Ed25519 over PAE(payloadType, base64(in-toto Statement)); predicate bound to the record)",
-  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python is 'not-implemented': no official wasmagent-py verifier exists (planned) — a reserved slot, not a claim.",
+  "signing_profile": "DSSE-only (Ed25519 over PAE(payloadType, SERIALIZED_BODY); predicate bound to the record)",
+  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label: a Python AEP DSSE authenticity verifier exists in trace-pipeline (evomerge/validate/aep.py) but is not yet wired into this corpus as a native authenticity target.",
   "canonical_schema": "schemas/aep/aep-record.schema.json",
   "protocol_version": "0.1.10",
   "verifying_keys": {
@@ -62,6 +62,34 @@
       "semantic": "invalid",
       "authenticity": "not-checked",
       "note": "authorization_evidence_count < 0 violates minimum: 0. Also structurally invalid: the canonical schema enum/uniqueItems/minimum reject it before semantic checks run."
+    },
+    {
+      "path": "invalid-semantic/floor-without-observed.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "pair-presence symmetry: floor without a non-empty observed set."
+    },
+    {
+      "path": "invalid-semantic/floor-with-empty-observed.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "pair-presence symmetry: floor with an empty observed set."
+    },
+    {
+      "path": "invalid-semantic/observed-without-floor.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "pair-presence symmetry: observed list without a floor — the pair ships together, never instead of."
+    },
+    {
+      "path": "invalid-semantic/empty-observed.json",
+      "structural": "valid",
+      "semantic": "invalid",
+      "authenticity": "not-checked",
+      "note": "empty observed set with no floor — an empty grading claim."
     },
     {
       "path": "dsse/js-signed-v05.json",

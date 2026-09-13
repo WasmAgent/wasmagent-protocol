@@ -66,18 +66,29 @@ def check_semantic(record: dict) -> tuple[bool, str]:
     if count is not None and (not isinstance(count, int) or isinstance(count, bool) or count < 0):
         return False, "attribution: authorization_evidence_count must be a non-negative integer"
 
-    # Floor consistency: a floor without a non-empty observed set cannot be
-    # verified against the weakest-grade rule — fail closed.
-    if floor is not None and (not isinstance(observed, list) or not observed):
+    # Pair-presence symmetry: the floor and observed fields ship together —
+    # "reported alongside, never instead of". Any half-pair fails closed:
+    #   floor present + observed absent/empty → invalid
+    #   observed present (non-list, empty, or floor absent)  → invalid
+    observed_is_list = isinstance(observed, list)
+    observed_nonempty = observed_is_list and len(observed) > 0
+    if floor is not None and not observed_nonempty:
         return False, "attribution: floor provided without a non-empty observed set"
+    if observed is not None:
+        if not observed_nonempty:
+            return False, "attribution: observed provided as an empty set — empty grading claim"
+        if floor is None:
+            return False, "attribution: observed provided without floor — the pair ships together"
 
-    if floor is not None and isinstance(observed, list) and observed:
+    if floor is not None and observed_nonempty:
         if any(g not in _BACKING_RANK for g in observed):
             return False, "attribution: observed grade outside canonical vocabulary"
-        if len(set(observed)) != len(observed):
-            return False, "attribution: duplicate grade in observed set"
+        # Independent membership check: the floor must literally be one of the
+        # observed grades, not merely tie the minimum by rank arithmetic.
         if floor not in observed:
             return False, "attribution: floor not present in observed"
+        if len(set(observed)) != len(observed):
+            return False, "attribution: duplicate grade in observed set"
         if _BACKING_RANK[floor] != min(_BACKING_RANK[g] for g in observed):
             return False, "attribution: floor is not the weakest observed grade"
     return True, ""

@@ -331,29 +331,34 @@ def main() -> int:
     # In strict mode, only explicitly accepted classes may pass. Anything
     # else (UNCLASSIFIED, reconcile, etc.) is a blocking finding — an
     # allowlisted entry with an unresolved class cannot produce a green gate.
+    # Enforcement is computed here, ONCE, independently of the output format:
+    # --json --strict must exit exactly like text --strict.
     ACCEPTABLE_CLASSES = {"compatibility-exception", "intentional-extension"}
 
     unclassified = 0
     strict_rejected = 0
+    for drifts in all_drifts.values():
+        for d in drifts:
+            if d.get("allowlisted"):
+                if d.get("exception_class") not in ACCEPTABLE_CLASSES:
+                    strict_rejected += 1
+            else:
+                unclassified += 1
+
     if args.json:
         print(json.dumps(all_drifts, indent=2, sort_keys=True))
-        unclassified = sum(
-            1 for drifts in all_drifts.values() for d in drifts if not d.get("allowlisted")
-        )
     else:
         for name, drifts in all_drifts.items():
             print(f"[{name}] {len(drifts)} drift(s) vs {args.canonical.name}")
             for d in drifts:
                 if d.get("allowlisted"):
                     if args.strict and d.get("exception_class") not in ACCEPTABLE_CLASSES:
-                        strict_rejected += 1
                         print(
                             f"  STRICT-REJECT [{d['exception_class']}]: {d['path']} ({d['kind']})"
                         )
                     else:
                         print(f"  ALLOWLISTED [{d['exception_class']}]: {d['path']} ({d['kind']})")
                 else:
-                    unclassified += 1
                     print(f"  DRIFT: {d['path']} ({d['kind']})")
                     if d.get("canonical") is not None:
                         print(f"    canonical: {json.dumps(d['canonical'], sort_keys=True)}")

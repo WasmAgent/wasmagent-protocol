@@ -11,11 +11,14 @@ name: schema-parity
 #
 # Gate B (check-aep-contract-compatibility.py): structural compatibility.
 #   Compares consumer schema exports against the canonical schema
-#   (properties, required, enums, types, additionalProperties).
-#   Currently REPORT-ONLY: it prints the drift inventory so every item can
-#   be classified as bug / intentional extension / compatibility exception.
-#   Once the baseline is allowlisted, flip the job to --strict so new
-#   drift fails CI.
+#   (properties, required, enums, types, additionalProperties). Runs with
+#   --strict: every baseline drift must be classified in
+#   scripts/aep-contract-exceptions.json (compatibility-exception or
+#   intentional-extension); UNCLASSIFIED / reconcile entries fail the gate.
+#
+# Consumer-side trigger: wasmagent-js runs its own mirror of Gate B
+# (.github/workflows/aep-schema-parity.yml) when its exported schema
+# changes, so consumer drift cannot land by waiting for this repo to move.
 
 on:
   pull_request:
