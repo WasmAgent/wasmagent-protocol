@@ -177,3 +177,5 @@ tokens stored. See [`docs/CONTRACT-CHANGE-PROCESS.md`](docs/CONTRACT-CHANGE-PROC
 ## License
 
 [Apache-2.0](LICENSE).
+
+Conformance status: see conformance/aep/manifest.json (signing profile, corpus targets) and the Gate C attestation artifact for the pinned four-repo closure record.
