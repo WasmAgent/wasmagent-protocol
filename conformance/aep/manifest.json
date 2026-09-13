@@ -9,12 +9,16 @@
     "predicate_type": "https://wasmagent.dev/attestations/aep/v0.4"
   },
   "signing_profile": "DSSE-only aep-dsse-ed25519-decoded-body-v1: Ed25519 over DSSE PAE(payloadType, decoded serialized in-toto Statement bytes). The envelope payload field is base64 transport encoding only and is not itself the PAE body. Predicate bound to the record; exactly one signature.",
-  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label: a Python AEP DSSE authenticity verifier exists in trace-pipeline (evomerge/validate/aep.py) but is not yet wired into this corpus as a native authenticity target.",
+  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label for an OFFICIAL standalone wasmagent-py SDK: no such SDK exists. Trace-pipeline is the current Python consumer implementation and executes this corpus's structural, semantic, authenticity, and chain targets in its CI — that consumer is not an official Python SDK.",
   "canonical_schema": "schemas/aep/aep-record.schema.json",
   "protocol_version": "0.1.10",
   "verifying_keys": {
     "js": "dsse/js-verify-key.hex",
-    "note": "corpus seed c0ffee00 x8, key id conformance-seed-key-01; the pinned rust fixture uses dsse/rust-fixture-verify-key.hex (seed deadbeef x8)."
+    "note": "corpus seed c0ffee00 x8, key id conformance-seed-key-01; the pinned rust fixture uses dsse/rust-fixture-verify-key.hex (seed deadbeef x8).",
+    "by_keyid": {
+      "conformance-seed-key-01": "dsse/js-verify-key.hex",
+      "ci-sample-key": "dsse/rust-fixture-verify-key.hex"
+    }
   },
   "conformance_target": [
     {

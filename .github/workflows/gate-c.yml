@@ -13,20 +13,15 @@ name: gate-c
 # record: rerunning Gate C on the same four SHAs must produce the same
 # verdict; upstream main movement never mutates an old attestation.
 
+# A required context must ALWAYS resolve — so this workflow triggers on
+# every PR to main and every push to main, and detects relevance INSIDE the
+# job (irrelevant PRs resolve SUCCESS as not-applicable instead of hanging
+# as a skipped/missing required check).
 on:
   pull_request:
-    paths:
-      - 'conformance/**'
-      - 'schemas/**'
-      - 'scripts/run-aep-conformance-corpus.py'
-      - '.github/workflows/gate-c.yml'
+    branches: [main]
   push:
     branches: [main]
-    paths:
-      - 'conformance/**'
-      - 'schemas/**'
-      - 'scripts/run-aep-conformance-corpus.py'
-      - '.github/workflows/gate-c.yml'
   workflow_dispatch:
 
 jobs:
@@ -36,8 +31,43 @@ jobs:
     steps:
       - name: Checkout wasmagent-protocol (candidate SHA)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - name: Detect relevance (conformance surfaces changed?)
+        id: relevance
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+        run: |
+          # Full matrix for changes on any surface that influences closure
+          # semantics; everything else resolves SUCCESS as not-applicable.
+          RELEVANT=$(git diff --name-only "$BASE_SHA"...HEAD | grep -E             '^(conformance/|schemas/|scripts/run-aep-conformance-corpus\.py$|scripts/check-aep-contract-compatibility\.py$|scripts/aep-contract-exceptions\.json$|\.github/workflows/gate-c\.yml$)'             | head -1)
+          if [ -n "$RELEVANT" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            echo "Gate C relevance: YES ($RELEVANT)"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "Gate C relevance: NO — will resolve not-applicable"
+          fi
+
+      - name: Not-applicable fast path (context must resolve)
+        if: steps.relevance.outputs.relevant != 'true'
+        run: |
+          python - << 'PY'
+          import json
+          attestation = {
+              "protocol": "${{ github.sha }}",
+              "verdicts": {},
+              "verdict": "not-applicable",
+              "note": "no conformance surface changed in this PR/push",
+          }
+          with open("gate-c-attestation.json", "w") as f:
+              json.dump(attestation, f, indent=2)
+          print(json.dumps(attestation, indent=2))
+          PY
 
       - name: Record exact consumer SHAs
+        if: steps.relevance.outputs.relevant == 'true'
         id: shas
         run: |
           PROTOCOL_SHA=$(git rev-parse HEAD)
@@ -54,9 +84,11 @@ jobs:
 
       # ---- JS consumer adapter ------------------------------------------------
       - name: Setup Bun (JS adapter)
+        if: steps.relevance.outputs.relevant == 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
 
       - name: JS corpus adapter (authenticity + chain)
+        if: steps.relevance.outputs.relevant == 'true'
         id: adapter-js
         continue-on-error: true
         working-directory: ../wasmagent-js
@@ -66,9 +98,11 @@ jobs:
 
       # ---- Rust consumer adapter ---------------------------------------------
       - name: Setup Rust (Rust adapter)
+        if: steps.relevance.outputs.relevant == 'true'
         uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
 
       - name: Rust corpus adapter (authenticity + chain)
+        if: steps.relevance.outputs.relevant == 'true'
         id: adapter-rust
         continue-on-error: true
         working-directory: ../wasmagent-proxy
@@ -78,11 +112,13 @@ jobs:
 
       # ---- Trace (Python) consumer adapter ------------------------------------
       - name: Setup Python (Trace adapter)
+        if: steps.relevance.outputs.relevant == 'true'
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
 
       - name: Trace corpus adapter (structural + semantic + authenticity + chain)
+        if: steps.relevance.outputs.relevant == 'true'
         id: adapter-trace
         continue-on-error: true
         working-directory: ../trace-pipeline
