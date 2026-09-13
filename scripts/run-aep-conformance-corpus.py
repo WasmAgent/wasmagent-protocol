@@ -66,6 +66,11 @@ def check_semantic(record: dict) -> tuple[bool, str]:
     if count is not None and (not isinstance(count, int) or isinstance(count, bool) or count < 0):
         return False, "attribution: authorization_evidence_count must be a non-negative integer"
 
+    # Floor consistency: a floor without a non-empty observed set cannot be
+    # verified against the weakest-grade rule — fail closed.
+    if floor is not None and (not isinstance(observed, list) or not observed):
+        return False, "attribution: floor provided without a non-empty observed set"
+
     if floor is not None and isinstance(observed, list) and observed:
         if any(g not in _BACKING_RANK for g in observed):
             return False, "attribution: observed grade outside canonical vocabulary"

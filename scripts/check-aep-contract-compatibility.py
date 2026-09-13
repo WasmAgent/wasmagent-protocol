@@ -328,7 +328,13 @@ def main() -> int:
         consumer = resolve_root(json.loads(path.read_text(encoding="utf-8")))
         all_drifts[name] = classify(compare(canonical_norm, normalize(consumer)), rules)
 
+    # In strict mode, only explicitly accepted classes may pass. Anything
+    # else (UNCLASSIFIED, reconcile, etc.) is a blocking finding — an
+    # allowlisted entry with an unresolved class cannot produce a green gate.
+    ACCEPTABLE_CLASSES = {"compatibility-exception", "intentional-extension"}
+
     unclassified = 0
+    strict_rejected = 0
     if args.json:
         print(json.dumps(all_drifts, indent=2, sort_keys=True))
         unclassified = sum(
@@ -339,7 +345,13 @@ def main() -> int:
             print(f"[{name}] {len(drifts)} drift(s) vs {args.canonical.name}")
             for d in drifts:
                 if d.get("allowlisted"):
-                    print(f"  ALLOWLISTED [{d['exception_class']}]: {d['path']} ({d['kind']})")
+                    if args.strict and d.get("exception_class") not in ACCEPTABLE_CLASSES:
+                        strict_rejected += 1
+                        print(
+                            f"  STRICT-REJECT [{d['exception_class']}]: {d['path']} ({d['kind']})"
+                        )
+                    else:
+                        print(f"  ALLOWLISTED [{d['exception_class']}]: {d['path']} ({d['kind']})")
                 else:
                     unclassified += 1
                     print(f"  DRIFT: {d['path']} ({d['kind']})")
@@ -355,7 +367,7 @@ def main() -> int:
                   f"intentional extension / compatibility exception, then extend "
                   f"{args.exceptions.name}")
 
-    if args.strict and unclassified > 0:
+    if args.strict and (unclassified > 0 or strict_rejected > 0):
         return 1
     return 0
 
