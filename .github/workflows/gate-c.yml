@@ -12,6 +12,11 @@ name: gate-c
 # The uploaded artifact (gate-c-attestation.json) is the canonical closure
 # record: rerunning Gate C on the same four SHAs must produce the same
 # verdict; upstream main movement never mutates an old attestation.
+#
+# Trigger classes (deliberately distinct):
+#   pull_request / push / workflow_dispatch → closure evidence
+#   repository_dispatch (aep-consumer-main-updated) → latest-head refresh
+#   schedule (hourly) → latest compatibility watch, NOT a certified target
 
 # A required context must ALWAYS resolve — so this workflow triggers on
 # every PR to main and every push to main, and detects relevance INSIDE the
@@ -23,6 +28,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  repository_dispatch:
+    types: [aep-consumer-main-updated]
+  schedule:
+    - cron: "17 * * * *"
 
 jobs:
   verdict-matrix:
@@ -39,9 +48,19 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
         run: |
+          # Scheduled / repository-dispatch refreshes always run the full
+          # matrix: their entire purpose is latest-head compatibility.
+          if [ "${{ github.event_name }}" = "schedule" ] \
+            || [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            echo "Gate C: triggered refresh (${{ github.event_name }}) — full matrix"
+            exit 0
+          fi
           # Full matrix for changes on any surface that influences closure
           # semantics; everything else resolves SUCCESS as not-applicable.
-          RELEVANT=$(git diff --name-only "$BASE_SHA"...HEAD | grep -E             '^(conformance/|schemas/|scripts/run-aep-conformance-corpus\.py$|scripts/check-aep-contract-compatibility\.py$|scripts/aep-contract-exceptions\.json$|\.github/workflows/gate-c\.yml$)'             | head -1)
+          RELEVANT=$(git diff --name-only "$BASE_SHA"...HEAD | grep -E \
+            '^(conformance/|schemas/|scripts/run-aep-conformance-corpus\.py$|scripts/check-aep-contract-compatibility\.py$|scripts/aep-contract-exceptions\.json$|\.github/workflows/gate-c\.yml$)' \
+            | head -1)
           if [ -n "$RELEVANT" ]; then
             echo "relevant=true" >> "$GITHUB_OUTPUT"
             echo "Gate C relevance: YES ($RELEVANT)"
@@ -83,17 +102,19 @@ jobs:
           echo "trace=$(git -C ../trace-pipeline rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       # ---- JS consumer adapter ------------------------------------------------
-      - name: Setup Bun (JS adapter)
+      - name: Setup Bun (JS adapter, pinned for lockfile reproducibility)
         if: steps.relevance.outputs.relevant == 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: "1.3.14"
 
-      - name: JS corpus adapter (authenticity + chain)
+      - name: JS corpus adapter (authenticity + chain, frozen deps)
         if: steps.relevance.outputs.relevant == 'true'
         id: adapter-js
         continue-on-error: true
         working-directory: ../wasmagent-js
         run: |
-          bun install
+          bun install --frozen-lockfile
           bun scripts/verify-corpus.mjs "${{ github.workspace }}/conformance/aep"
 
       # ---- Rust consumer adapter ---------------------------------------------
@@ -101,14 +122,14 @@ jobs:
         if: steps.relevance.outputs.relevant == 'true'
         uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
 
-      - name: Rust corpus adapter (authenticity + chain)
+      - name: Rust corpus adapter (authenticity + chain, locked deps)
         if: steps.relevance.outputs.relevant == 'true'
         id: adapter-rust
         continue-on-error: true
         working-directory: ../wasmagent-proxy
         env:
           AEP_PROTOCOL_CORPUS: ${{ github.workspace }}/conformance/aep
-        run: cargo test -p aep-core --test protocol_corpus
+        run: cargo test --locked -p aep-core --test protocol_corpus
 
       # ---- Trace (Python) consumer adapter ------------------------------------
       - name: Setup Python (Trace adapter)
@@ -117,7 +138,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Trace corpus adapter (structural + semantic + authenticity + chain)
+      - name: Trace corpus adapter (structural + semantic + authenticity + chain, constrained deps)
         if: steps.relevance.outputs.relevant == 'true'
         id: adapter-trace
         continue-on-error: true
@@ -126,13 +147,13 @@ jobs:
           AEP_PROTOCOL_CORPUS: ${{ github.workspace }}/conformance/aep
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -c ci/constraints.txt -e ".[dev]"
           PYTHONPATH=. pytest tests/test_conformance_corpus.py -q
 
       # ---- Attestation --------------------------------------------------------
       - name: Emit gate-c attestation artifact
         id: attest
-        if: always()
+        if: always() && steps.relevance.outputs.relevant == 'true'
         env:
           SHA_PROTOCOL: ${{ steps.shas.outputs.protocol }}
           SHA_JS: ${{ steps.shas.outputs.js }}
@@ -143,7 +164,7 @@ jobs:
           OUTCOME_TRACE: ${{ steps.adapter-trace.outcome }}
         run: |
           python - << 'PY'
-          import json, os
+          import hashlib, json, os, subprocess
 
           def verdict(outcome):
               if outcome == "success":
@@ -151,6 +172,13 @@ jobs:
               if outcome in ("failure", "cancelled", "timed_out"):
                   return "fail"
               return "not-executed"
+
+          def sha256_file(path):
+              h = hashlib.sha256()
+              with open(path, "rb") as f:
+                  for chunk in iter(lambda: f.read(1 << 16), b""):
+                      h.update(chunk)
+              return "sha256:" + h.hexdigest()
 
           shas = {
               "protocol": os.environ["SHA_PROTOCOL"],
@@ -164,11 +192,36 @@ jobs:
               "trace_structural_semantic_authenticity_chain": verdict(os.environ["OUTCOME_TRACE"]),
           }
           manifest = json.load(open("conformance/aep/manifest.json"))
+
+          # Toolchain + lock fingerprinting: exact source SHAs plus the exact
+          # dependency graph and toolchain versions make a rerun reproducible.
+          def tool_output(cmd):
+              try:
+                  return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
+              except Exception:
+                  return "unknown"
+
+          toolchains = {
+              "bun": tool_output("bun --version 2>/dev/null || echo not-installed"),
+              "rustc": tool_output("rustc --version 2>/dev/null || echo not-installed"),
+              "cargo": tool_output("cargo --version 2>/dev/null || echo not-installed"),
+              "python": tool_output("python --version 2>/dev/null || echo not-installed"),
+          }
+          locks = {}
+          for name, rel in (
+              ("js", "../wasmagent-js/bun.lock"),
+              ("rust", "../wasmagent-proxy/Cargo.lock"),
+              ("trace", "../trace-pipeline/ci/constraints.txt"),
+          ):
+              locks[name] = sha256_file(rel) if os.path.exists(rel) else "absent"
+
           attestation = {
               **shas,
               "signing_profile_id": manifest["signing_profile_id"],
               "verdicts": verdicts,
               "verdict": "pass" if all(v == "pass" for v in verdicts.values()) else "fail",
+              "toolchains": toolchains,
+              "locks": locks,
           }
           with open("gate-c-attestation.json", "w") as f:
               json.dump(attestation, f, indent=2)
@@ -179,7 +232,9 @@ jobs:
           PY
 
       - name: Fail the gate when any adapter failed
-        if: steps.attest.outputs.failed == '1'
+        if: >
+          steps.relevance.outputs.relevant == 'true' &&
+          steps.attest.outputs.failed == '1'
         run: |
           echo "Gate C verdict: FAIL — see gate-c-attestation.json"
           exit 1
