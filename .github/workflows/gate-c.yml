@@ -61,7 +61,7 @@ jobs:
         continue-on-error: true
         working-directory: ../wasmagent-js
         run: |
-          bun install --frozen-lockfile
+          bun install
           bun scripts/verify-corpus.mjs "${{ github.workspace }}/conformance/aep"
 
       # ---- Rust consumer adapter ---------------------------------------------
