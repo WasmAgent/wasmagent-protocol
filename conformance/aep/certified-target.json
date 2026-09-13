@@ -1,13 +1,13 @@
 {
-  "target_id": "aep-certified-2026-09-13-02",
-  "certified_at": "2026-09-13T10:06:34Z",
-  "gate_c_run_id": "34750967861",
-  "protocol": "00a9a2f513cb13bba4778334b6ee5afdd36ccc3e",
+  "target_id": "aep-certified-2026-09-13-03",
+  "certified_at": "2026-09-13T13:33:08Z",
+  "gate_c_run_id": "34760116414",
+  "protocol": "35320c567ba02ae30ba441f488952954dd66a4cc",
   "js": "bb71077cbd13051c05e17195d11d16efd0d1c572",
   "proxy": "4b4bde3b2e06eb62b7910cb3f379d75288cc4db1",
-  "trace": "fccbba8110b4d2a707d06e0b41ca6a762c5740c7",
+  "trace": "5820bf811302a1e202b762792cac6ef44e833ad6",
   "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
   "verdict": "pass",
-  "supersedes": "aep-certified-2026-09-13-01",
-  "note": "Certified AFTER the final four hardening tasks (consumer dispatch credential operational, setup-uv pinned by immutable SHA with cache disabled, QuotaCharge one-shot rollback). Rust provenance verified: attested rustc/cargo 1.96.1 == proxy rust-toolchain.toml channel. All lock fingerprints present (bun.lock, Cargo.lock, rust-toolchain.toml, uv.lock)."
+  "supersedes": "aep-certified-2026-09-13-02",
+  "note": "Certified from Gate C run 34760116414 after the latest cross-repository hardening. The exact four-repository tuple passed the JS, Rust, and Trace conformance adapters. Trace required Python 3.10/3.11/3.12 CI is green at the pinned Trace SHA."
 }
