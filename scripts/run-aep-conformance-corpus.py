@@ -94,32 +94,57 @@ def check_semantic(record: dict) -> tuple[bool, str]:
     return True, ""
 
 
-def main() -> int:
-    if not MANIFEST.exists():
-        fail(f"missing manifest: {MANIFEST}")
+def main(argv: list[str] | None = None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv)
+    # Optional positional override (used by Gate C / tests to point at any
+    # corpus checkout); defaults to this repository's own corpus.
+    corpus = Path(args[0]).resolve() if args else CORPUS
+    manifest_path = corpus / "manifest.json"
+    if not manifest_path.exists():
+        fail(f"missing manifest: {manifest_path}")
         return 1
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     entries = manifest.get("conformance_target", [])
     historical = manifest.get("historical", [])
 
+    # Signing-profile gate (P0-A): refuse to execute a corpus whose profile is
+    # not the one this runner implements — a stale manifest must fail loudly,
+    # never silently verify fixtures under a retired construction.
+    SUPPORTED_PROFILE = "aep-dsse-ed25519-decoded-body-v1"
+    if manifest.get("signing_profile_id") != SUPPORTED_PROFILE:
+        fail(
+            f"unsupported or stale signing_profile_id "
+            f"{manifest.get('signing_profile_id')!r} — this runner implements {SUPPORTED_PROFILE!r}"
+        )
+        return 2
+
+    # Structural conformance requires jsonschema: fail closed when absent
+    # instead of silently downgrading the corpus to semantic-only.
     try:
         import jsonschema
     except ImportError:
-        jsonschema = None
-        print("NOTE jsonschema not installed — structural checks skipped")
+        print(
+            "ERROR: jsonschema is required for structural conformance checks",
+            file=sys.stderr,
+        )
+        return 2
 
     canonical_path = REPO_ROOT / manifest.get(
         "canonical_schema", "schemas/aep/aep-record.schema.json"
     )
     canonical = json.loads(canonical_path.read_text(encoding="utf-8"))
-    validator = jsonschema.Draft7Validator(canonical) if jsonschema else None
+    # Select the validator from the schema's own $schema dialect (the canonical
+    # schema declares Draft 2020-12) — never hard-code a draft.
+    Validator = jsonschema.validators.validator_for(canonical)
+    Validator.check_schema(canonical)
+    validator = Validator(canonical)
 
     executed = 0
 
     # 1. manifest vocabulary + paths.
     for entry in entries:
         rel = entry.get("path")
-        fixture = CORPUS / str(rel)
+        fixture = corpus / str(rel)
         if not rel:
             fail(f"entry missing path: {entry}")
             continue

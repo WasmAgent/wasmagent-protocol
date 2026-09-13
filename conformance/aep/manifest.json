@@ -1,6 +1,14 @@
 {
   "schema_version": 2,
-  "signing_profile": "DSSE-only (Ed25519 over PAE(payloadType, SERIALIZED_BODY); predicate bound to the record)",
+  "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
+  "dsse": {
+    "payload_type": "application/vnd.in-toto+json",
+    "pae_payload_semantics": "decoded-serialized-body-bytes",
+    "signature_policy": "exactly-one",
+    "statement_type": "https://in-toto.io/Statement/v1",
+    "predicate_type": "https://wasmagent.dev/attestations/aep/v0.4"
+  },
+  "signing_profile": "DSSE-only aep-dsse-ed25519-decoded-body-v1: Ed25519 over DSSE PAE(payloadType, decoded serialized in-toto Statement bytes). The envelope payload field is base64 transport encoding only and is not itself the PAE body. Predicate bound to the record; exactly one signature.",
   "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label: a Python AEP DSSE authenticity verifier exists in trace-pipeline (evomerge/validate/aep.py) but is not yet wired into this corpus as a native authenticity target.",
   "canonical_schema": "schemas/aep/aep-record.schema.json",
   "protocol_version": "0.1.10",
