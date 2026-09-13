@@ -164,7 +164,13 @@ jobs:
 
       - name: Setup uv (Trace adapter)
         if: steps.relevance.outputs.relevant == 'true'
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
+        with:
+          # Provenance-critical gate: no cache. The action's default glob
+          # looks for uv.lock inside the protocol workspace, while the real
+          # lock lives in ../trace-pipeline — a miskeyed cache would be
+          # worse than no cache.
+          enable-cache: false
 
       - name: Trace corpus adapter (structural + semantic + authenticity + chain, frozen uv lock)
         if: steps.relevance.outputs.relevant == 'true'
