@@ -51,7 +51,8 @@ jobs:
           # Scheduled / repository-dispatch refreshes always run the full
           # matrix: their entire purpose is latest-head compatibility.
           if [ "${{ github.event_name }}" = "schedule" ] \
-            || [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            || [ "${{ github.event_name }}" = "repository_dispatch" ] \
+            || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "relevant=true" >> "$GITHUB_OUTPUT"
             echo "Gate C: triggered refresh (${{ github.event_name }}) — full matrix"
             exit 0
