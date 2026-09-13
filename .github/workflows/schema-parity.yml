@@ -70,7 +70,7 @@ jobs:
         run: python wasmagent-protocol/scripts/check-schema-parity.py
 
   contract-compatibility:
-    name: Gate B — structural contract compatibility (report-only)
+    name: Gate B — structural contract compatibility (strict)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout wasmagent-protocol
