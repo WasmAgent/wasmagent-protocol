@@ -1,12 +1,13 @@
 {
-  "target_id": "aep-certified-2026-09-13-01",
-  "certified_at": "2026-09-13T08:35:58Z",
-  "gate_c_run_id": "34748039629",
-  "protocol": "85e2f48c641ae22ba397be5c33fd06b663ac2cda",
-  "js": "45f17f9fa66e7c74b20ee7690ec5be49f356a635",
-  "proxy": "bb6a412d965b6cfec397ae731f8f274f57959393",
-  "trace": "310070ee4c4fed05f2993798ee0a9a858f20ed43",
+  "target_id": "aep-certified-2026-09-13-02",
+  "certified_at": "2026-09-13T10:06:34Z",
+  "gate_c_run_id": "34750967861",
+  "protocol": "00a9a2f513cb13bba4778334b6ee5afdd36ccc3e",
+  "js": "bb71077cbd13051c05e17195d11d16efd0d1c572",
+  "proxy": "4b4bde3b2e06eb62b7910cb3f379d75288cc4db1",
+  "trace": "fccbba8110b4d2a707d06e0b41ca6a762c5740c7",
   "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
   "verdict": "pass",
-  "note": "Cross-repo closure is defined against THIS pinned exact-SHA set, attested by Gate C run 34748039629 \u2014 never against 'latest main'. A later Gate C run with verdict=pass on a new SHA set supersedes this target by writing a new target_id."
+  "supersedes": "aep-certified-2026-09-13-01",
+  "note": "Certified AFTER the final four hardening tasks (consumer dispatch credential operational, setup-uv pinned by immutable SHA with cache disabled, QuotaCharge one-shot rollback). Rust provenance verified: attested rustc/cargo 1.96.1 == proxy rust-toolchain.toml channel. All lock fingerprints present (bun.lock, Cargo.lock, rust-toolchain.toml, uv.lock)."
 }
