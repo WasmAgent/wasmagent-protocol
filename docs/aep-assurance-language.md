@@ -53,6 +53,30 @@ assurance type that does not exist:
 | "complete capture proof" / "proves complete capture" | Capture completeness is a documented no-go boundary (see below) |
 | "fully certified" | Implies an assurance program that does not exist |
 
+## External evidence grades
+
+Per-layer evidence grades recorded in `conformance/aep/external-evidence/`
+use a controlled vocabulary — an independent RUNNER must never be silently
+upgraded to "every layer independently implemented" (they are not the same
+thing):
+
+```text
+INDEPENDENT              the layer's verdict was produced by code the run
+                         author did not author (e.g. the project's native
+                         JS/Rust verifiers)
+AUTHOR_PRODUCED_MODE_B   the layer's verdict came from a harness written by
+                         the run author — agreement with project targets is
+                         an OBSERVED fact, not an independent check
+OBSERVED                 a reported fact without a provenance upgrade
+NOT_YET_ESTABLISHED      no evidence of this grade exists yet
+```
+
+Current recorded state for the APS PR #94 layered run against
+`aep-certified-2026-09-13-03`: JS record/chain and Rust DSSE verification
+are INDEPENDENT; the semantic recomputation is AUTHOR_PRODUCED_MODE_B with
+28/28 agreement OBSERVED; independent semantic verification is
+NOT_YET_ESTABLISHED and stays in the upstream `docs/OPEN-RUNS.md`.
+
 ## Correct external-evidence phrasing
 
 > An independent layered AEP run was published in the

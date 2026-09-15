@@ -13,6 +13,8 @@
  *   R9  intact chain does not imply capture completeness
  *   R10 a producer-signed completeness claim does not establish completeness
  *   R11 trace-pipeline is never rendered as a native Python verifier
+ *   R13 evidence grades: a Mode-B semantic layer cannot be silently
+ *       upgraded to INDEPENDENT without an independent_runner reference
  *
  * Run: node scripts/verify-assurance-invariants.mjs   (exit 0/1)
  */
@@ -225,9 +227,47 @@ test('R11b: the canonical repo docs contain no native-Python-verifier phrasing',
   }
 });
 
+// ── R13 — evidence-grade firewall ─────────────────────────────────────────────
+
+test('R13: grading the Mode-B semantic layer INDEPENDENT without a runner reference is INVALID', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'aep-r13-'));
+  try {
+    const entry = JSON.parse(readFileSync('conformance/aep/external-evidence/aps-conformance-suite-pr-94.json', 'utf8'));
+    entry.verification_grades.lab_semantic_recomputation = 'INDEPENDENT';
+    writeFileSync(join(dir, 'aps-conformance-suite-pr-94.json'), JSON.stringify(entry, null, 2));
+    const res = runNode([
+      'scripts/verify-external-evidence.mjs',
+      '--dir', dir,
+      '--target', 'conformance/aep/certified-target.json',
+    ]);
+    if (res.status !== 1) throw new Error(`grade upgrade must fail\n${res.stdout}`);
+    if (!res.stdout.includes('EE-07b')) throw new Error('EE-07b must be the failing check');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('R13b: with an independent_runner reference, the INDEPENDENT semantic grade validates', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'aep-r13b-'));
+  try {
+    const entry = JSON.parse(readFileSync('conformance/aep/external-evidence/aps-conformance-suite-pr-94.json', 'utf8'));
+    entry.verification_grades.lab_semantic_recomputation = 'INDEPENDENT';
+    entry.independent_runner = { repository: 'example/independent-semantic-runner', commit: 'c'.repeat(40) };
+    writeFileSync(join(dir, 'aps-conformance-suite-pr-94.json'), JSON.stringify(entry, null, 2));
+    const res = runNode([
+      'scripts/verify-external-evidence.mjs',
+      '--dir', dir,
+      '--target', 'conformance/aep/certified-target.json',
+    ]);
+    if (res.status !== 0) throw new Error(`runner-referenced grade must pass\n${res.stdout}`);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // ── summary ──────────────────────────────────────────────────────────────────
 if (failures.length > 0) {
   console.log(`INVALID: ${failures.length} invariant(s) failed: ${failures.join(', ')}`);
   process.exit(1);
 }
-console.log('VALID: assurance invariants R4–R11 hold');
+console.log('VALID: assurance invariants R4–R13 hold');

@@ -15,7 +15,10 @@
     "claim_boundary"
   ],
   "properties": {
-    "evidence_id": { "type": "string", "minLength": 1 },
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
     "target_id": {
       "type": "string",
       "pattern": "^aep-certified-\\d{4}-\\d{2}-\\d{2}-\\d{2}$"
@@ -23,31 +26,70 @@
     "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["repository"],
+      "required": [
+        "repository"
+      ],
       "properties": {
-        "repository": { "type": "string", "minLength": 1 },
-        "pull_request": { "type": "integer", "minimum": 1 },
-        "url": { "type": "string" }
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pull_request": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "url": {
+          "type": "string"
+        }
       }
     },
-    "status": { "type": "string", "enum": ["pending_merge", "merged", "superseded"] },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_merge",
+        "merged",
+        "superseded"
+      ]
+    },
     "merged_in": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["merge_commit"],
+      "required": [
+        "merge_commit"
+      ],
       "properties": {
-        "merge_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
-        "final_head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
-        "merged_at": { "type": "string", "format": "date-time" }
+        "merge_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "final_head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "merged_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "scope": {
       "type": "object",
-      "additionalProperties": { "type": ["boolean", "string"] }
+      "additionalProperties": {
+        "type": [
+          "boolean",
+          "string"
+        ]
+      }
     },
     "reported_results": {
       "type": "object",
-      "additionalProperties": { "type": ["string", "number", "boolean"] }
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
     },
     "claim_boundary": {
       "type": "object",
@@ -59,12 +101,39 @@
         "owasp_endorsement"
       ],
       "properties": {
-        "external_independent_run": { "type": "boolean", "const": true },
-        "formal_certification": { "type": "boolean", "const": false },
-        "linux_foundation_endorsement": { "type": "boolean", "const": false },
-        "owasp_endorsement": { "type": "boolean", "const": false }
+        "external_independent_run": {
+          "type": "boolean",
+          "const": true
+        },
+        "formal_certification": {
+          "type": "boolean",
+          "const": false
+        },
+        "linux_foundation_endorsement": {
+          "type": "boolean",
+          "const": false
+        },
+        "owasp_endorsement": {
+          "type": "boolean",
+          "const": false
+        }
       }
     },
-    "notes": { "type": "string" }
+    "notes": {
+      "type": "string"
+    },
+    "verification_grades": {
+      "type": "object",
+      "description": "Per-layer evidence grade for the reported run. The vocabulary exists so an independent RUNNER can never be silently upgraded to 'every layer independently implemented'. If lab_semantic_recomputation (or any semantic grade) is marked INDEPENDENT, an independent_runner reference is REQUIRED (enforced by scripts/verify-external-evidence.mjs, EE-07).",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "INDEPENDENT",
+          "AUTHOR_PRODUCED_MODE_B",
+          "OBSERVED",
+          "NOT_YET_ESTABLISHED"
+        ]
+      }
+    }
   }
 }

@@ -99,6 +99,33 @@ for (const file of files) {
   } else {
     check('EE-06', true, `${label} capture_completeness not claimed`);
   }
+
+  // EE-07 — evidence-grade firewall (R13): an INDEPENDENT runner can never
+  // be silently upgraded to 'every layer independently implemented'. Any
+  // semantic layer graded INDEPENDENT demands an explicit independent_runner
+  // reference; the Mode-B vocabulary is the default for lab-authored
+  // recomputation.
+  const grades = entry.verification_grades ?? null;
+  if (grades !== null) {
+    const VOCAB = ['INDEPENDENT', 'AUTHOR_PRODUCED_MODE_B', 'OBSERVED', 'NOT_YET_ESTABLISHED'];
+    const badVocab = Object.entries(grades)
+      .filter(([, v]) => !VOCAB.includes(v))
+      .map(([k]) => k);
+    check('EE-07a', badVocab.length === 0, `${label} grade vocabulary violations: [${badVocab.join(', ') || 'none'}]`);
+
+    const semanticGrades = Object.entries(grades).filter(([k]) => k.toLowerCase().includes('semantic'));
+    const claimsIndependentSemantic = semanticGrades.some(
+      ([k, v]) => k !== 'independent_semantic_verification' && v === 'INDEPENDENT',
+    );
+    const hasRunnerRef = typeof entry.independent_runner === 'object' && entry.independent_runner !== null;
+    check(
+      'EE-07b',
+      !claimsIndependentSemantic || hasRunnerRef,
+      `${label} semantic INDEPENDENT grade requires an independent_runner reference`,
+    );
+  } else {
+    check('EE-07', true, `${label} no verification_grades block (grades optional)`);
+  }
 }
 
 console.log(
