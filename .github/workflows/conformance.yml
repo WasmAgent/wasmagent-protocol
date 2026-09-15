@@ -105,7 +105,7 @@ jobs:
       - name: Verify certified publication anchors (PUB-01..07)
         run: node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref aep-certified-2026-09-13-03
       - name: Assurance geometry negative regressions (R1/R2/R3/R12)
-        run: node --test scripts/test-assurance-geometry.mjs
+        run: node scripts/verify-assurance-negatives.mjs
       - name: Verify external evidence ledger (EE-01..EE-06)
         run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
       - name: Claim-language firewall

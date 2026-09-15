@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://wasmagent.dev/schemas/aep/publication-record-v1.json",
+  "$id": "urn:wasmagent:aep:assurance:publication-record-v1",
   "title": "AEP certified-target publication record",
   "description": "Descriptive provenance metadata separating component identity (the Gate-C-exercised tuple) from publication identity (the protected-main revision + immutable tag carrying the manifest naming that tuple). This record is NOT a certified target and MUST NOT mutate a frozen component tuple.",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://wasmagent.dev/schemas/aep/external-evidence-v1.json",
+  "$id": "urn:wasmagent:aep:assurance:external-evidence-v1",
   "title": "AEP external evidence ledger entry",
   "description": "A fact-only ledger entry recording that an EXTERNAL source reported observations against a certified target. This is evidence registration only: an external run is NOT a certification, an endorsement, or a re-certification trigger. Claim-boundary fields are enforced by scripts/verify-external-evidence.mjs.",
   "type": "object",
