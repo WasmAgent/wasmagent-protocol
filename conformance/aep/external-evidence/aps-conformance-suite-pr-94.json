@@ -25,5 +25,13 @@
     "linux_foundation_endorsement": false,
     "owasp_endorsement": false
   },
-  "notes": "Independent layered AEP run published in the Agent-Authority-Conformance conformance repository (an LF Decentralized Trust lab). This entry REGISTERS the reported observations against the -03 component tuple; it does not certify, endorse, or trigger a new certified target. On upstream PR merge: flip status pending_merge -> merged and record the merge commit + final head/result hashes. No other wording change."
+  "notes": "Independent layered AEP run published in the Agent-Authority-Conformance conformance repository (an LF Decentralized Trust lab). The external layered run independently exercised the native JS/Rust verification surfaces. A lab-authored Mode-B semantic recomputation agreed with all 28 corpus semantic targets; that semantic layer is author-produced and is not yet an independent semantic check (see verification_grades). This entry REGISTERS the reported observations against the -03 component tuple; it does not certify, endorse, or trigger a new certified target. On upstream PR merge: flip status pending_merge -> merged and record the merge commit + final head/result hashes. No other wording change.",
+  "verification_grades": {
+    "js_native_record_verification": "INDEPENDENT",
+    "js_native_chain_verification": "INDEPENDENT",
+    "rust_native_dsse_verification": "INDEPENDENT",
+    "lab_semantic_recomputation": "AUTHOR_PRODUCED_MODE_B",
+    "semantic_agreement_28_of_28": "OBSERVED",
+    "independent_semantic_verification": "NOT_YET_ESTABLISHED"
+  }
 }
