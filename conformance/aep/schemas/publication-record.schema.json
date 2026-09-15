@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wasmagent:aep:assurance:publication-record-v1",
+  "title": "AEP certified-target publication record",
+  "description": "Descriptive provenance metadata separating component identity (the Gate-C-exercised tuple) from publication identity (the protected-main revision + immutable tag carrying the manifest naming that tuple). This record is NOT a certified target and MUST NOT mutate a frozen component tuple.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_id",
+    "target_manifest_path",
+    "component_tuple",
+    "publication",
+    "gate",
+    "signing_profile_id"
+  ],
+  "properties": {
+    "target_id": {
+      "type": "string",
+      "pattern": "^aep-certified-\\d{4}-\\d{2}-\\d{2}-\\d{2}$"
+    },
+    "target_manifest_path": { "type": "string", "minLength": 1 },
+    "component_tuple": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "js", "proxy", "trace"],
+      "properties": {
+        "protocol": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "js": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "proxy": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "trace": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "protected_main_commit", "tag"],
+      "properties": {
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "protected_main_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tag": { "type": "string", "minLength": 1 }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "run_id", "verdict"],
+      "properties": {
+        "name": { "type": "string", "const": "Gate C" },
+        "run_id": { "type": "string", "pattern": "^\\d+$" },
+        "verdict": { "type": "string", "enum": ["pass", "fail"] }
+      }
+    },
+    "signing_profile_id": { "type": "string", "minLength": 1 },
+    "note": { "type": "string" }
+  }
+}

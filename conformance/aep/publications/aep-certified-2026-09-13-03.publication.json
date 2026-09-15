@@ -1,0 +1,22 @@
+{
+  "target_id": "aep-certified-2026-09-13-03",
+  "target_manifest_path": "conformance/aep/certified-target.json",
+  "component_tuple": {
+    "protocol": "35320c567ba02ae30ba441f488952954dd66a4cc",
+    "js": "bb71077cbd13051c05e17195d11d16efd0d1c572",
+    "proxy": "4b4bde3b2e06eb62b7910cb3f379d75288cc4db1",
+    "trace": "5820bf811302a1e202b762792cac6ef44e833ad6"
+  },
+  "publication": {
+    "source_commit": "639a611714f70972e6196f56a60c615c9f42ef9d",
+    "protected_main_commit": "228db7536094df7f245baf379e0e0aea5e95f33d",
+    "tag": "aep-certified-2026-09-13-03"
+  },
+  "gate": {
+    "name": "Gate C",
+    "run_id": "34760116414",
+    "verdict": "pass"
+  },
+  "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
+  "note": "Descriptive publication provenance metadata. This file is NOT a certified target, NOT a re-certification, and MUST NOT mutate the frozen component tuple. The protocol component SHA is intentionally different from the publication commit: a manifest stored in repository R cannot contain the SHA of the commit that contains it (self-reference). See conformance/aep/README.md 'Component identity vs publication identity'."
+}
