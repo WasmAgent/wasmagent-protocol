@@ -60,3 +60,47 @@ Layer semantics in `manifest.json`:
 Adding a fixture: append the file, extend `manifest.json`, and state which
 emitter produced it. Hand-written signatures are rejected in review —
 fixtures must be reproducible from a pinned producer commit.
+
+## Component identity vs publication identity (normative)
+
+A certified target names **two distinct anchors**. Conflating them is the
+single most common integration mistake — an external consumer once reasonably
+expected the `-03` manifest to exist *at* the pinned protocol component SHA
+(it does not, and structurally cannot).
+
+1. **Component identity** — the exact repository SHAs exercised by Gate C:
+
+   ```text
+   protocol 35320c567ba02ae30ba441f488952954dd66a4cc
+   js       bb71077cbd13051c05e17195d11d16efd0d1c572
+   proxy    4b4bde3b2e06eb62b7910cb3f379d75288cc4db1
+   trace    5820bf811302a1e202b762792cac6ef44e833ad6
+   ```
+
+2. **Publication identity** — the immutable protected-main revision that
+   carries the manifest naming that tuple:
+
+   ```text
+   manifest source commit  639a611714f70972e6196f56a60c615c9f42ef9d
+   publication commit      228db7536094df7f245baf379e0e0aea5e95f33d
+                           (PR #227 merge into protected main)
+   ```
+
+The split is structural: a manifest stored inside repository R cannot contain
+the SHA of the commit that contains that same manifest (self-reference).
+External consumers pin **tuple + publication anchor**; publication-only files
+(`README.md`, `certified-target.json`) may differ between the component SHA
+and the publication anchor, but corpus fixtures and manifests may not —
+verify with `scripts/verify-certified-publication.mjs`.
+
+### Publication flow for new certified targets
+
+```text
+Gate C exact tuple PASS
+        ↓  generate candidate certified-target.json
+PR against wasmagent-protocol (protected main)
+        ↓  merge → publication commit
+create immutable tag aep-certified-YYYY-MM-DD-NN at the merge commit
+        ↓
+external consumers pin: component tuple + publication tag
+```
