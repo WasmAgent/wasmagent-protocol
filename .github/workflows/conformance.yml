@@ -86,3 +86,27 @@ jobs:
           python -m build --wheel
           python -m pip install dist/*.whl
           python -c "from wasmagent_protocol import get_schema, schema_ids; assert get_schema('aep-record')['title']=='AEPRecord'; print('ids:', schema_ids())"
+
+  assurance-geometry:
+    name: AEP assurance geometry (publication + external evidence + claim language)
+    runs-on: ubuntu-latest
+    steps:
+      # Full history + tags: PC/EE checks resolve the publication tag, the
+      # protected-main anchor, and the component protocol SHA.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '20'
+      - name: Verify publication record (PC-01..PC-07)
+        run: node scripts/verify-publication-record.mjs --record conformance/aep/publications/aep-certified-2026-09-13-03.publication.json
+      - name: Verify certified publication anchors (PUB-01..07)
+        run: node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref aep-certified-2026-09-13-03
+      - name: Assurance geometry negative regressions (R1/R2/R3/R12)
+        run: node --test scripts/test-assurance-geometry.mjs
+      - name: Verify external evidence ledger (EE-01..EE-06)
+        run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
+      - name: Claim-language firewall
+        run: node scripts/check-assurance-language.mjs

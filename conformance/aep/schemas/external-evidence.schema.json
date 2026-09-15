@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wasmagent.dev/schemas/aep/external-evidence-v1.json",
+  "title": "AEP external evidence ledger entry",
+  "description": "A fact-only ledger entry recording that an EXTERNAL source reported observations against a certified target. This is evidence registration only: an external run is NOT a certification, an endorsement, or a re-certification trigger. Claim-boundary fields are enforced by scripts/verify-external-evidence.mjs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "target_id",
+    "source",
+    "status",
+    "scope",
+    "reported_results",
+    "claim_boundary"
+  ],
+  "properties": {
+    "evidence_id": { "type": "string", "minLength": 1 },
+    "target_id": {
+      "type": "string",
+      "pattern": "^aep-certified-\\d{4}-\\d{2}-\\d{2}-\\d{2}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "pull_request": { "type": "integer", "minimum": 1 },
+        "url": { "type": "string" }
+      }
+    },
+    "status": { "type": "string", "enum": ["pending_merge", "merged", "superseded"] },
+    "merged_in": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["merge_commit"],
+      "properties": {
+        "merge_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "final_head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "merged_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": { "type": ["boolean", "string"] }
+    },
+    "reported_results": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_independent_run",
+        "formal_certification",
+        "linux_foundation_endorsement",
+        "owasp_endorsement"
+      ],
+      "properties": {
+        "external_independent_run": { "type": "boolean", "const": true },
+        "formal_certification": { "type": "boolean", "const": false },
+        "linux_foundation_endorsement": { "type": "boolean", "const": false },
+        "owasp_endorsement": { "type": "boolean", "const": false }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

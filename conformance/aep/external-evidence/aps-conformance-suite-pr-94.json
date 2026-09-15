@@ -1,0 +1,29 @@
+{
+  "evidence_id": "aps-aep-layered-run-2026-09-14",
+  "target_id": "aep-certified-2026-09-13-03",
+  "source": {
+    "repository": "Agent-Authority-Conformance/aps-conformance-suite",
+    "pull_request": 94
+  },
+  "status": "pending_merge",
+  "scope": {
+    "lab_semantic": true,
+    "js_native": true,
+    "rust_native": true,
+    "python_native_verifier": false,
+    "trace_python_consumer": "recorded-not-native-verifier",
+    "capture_completeness": false
+  },
+  "reported_results": {
+    "semantic_targets": "28/28",
+    "dsse_fixtures_exercised": 9,
+    "published_js_chain_states": "reproduced"
+  },
+  "claim_boundary": {
+    "external_independent_run": true,
+    "formal_certification": false,
+    "linux_foundation_endorsement": false,
+    "owasp_endorsement": false
+  },
+  "notes": "Independent layered AEP run published in the Agent-Authority-Conformance conformance repository (an LF Decentralized Trust lab). This entry REGISTERS the reported observations against the -03 component tuple; it does not certify, endorse, or trigger a new certified target. On upstream PR merge: flip status pending_merge -> merged and record the merge commit + final head/result hashes. No other wording change."
+}

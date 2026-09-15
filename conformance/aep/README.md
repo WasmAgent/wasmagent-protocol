@@ -104,3 +104,12 @@ create immutable tag aep-certified-YYYY-MM-DD-NN at the merge commit
         ↓
 external consumers pin: component tuple + publication tag
 ```
+
+For `aep-certified-2026-09-13-03` the publication anchors are machine-readable
+in `publications/aep-certified-2026-09-13-03.publication.json` (verified by
+`scripts/verify-publication-record.mjs`, PC-01..PC-07) and pinned by the
+immutable tag `aep-certified-2026-09-13-03`. External runs are registered —
+never certified — in `external-evidence/` (verified by
+`scripts/verify-external-evidence.mjs`, EE-01..EE-06). Assurance claim
+vocabulary is governed by `docs/aep-assurance-language.md` and enforced by
+`scripts/check-assurance-language.mjs`.
