@@ -28,6 +28,12 @@ const FORBIDDEN = [
   'complete capture proof',
   'proves complete capture',
   'fully certified',
+  // R11 — trace-pipeline is a Python corpus consumer, never a native
+  // Python verifier, and no wasmagent-py verifier SDK exists.
+  'native python verifier',
+  'python native verifier',
+  'wasmagent-py verifier',
+  'python verifier sdk',
 ];
 
 function* walk(path) {

@@ -106,6 +106,10 @@ jobs:
         run: node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref aep-certified-2026-09-13-03
       - name: Assurance geometry negative regressions (R1/R2/R3/R12)
         run: node scripts/verify-assurance-negatives.mjs
+      - name: Verify certified target + trigger policy (CT-01..CT-08)
+        run: node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication conformance/aep/publications/aep-certified-2026-09-13-03.publication.json
+      - name: Verifier result contract invariants (R6–R10)
+        run: node scripts/verify-assurance-invariants.mjs
       - name: Verify external evidence ledger (EE-01..EE-06)
         run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
       - name: Claim-language firewall

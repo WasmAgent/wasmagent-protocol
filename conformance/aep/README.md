@@ -112,4 +112,10 @@ immutable tag `aep-certified-2026-09-13-03`. External runs are registered —
 never certified — in `external-evidence/` (verified by
 `scripts/verify-external-evidence.mjs`, EE-01..EE-06). Assurance claim
 vocabulary is governed by `docs/aep-assurance-language.md` and enforced by
-`scripts/check-assurance-language.mjs`.
+`scripts/check-assurance-language.mjs`. Verifier implementations are governed
+by the logical result envelope in `verifier-result-contract.md`
+(evaluation state vs record outcome, five layers, axis independence,
+capture-completeness no-go; machine-checked by
+`scripts/verifier-result-contract.mjs` and
+`scripts/verify-assurance-invariants.mjs`). New certified targets are gated
+by the trigger policy via `scripts/verify-certified-target.mjs`.
