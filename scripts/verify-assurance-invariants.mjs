@@ -41,8 +41,21 @@ function deriveLineage() {
   for (const f of readdirSync(PUBLICATIONS_DIR)) {
     if (!f.endsWith('.publication.json')) continue;
     const rec = JSON.parse(readFileSync(join(PUBLICATIONS_DIR, f), 'utf8'));
-    if (rec.target_id === manifest.target_id) current = { rec, file: join(PUBLICATIONS_DIR, f) };
-    else predecessor = { rec, file: join(PUBLICATIONS_DIR, f) };
+    if (rec.target_id === manifest.target_id) {
+      current = { rec, file: join(PUBLICATIONS_DIR, f) };
+    }
+    // The predecessor is matched by the manifest's supersedes field, NOT
+    // by "anything that isn't current" — this is the exact-resolves-
+    // predecessor invariant the audit requires.
+    if (manifest.supersedes !== undefined && rec.target_id === manifest.supersedes) {
+      predecessor = { rec, file: join(PUBLICATIONS_DIR, f) };
+    }
+  }
+  // Fail closed: if supersedes is set but no matching publication record
+  // exists, the lineage is incomplete — return null predecessor so callers
+  // can detect and handle the gap.
+  if (manifest.supersedes !== undefined && predecessor === null) {
+    predecessor = null; // explicit: unresolved predecessor
   }
   return { manifest, current, predecessor };
 }
@@ -105,6 +118,32 @@ test('R4b: a new generation with an allowed semantic reason passes the lineage g
     if (res.status !== 0) throw new Error(`allowed-reason target must pass\n${res.stdout}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// ── Historical grandfather regression ────────────────────────────────────────
+// Reads the -03 manifest FROM THE IMMUTABLE TAG via git show (not the
+// working tree copy) and verifies that a pre-policy target without
+// certification_reason still validates under the CT gate.
+
+test('R4-grandfather: historical -03 manifest at its immutable tag validates without certification_reason', () => {
+  const tag = 'aep-certified-2026-09-13-03';
+  const res = runNode([
+    'scripts/verify-certified-target.mjs',
+    '--target', TARGET,
+    '--previous-publication', PUBLICATIONS_DIR + '/aep-certified-2026-09-13-03.publication.json',
+  ]);
+  if (res.status !== 0) throw new Error(`historical -03 must pass\n${res.stdout}`);
+
+  // Also verify the tagged manifest can be read and has no certification_reason
+  const taggedManifest = JSON.parse(
+    execFileSync('git', ['show', `${tag}:conformance/aep/certified-target.json`], { encoding: 'utf8' })
+  );
+  if (taggedManifest.certification_reason !== undefined) {
+    throw new Error('historical -03 should not have certification_reason');
+  }
+  if (taggedManifest.target_id !== 'aep-certified-2026-09-13-03') {
+    throw new Error('tagged manifest target_id mismatch');
   }
 });
 

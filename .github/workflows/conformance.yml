@@ -99,7 +99,6 @@ jobs:
           fetch-tags: true
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '20'
       - name: Verify certified target + trigger policy (CT-01..CT-08, lineage-aware)
         run: |
           SUPERSEDES=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json')).get('supersedes',''))")
@@ -116,7 +115,13 @@ jobs:
             node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json
           fi
       - name: Gate C provenance + certified_at verification (GP-01..GP-10)
-        run: node scripts/verify-gate-provenance.mjs
+        run: |
+          ERR=$(ls conformance/aep/corrections/*.erratum.json 2>/dev/null | tail -1)
+          if [ -n "$ERR" ]; then
+            node scripts/verify-gate-provenance.mjs --erratum "$ERR"
+          else
+            node scripts/verify-gate-provenance.mjs
+          fi
       - name: Verify ALL publication records (PC-01..PC-07, current + historical)
         run: |
           for rec in conformance/aep/publications/*.publication.json; do
@@ -140,5 +145,7 @@ jobs:
         run: node scripts/verify-assurance-invariants.mjs
       - name: Verify external evidence ledger (EE-01..EE-06)
         run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
+      - name: Claim-language firewall
+        run: node scripts/check-assurance-language.mjs
       - name: Claim-language firewall
         run: node scripts/check-assurance-language.mjs
