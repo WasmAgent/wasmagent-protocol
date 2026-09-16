@@ -122,28 +122,52 @@ test('R4b: a new generation with an allowed semantic reason passes the lineage g
 });
 
 // ── Historical grandfather regression ────────────────────────────────────────
-// Reads the -03 manifest FROM THE IMMUTABLE TAG via git show (not the
-// working tree copy) and verifies that a pre-policy target without
-// certification_reason still validates under the CT gate.
+// Materializes the -03 manifest FROM THE IMMUTABLE TAG via git show (not the
+// working tree copy) and runs the CT verifier against THAT tagged manifest:
+// with --historical it must pass (grandfathered, no certification_reason);
+// without the flag the same artifact must FAIL (policy isolation holds).
 
-test('R4-grandfather: historical -03 manifest at its immutable tag validates without certification_reason', () => {
+test('R4-grandfather: historical -03 manifest at its immutable tag validates under --historical, fails without it', () => {
   const tag = 'aep-certified-2026-09-13-03';
-  const res = runNode([
-    'scripts/verify-certified-target.mjs',
-    '--target', TARGET,
-    '--previous-publication', PUBLICATIONS_DIR + '/aep-certified-2026-09-13-03.publication.json',
-  ]);
-  if (res.status !== 0) throw new Error(`historical -03 must pass\n${res.stdout}`);
-
-  // Also verify the tagged manifest can be read and has no certification_reason
-  const taggedManifest = JSON.parse(
-    execFileSync('git', ['show', `${tag}:conformance/aep/certified-target.json`], { encoding: 'utf8' })
+  const taggedRaw = execFileSync(
+    'git', ['show', `${tag}:conformance/aep/certified-target.json`], { encoding: 'utf8' }
   );
+  const taggedManifest = JSON.parse(taggedRaw);
+  if (taggedManifest.target_id !== 'aep-certified-2026-09-13-03') {
+    throw new Error(`tagged manifest target_id mismatch: ${taggedManifest.target_id}`);
+  }
   if (taggedManifest.certification_reason !== undefined) {
     throw new Error('historical -03 should not have certification_reason');
   }
-  if (taggedManifest.target_id !== 'aep-certified-2026-09-13-03') {
-    throw new Error('tagged manifest target_id mismatch');
+
+  const dir = mkdtempSync(join(tmpdir(), 'aep-grandfather-'));
+  const taggedPath = join(dir, 'tagged-certified-target.json');
+  writeFileSync(taggedPath, taggedRaw);
+  try {
+    const historical = runNode([
+      'scripts/verify-certified-target.mjs',
+      '--target', taggedPath,
+      '--historical',
+    ]);
+    if (historical.status !== 0) {
+      throw new Error(`tagged historical -03 must pass under --historical\n${historical.stdout}`);
+    }
+    if (!historical.stdout.includes('aep-certified-2026-09-13-03')) {
+      throw new Error(`verifier must have validated the TAGGED manifest\n${historical.stdout}`);
+    }
+
+    const strict = runNode([
+      'scripts/verify-certified-target.mjs',
+      '--target', taggedPath,
+    ]);
+    if (strict.status !== 1) {
+      throw new Error(`tagged historical -03 must FAIL without --historical\n${strict.stdout}`);
+    }
+    if (!strict.stdout.includes('CT-06')) {
+      throw new Error(`strict failure must be the lifecycle trigger policy\n${strict.stdout}`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 

@@ -117,10 +117,17 @@ jobs:
           fi
       - name: Gate C provenance + certified_at verification (GP-01..GP-10)
         run: |
-          ERR=$(ls conformance/aep/corrections/*.erratum.json 2>/dev/null | tail -1)
+          CURRENT_ID=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json'))['target_id'])")
+          ERR=""
+          for f in conformance/aep/corrections/*.erratum.json; do
+            [ -f "$f" ] || continue
+            tid=$(python3 -c "import json; print(json.load(open('$f')).get('target_id',''))")
+            if [ "$tid" = "$CURRENT_ID" ]; then ERR="$f"; break; fi
+          done
           if [ -n "$ERR" ]; then
             node scripts/verify-gate-provenance.mjs --erratum "$ERR"
           else
+            echo "no erratum matching target_id=$CURRENT_ID — GP checks will use target.certified_at directly"
             node scripts/verify-gate-provenance.mjs
           fi
       - name: Verify ALL publication records (PC-01..PC-07, current + historical)
