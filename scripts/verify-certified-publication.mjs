@@ -38,7 +38,11 @@ const extraAllowed = [].concat(
   ...args
     .map((a, i) => (a === '--allow-extra' ? (args[i + 1] ?? '').split(',').filter(Boolean) : [])),
 );
+// --allow-extra entries match as PATH PREFIXES or basenames, so whole
+// governance subdirectories (e.g. conformance/aep/publications) can be
+// allowlisted per generation.
 const PUBLICATION_ONLY = new Set(['README.md', 'certified-target.json', ...extraAllowed]);
+const PUBLICATION_PREFIXES = extraAllowed.filter((e) => e.endsWith('/'));
 
 if (targetPath === undefined || publicationRef === undefined) {
   console.error(
@@ -104,7 +108,11 @@ try {
     .split('\n')
     .filter(Boolean);
   const base = (f) => f.split('/').pop();
-  const nonPublication = changed.filter((f) => !PUBLICATION_ONLY.has(base(f)));
+  const nonPublication = changed.filter(
+    (f) =>
+      !PUBLICATION_ONLY.has(base(f)) &&
+      !PUBLICATION_PREFIXES.some((prefix) => f.startsWith(prefix)),
+  );
   corpusClean = nonPublication.length === 0;
   check('PUB-05', corpusClean, `changed under conformance/aep: ${changed.join(', ') || '(none)'}`);
   if (!corpusClean) {
