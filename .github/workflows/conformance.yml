@@ -99,6 +99,7 @@ jobs:
           fetch-tags: true
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
+          node-version: '20'
       - name: Verify certified target + trigger policy (CT-01..CT-08, lineage-aware)
         run: |
           SUPERSEDES=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json')).get('supersedes',''))")
