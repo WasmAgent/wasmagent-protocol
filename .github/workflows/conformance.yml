@@ -100,10 +100,25 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '20'
-      - name: Verify certified target + trigger policy (CT-01..CT-08)
+      - name: Verify certified target + trigger policy (CT-01..CT-08 (lineage-aware))
         run: |
           LATEST=$(ls conformance/aep/publications/*.publication.json | sort | tail -1)
-          node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication "$LATEST"
+          CURRENT_ID=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json'))['target_id'])")
+          SUPERSEDES=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json')).get('supersedes',''))")
+          PREVIOUS=""
+          if [ -n "$SUPERSEDES" ]; then
+            PREVIOUS=$(ls conformance/aep/publications/*.publication.json | while read f; do
+              tid=$(python3 -c "import json; print(json.load(open('$f')).get('target_id',''))")
+              if [ "$tid" = "$SUPERSEDES" ]; then echo "$f"; break; fi
+            done)
+          fi
+          if [ -n "$PREVIOUS" ]; then
+            node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --previous-publication "$PREVIOUS"
+      - name: Gate C provenance + certified_at verification (GP-01..GP-10)
+        run: node scripts/verify-gate-provenance.mjs --erratum conformance/aep/corrections/aep-certified-2026-09-16-01.erratum.json
+          else
+            node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json
+          fi
       - name: Verify ALL publication records (PC-01..PC-07, current + historical)
         run: |
           for rec in conformance/aep/publications/*.publication.json; do
@@ -127,8 +142,7 @@ jobs:
           done
       - name: Assurance geometry negative regressions (R1/R2/R3/R12)
         run: node scripts/verify-assurance-negatives.mjs
-      - name: Verify certified target + trigger policy (CT-01..CT-08)
-        run: node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication conformance/aep/publications/aep-certified-2026-09-13-03.publication.json
+      - name: Verify certified target + trigger policy (CT-01..CT-08 (lineage-aware))
       - name: Verifier result contract invariants (R6–R10)
         run: node scripts/verify-assurance-invariants.mjs
       - name: Verify external evidence ledger (EE-01..EE-06)

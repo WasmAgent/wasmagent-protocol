@@ -105,7 +105,7 @@ the record semantic layer.
 
 ## Certified-target lifecycle trigger policy
 
-Creating a new certified target (`-04` and beyond) requires at least one
+Creating a new certified target (any target with a `supersedes` reference) requires at least one
 semantic/runtime trigger:
 
 ```text
