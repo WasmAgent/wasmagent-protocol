@@ -32,6 +32,7 @@ const arg = (name, fallback) => {
 };
 const targetPath = arg('target', 'conformance/aep/certified-target.json');
 const previousPublicationPath = arg('previous-publication');
+const historicalMode = args.includes('--historical');
 
 const ALLOWED_REASONS = new Set([
   'schema-change', 'semantic-rule-change', 'verifier-contract-change',
@@ -105,7 +106,12 @@ if (previous !== null && previous.target_id === target.target_id && claimsNewGen
 }
 
 // CT-LINEAGE-02: forbidden reasons on a new generation fail.
-if (claimsNewGeneration) {
+// When --historical is set, trigger-policy checks are skipped entirely:
+// the target is verified for structural integrity only (grandfathered).
+if (historicalMode) {
+  check('CT-LINEAGE-H', true, 'historical mode — trigger-policy checks skipped (grandfathered)');
+}
+if (claimsNewGeneration && !historicalMode) {
   const forbiddenFound = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
   check('CT-LINEAGE-02', forbiddenFound.length === 0,
     `forbidden reasons: [${forbiddenFound.join(', ') || 'none'}]`);
