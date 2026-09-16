@@ -100,8 +100,16 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '20'
-      - name: Verify publication record (PC-01..PC-07)
-        run: node scripts/verify-publication-record.mjs --record conformance/aep/publications/aep-certified-2026-09-13-03.publication.json
+      - name: Verify certified target + trigger policy (CT-01..CT-08)
+        run: |
+          LATEST=$(ls conformance/aep/publications/*.publication.json | sort | tail -1)
+          node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication "$LATEST"
+      - name: Verify ALL publication records (PC-01..PC-07, current + historical)
+        run: |
+          for rec in conformance/aep/publications/*.publication.json; do
+            echo "--- $rec ---"
+            node scripts/verify-publication-record.mjs --record "$rec"               --target conformance/aep/certified-target.json
+          done
       - name: Verify certified publication anchors (PUB-01..07)
         run: node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref aep-certified-2026-09-13-03
       - name: Assurance geometry negative regressions (R1/R2/R3/R12)

@@ -112,14 +112,19 @@ if (!isNew) {
 const forbiddenAnywhere = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
 check('CT-07', forbiddenAnywhere.length === 0, `forbidden reasons on manifest: [${forbiddenAnywhere.join(', ') || 'none'}]`);
 
-// CT-08 — the manifest names the tuple that Gate C certified: the working
-// tree must not have drifted from the publication record's frozen tuple
-// (light check; full anchor verification lives in the PUB/PC verifiers).
+// CT-08 — tuple coherence between the manifest and a publication record.
+// Only enforced when the record names the CURRENT target: a record for a
+// SUPERSEDED target is historical (its own anchor was verified at its own
+// publication time; PC-06/tag checks remain authoritative there).
 if (publicationPath) {
   try {
     const record = JSON.parse(readFileSync(publicationPath, 'utf8'));
-    const drift = keys.filter((k) => record.component_tuple?.[k] !== target[k]);
-    check('CT-08', drift.length === 0, `tuple drift vs publication record: [${drift.join(', ') || 'none'}]`);
+    if (record.target_id === target.target_id) {
+      const drift = keys.filter((k) => record.component_tuple?.[k] !== target[k]);
+      check('CT-08', drift.length === 0, `tuple drift vs publication record: [${drift.join(', ') || 'none'}]`);
+    } else {
+      check('CT-08', true, `skipped: record targets historical ${record.target_id}`);
+    }
   } catch (error) {
     check('CT-08', false, `publication record unreadable: ${String(error).slice(0, 120)}`);
   }
