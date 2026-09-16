@@ -1,0 +1,19 @@
+{
+  "format": "wasmagent-gate-c-provenance/v1",
+  "gate_c_run_id": "35051620734",
+  "head_sha": "16f9db2b80e57a31de17d6ac25378b0ea06c22ec",
+  "started_at": "2026-09-16T03:23:38Z",
+  "job_completed_at": "2026-09-16T03:24:35Z",
+  "completed_at": "2026-09-16T03:24:36Z",
+  "conclusion": "success",
+  "component_tuple": {
+    "protocol": "16f9db2b80e57a31de17d6ac25378b0ea06c22ec",
+    "js": "93b25ba466e08d32be836e4a5e1c3c4323afd103",
+    "proxy": "4b4bde3b2e06eb62b7910cb3f379d75288cc4db1",
+    "trace": "8e7a9932bee8c5e4e9e4b58df2f1b09f61abd4d5"
+  },
+  "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
+  "targets_established": [
+    "aep-certified-2026-09-16-01"
+  ]
+}

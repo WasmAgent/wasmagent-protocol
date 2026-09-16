@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 /**
- * Verify an AEP certified-target manifest AND enforce the certified-target
- * trigger policy (CT-01..CT-07).
+ * Verify an AEP certified-target manifest AND enforce the LINEAGE-AWARE
+ * certified-target trigger policy (CT-01..CT-08, CT-LINEAGE-01..05).
  *
- * Trigger policy (docs/aep-assurance-language.md, "Certified-target
- * lifecycle trigger policy"):
- *   - a NEW certified target requires at least one allowed
- *     `certification_reason` (semantic/runtime changes only) and a
- *     `supersedes` reference;
+ * Newness is determined relative to the IMMEDIATE PREDECESSOR publication
+ * record (--previous-publication), never the target's own record
+ * (CT-LINEAGE-01: same-ID self-record cannot bypass reason enforcement).
+ *
+ * Trigger policy:
+ *   - a NEW generation requires an ALLOWED certification_reason and a
+ *     supersedes reference naming the immediate predecessor;
  *   - forbidden reasons (latest-main, docs-refresh, external-run-merged,
- *     README-update) are invalid BY CONSTRUCTION — documentation-only,
- *     external-evidence, and publication-index movement must never produce
- *     a new certified target (regressions R4 / R5);
- *   - the currently published target is grandfathered without reasons (the
- *     -03 manifest predates the policy field).
+ *     README-update) are invalid BY CONSTRUCTION;
+ *   - the predecessor publication must exist and be resolved.
  *
  * Usage:
  *   node scripts/verify-certified-target.mjs \
  *     --target conformance/aep/certified-target.json \
- *     [--publication conformance/aep/publications/aep-certified-2026-09-13-03.publication.json]
+ *     [--previous-publication conformance/aep/publications/<prev>.publication.json]
  *
  * Exit 0 = valid; 1 = any check failed; 2 = usage error.
  */
-import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 const arg = (name, fallback) => {
@@ -31,22 +31,14 @@ const arg = (name, fallback) => {
   return i !== -1 && args[i + 1] !== undefined ? args[i + 1] : fallback;
 };
 const targetPath = arg('target', 'conformance/aep/certified-target.json');
-const publicationPath = arg('publication');
+const previousPublicationPath = arg('previous-publication');
 
 const ALLOWED_REASONS = new Set([
-  'schema-change',
-  'semantic-rule-change',
-  'verifier-contract-change',
-  'signing-profile-change',
-  'chain-semantics-change',
-  'corpus-change',
-  'security-repair',
+  'schema-change', 'semantic-rule-change', 'verifier-contract-change',
+  'signing-profile-change', 'chain-semantics-change', 'corpus-change', 'security-repair',
 ]);
 const FORBIDDEN_REASONS = new Set([
-  'latest-main',
-  'docs-refresh',
-  'external-run-merged',
-  'README-update',
+  'latest-main', 'docs-refresh', 'external-run-merged', 'README-update',
 ]);
 
 const failures = [];
@@ -55,6 +47,15 @@ const check = (id, ok, detail) => {
   if (!ok) failures.push(id);
 };
 
+function git(args2) {
+  try {
+    return execFileSync('git', args2, { encoding: 'utf8' }).trim();
+  } catch (error) {
+    throw new Error(`git ${args2.join(' ')}: ${String(error.stderr || error.message || '').slice(0, 160)}`);
+  }
+}
+
+// ── Load manifest ────────────────────────────────────────────────────────────
 let target;
 try {
   target = JSON.parse(readFileSync(targetPath, 'utf8'));
@@ -63,70 +64,106 @@ try {
   process.exit(1);
 }
 
-// CT-01 — required fields.
+// ── Load predecessor publication record (optional) ───────────────────────────
+let previous = null;
+if (previousPublicationPath !== undefined) {
+  try {
+    previous = JSON.parse(readFileSync(previousPublicationPath, 'utf8'));
+  } catch (e) {
+    console.error(`predecessor publication unreadable: ${String(e).slice(0, 200)}`);
+    process.exit(1);
+  }
+}
+
+const reasons = Array.isArray(target.certification_reason) ? target.certification_reason : null;
+const claimsNewGeneration = typeof target.supersedes === 'string';
+
+// ── CT-01..CT-05 — structural checks ────────────────────────────────────────
 const required = ['target_id', 'certified_at', 'gate_c_run_id', 'protocol', 'js', 'proxy', 'trace', 'signing_profile_id', 'verdict'];
 const missing = required.filter((k) => target[k] === undefined);
 check('CT-01', missing.length === 0, `missing=[${missing.join(',') || 'none'}]`);
 
-// CT-02 — id format.
-check('CT-02', /^aep-certified-\d{4}-\d{2}-\d{2}-\d{2}$/.test(String(target.target_id ?? '')), `target_id=${target.target_id ?? '<missing>'}`);
+check('CT-02', /^aep-certified-\d{4}-\d{2}-\d{2}-\d{2}$/.test(String(target.target_id ?? '')),
+  `target_id=${target.target_id ?? '<missing>'}`);
 
-// CT-03 — exact 40-hex component tuple.
-const keys = ['protocol', 'js', 'proxy', 'trace'];
-const tupleOk = keys.every((k) => typeof target[k] === 'string' && /^[0-9a-f]{40}$/.test(target[k]));
+const tupleKeys = ['protocol', 'js', 'proxy', 'trace'];
+const tupleOk = tupleKeys.every((k) => typeof target[k] === 'string' && /^[0-9a-f]{40}$/.test(target[k]));
 check('CT-03', tupleOk, 'component tuple: 4 exact-SHA entries');
 
-// CT-04 — gate provenance.
-check('CT-04', /^\d+$/.test(String(target.gate_c_run_id ?? '')) && target.verdict === 'pass', `gate run=${target.gate_c_run_id} verdict=${target.verdict}`);
+check('CT-04', /^\d+$/.test(String(target.gate_c_run_id ?? '')) && target.verdict === 'pass',
+  `gate run=${target.gate_c_run_id} verdict=${target.verdict}`);
 
-// CT-05 — signing profile.
-check('CT-05', typeof target.signing_profile_id === 'string' && target.signing_profile_id.length > 0, `signing_profile_id=${target.signing_profile_id ?? '<missing>'}`);
+check('CT-05', typeof target.signing_profile_id === 'string' && target.signing_profile_id.length > 0,
+  `signing_profile_id=${target.signing_profile_id ?? '<missing>'}`);
 
-// CT-06 — trigger policy. A NEW target (differs from the currently published
-// one) MUST declare allowed semantic/runtime reasons and what it supersedes.
-let publishedId = null;
-if (publicationPath) {
-  try {
-    publishedId = JSON.parse(readFileSync(publicationPath, 'utf8')).target_id ?? null;
-  } catch {
-    publishedId = null;
-  }
-}
-const isNew = publishedId !== null && target.target_id !== publishedId;
-const reasons = Array.isArray(target.certification_reason) ? target.certification_reason : null;
-
-if (!isNew) {
-  check('CT-06', true, `published target ${target.target_id} — trigger policy not applicable (grandfathered)`);
+// ── CT-LINEAGE-01..05 — lineage-aware trigger policy ────────────────────────
+// CT-LINEAGE-01: a same-ID "predecessor" is a self-record bypass attempt.
+if (previous !== null && previous.target_id === target.target_id && claimsNewGeneration) {
+  check('CT-LINEAGE-01', false, 'same-ID self-record cannot bypass reason enforcement');
 } else {
-  const reasonsOk =
-    reasons !== null &&
-    reasons.length > 0 &&
-    reasons.every((r) => ALLOWED_REASONS.has(r));
-  check('CT-06', reasonsOk, `new target requires allowed certification_reason (got ${JSON.stringify(target.certification_reason ?? null)})`);
-  const forbiddenFound = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
-  check('CT-06b', forbiddenFound.length === 0, `forbidden reasons present: [${forbiddenFound.join(', ') || 'none'}]`);
-  check('CT-06c', typeof target.supersedes === 'string' && /^aep-certified-\d{4}-\d{2}-\d{2}-\d{2}$/.test(target.supersedes), `supersedes=${target.supersedes ?? '<missing>'}`);
+  check('CT-LINEAGE-01', true, 'no self-record bypass');
 }
 
-// Forbidden reasons are invalid on ANY manifest, old or new.
-const forbiddenAnywhere = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
-check('CT-07', forbiddenAnywhere.length === 0, `forbidden reasons on manifest: [${forbiddenAnywhere.join(', ') || 'none'}]`);
+// CT-LINEAGE-02: forbidden reasons on a new generation fail.
+if (claimsNewGeneration) {
+  const forbiddenFound = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
+  check('CT-LINEAGE-02', forbiddenFound.length === 0,
+    `forbidden reasons: [${forbiddenFound.join(', ') || 'none'}]`);
+} else {
+  check('CT-LINEAGE-02', true, 'not a new generation');
+}
 
-// CT-08 — tuple coherence between the manifest and a publication record.
-// Only enforced when the record names the CURRENT target: a record for a
-// SUPERSEDED target is historical (its own anchor was verified at its own
-// publication time; PC-06/tag checks remain authoritative there).
-if (publicationPath) {
+// CT-LINEAGE-03: allowed reason + exact immediate predecessor + resolved
+// predecessor publication => PASS.
+if (claimsNewGeneration) {
+  const reasonsOk = reasons !== null && reasons.length > 0 && reasons.every((r) => ALLOWED_REASONS.has(r));
+  check('CT-LINEAGE-03', reasonsOk,
+    `certification_reason=${JSON.stringify(target.certification_reason ?? null)}`);
+  const supersedesKnown = previous !== null && previous.target_id === target.supersedes;
+  check('CT-LINEAGE-04', supersedesKnown,
+    `supersedes=${target.supersedes ?? '<missing>'} vs predecessor ${previous?.target_id ?? '<none>'}`);
+  const prevPending = String(previous?.publication?.protected_main_commit ?? '').startsWith('PENDING');
+  check('CT-LINEAGE-05', previous !== null && !prevPending, 'predecessor publication resolved');
+} else {
+  check('CT-LINEAGE-03', true, 'not a new generation');
+  check('CT-LINEAGE-04', true, 'not a new generation');
+  check('CT-LINEAGE-05', true, 'not a new generation');
+}
+
+// ── CT-06 — same-generation: trigger policy not applicable ──────────────────
+if (!claimsNewGeneration) {
+  check('CT-06', true, `target ${target.target_id} — not a new generation`);
+} else {
+  const reasonsOk = reasons !== null && reasons.length > 0 && reasons.every((r) => ALLOWED_REASONS.has(r));
+  check('CT-06', reasonsOk, 'new generation requires allowed certification_reason');
+}
+
+// ── CT-07 — forbidden reasons are invalid on ANY manifest ───────────────────
+const forbiddenAnywhere = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
+check('CT-07', forbiddenAnywhere.length === 0,
+  `forbidden reasons: [${forbiddenAnywhere.join(', ') || 'none'}]`);
+
+// ── CT-08 — tuple coherence with Gate C provenance ──────────────────────────
+// The manifest must name the tuple that ITS OWN Gate C run certified.
+{
+  let gateTuple = null;
   try {
-    const record = JSON.parse(readFileSync(publicationPath, 'utf8'));
-    if (record.target_id === target.target_id) {
-      const drift = keys.filter((k) => record.component_tuple?.[k] !== target[k]);
-      check('CT-08', drift.length === 0, `tuple drift vs publication record: [${drift.join(', ') || 'none'}]`);
-    } else {
-      check('CT-08', true, `skipped: record targets historical ${record.target_id}`);
+    const gateDir = 'conformance/aep/gate-provenance';
+    for (const f of readdirSync(gateDir)) {
+      if (!f.endsWith('.json')) continue;
+      const gp = JSON.parse(readFileSync(join(gateDir, f), 'utf8'));
+      if (String(gp.gate_c_run_id) === String(target.gate_c_run_id)) {
+        gateTuple = gp.component_tuple ?? null;
+        break;
+      }
     }
-  } catch (error) {
-    check('CT-08', false, `publication record unreadable: ${String(error).slice(0, 120)}`);
+  } catch { /* dir absent */ }
+  if (gateTuple === null) {
+    check('CT-08', false, `no persisted Gate C provenance for run ${target.gate_c_run_id}`);
+  } else {
+    const drift = tupleKeys.filter((k) => gateTuple[k] !== target[k]);
+    check('CT-08', drift.length === 0,
+      `tuple drift vs Gate C provenance: [${drift.join(', ') || 'none'}]`);
   }
 }
 

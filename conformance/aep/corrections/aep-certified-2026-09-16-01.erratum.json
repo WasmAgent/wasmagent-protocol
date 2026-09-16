@@ -1,0 +1,17 @@
+{
+  "target_id": "aep-certified-2026-09-16-01",
+  "correction_type": "metadata-erratum",
+  "field": "certified_at",
+  "published_value": "2026-09-16T00:00:00Z",
+  "corrected_value": "2026-09-16T03:24:36Z",
+  "evidence": {
+    "gate_c_run_id": "35051620734",
+    "gate_started_at": "2026-09-16T03:23:38Z",
+    "gate_job_completed_at": "2026-09-16T03:24:35Z",
+    "gate_completed_at": "2026-09-16T03:24:36Z",
+    "gate_conclusion": "success"
+  },
+  "changes_component_identity": false,
+  "changes_publication_identity": false,
+  "recertification": false
+}
