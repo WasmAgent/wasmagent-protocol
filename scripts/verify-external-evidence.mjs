@@ -72,8 +72,20 @@ for (const file of files) {
     (typeof entry.merged_in?.merge_commit === 'string' && /^[0-9a-f]{40}$/.test(entry.merged_in.merge_commit));
   check('EE-02', statusOk && mergedOk, `${label} status=${status} merged_provenance=${mergedOk}`);
 
-  // EE-03 — target_id resolves to the actual certified target.
-  check('EE-03', entry.target_id === target.target_id, `${label} target_id=${entry.target_id}`);
+  // EE-03 — target_id resolves to a known certified target: the CURRENT
+  // manifest target, or any SUPERSEDED target that has a publication record
+  // (historical). An unknown target id is a fabrication.
+  const knownTargets = new Set([target.target_id]);
+  const pubDir = join(import.meta.dirname ?? '.', '..');
+  try {
+    for (const f of readdirSync(pubDir + '/conformance/aep/publications')) {
+      if (!f.endsWith('.publication.json')) continue;
+      try {
+        knownTargets.add(JSON.parse(readFileSync(join(pubDir, 'conformance/aep/publications', f), 'utf8')).target_id);
+      } catch { /* unparseable records are caught by their own verifier run */ }
+    }
+  } catch { /* publications dir absent in this invocation */ }
+  check('EE-03', knownTargets.has(entry.target_id), `${label} target_id=${entry.target_id} (known=${knownTargets.has(entry.target_id)})`);
 
   // EE-04 — claim boundary is an anti-certification wall: any entry claiming
   // certification/endorsement is invalid by construction.

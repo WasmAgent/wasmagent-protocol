@@ -1,0 +1,22 @@
+{
+  "target_id": "aep-certified-2026-09-16-01",
+  "target_manifest_path": "conformance/aep/certified-target.json",
+  "component_tuple": {
+    "protocol": "16f9db2b80e57a31de17d6ac25378b0ea06c22ec",
+    "js": "93b25ba466e08d32be836e4a5e1c3c4323afd103",
+    "proxy": "4b4bde3b2e06eb62b7910cb3f379d75288cc4db1",
+    "trace": "8e7a9932bee8c5e4e9e4b58df2f1b09f61abd4d5"
+  },
+  "publication": {
+    "source_commit": "PENDING-PROTECTED-MAIN-ANCHOR",
+    "protected_main_commit": "PENDING-PROTECTED-MAIN-ANCHOR",
+    "tag": "aep-certified-2026-09-16-01"
+  },
+  "gate": {
+    "name": "Gate C",
+    "run_id": "35051620734",
+    "verdict": "pass"
+  },
+  "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
+  "note": "Publication record. protected_main_commit is resolved in the fast-follow commit immediately after this PR merges (the anchor must name the merge commit that contains the -04 manifest \u2014 it cannot name itself beforehand)."
+}
