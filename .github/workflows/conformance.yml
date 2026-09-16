@@ -100,21 +100,43 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '20'
-      - name: Verify certified target + trigger policy (CT-01..CT-08)
+
+      - name: Verify certified target + trigger policy (CT-01..CT-08, lineage-aware)
         run: |
-          LATEST=$(ls conformance/aep/publications/*.publication.json | sort | tail -1)
-          node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication "$LATEST"
+          CURRENT_ID=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json'))['target_id'])")
+          SUPERSEDES=$(python3 -c "import json; print(json.load(open('conformance/aep/certified-target.json')).get('supersedes',''))")
+          PREVIOUS=""
+          if [ -n "$SUPERSEDES" ]; then
+            for f in conformance/aep/publications/*.publication.json; do
+              tid=$(python3 -c "import json; print(json.load(open('$f')).get('target_id',''))")
+              if [ "$tid" = "$SUPERSEDES" ]; then PREVIOUS="$f"; break; fi
+            done
+          fi
+          if [ -n "$PREVIOUS" ]; then
+            node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --previous-publication "$PREVIOUS"
+          else
+            echo "no predecessor — skipping lineage checks (first-generation target)"
+            node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json
+          fi
+
+      - name: Gate C provenance + certified_at verification (GP-01..GP-10)
+        run: |
+          ERR=$(ls conformance/aep/corrections/*.erratum.json 2>/dev/null | tail -1)
+          if [ -n "$ERR" ]; then
+            node scripts/verify-gate-provenance.mjs --erratum "$ERR"
+          else
+            echo "no erratum — skipping GP checks"
+          fi
+
       - name: Verify ALL publication records (PC-01..PC-07, current + historical)
         run: |
           for rec in conformance/aep/publications/*.publication.json; do
             echo "--- $rec ---"
-            node scripts/verify-publication-record.mjs --record "$rec"               --target conformance/aep/certified-target.json
+            node scripts/verify-publication-record.mjs --record "$rec" --target conformance/aep/certified-target.json
           done
+
       - name: Verify certified publication anchors (PUB-01..07, every generation)
         run: |
-          # Each publication generation is verified at ITS OWN anchor against
-          # ITS OWN target manifest (generation self-consistency). Pending
-          # anchors are skipped until their fast-follow resolution commit.
           for rec in conformance/aep/publications/*.publication.json; do
             TAG=$(python3 -c "import json,sys; print(json.load(open('$rec'))['publication']['tag'])")
             ANCHOR=$(python3 -c "import json,sys; d=json.load(open('$rec')); print(d['publication']['protected_main_commit'])")
@@ -122,16 +144,17 @@ jobs:
               echo "skipping $TAG — anchor pending (fast-follow resolution)"
               continue
             fi
-            node scripts/verify-certified-publication.mjs               --target conformance/aep/certified-target.json               --publication-ref "$TAG"               --target-ref "$TAG" \
-              --allow-extra conformance/aep/publications/
+            node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref "$TAG" --target-ref "$TAG" --allow-extra conformance/aep/publications/
           done
-      - name: Assurance geometry negative regressions (R1/R2/R3/R12)
-        run: node scripts/verify-assurance-negatives.mjs
-      - name: Verify certified target + trigger policy (CT-01..CT-08)
-        run: node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --publication conformance/aep/publications/aep-certified-2026-09-13-03.publication.json
+
       - name: Verifier result contract invariants (R6–R10)
         run: node scripts/verify-assurance-invariants.mjs
+
+      - name: Assurance geometry negative regressions (R1/R2/R3/R12)
+        run: node scripts/verify-assurance-negatives.mjs
+
       - name: Verify external evidence ledger (EE-01..EE-06)
         run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
+
       - name: Claim-language firewall
         run: node scripts/check-assurance-language.mjs
