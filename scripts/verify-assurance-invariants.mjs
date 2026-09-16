@@ -1,25 +1,17 @@
 /**
- * AEP assurance invariants — regression set R4–R11 (plan §18).
+ * AEP assurance invariants — regression set R4–R13 (plan §18).
  *
  * Companion to scripts/verify-assurance-negatives.mjs (R1/R2/R3/R12).
  * Every test here prevents one specific way the assurance layer could
- * re-collapse:
+ * re-collapse.
  *
- *   R4  docs-only movement cannot produce a new certified target
- *   R5  external-evidence merges cannot produce a new certified target
- *   R6  manifest evaluation state != API record outcome (no merged enum)
- *   R7  authenticity pass does not imply semantic pass
- *   R8  semantic pass does not imply authenticity pass
- *   R9  intact chain does not imply capture completeness
- *   R10 a producer-signed completeness claim does not establish completeness
- *   R11 trace-pipeline is never rendered as a native Python verifier
- *   R13 evidence grades: a Mode-B semantic layer cannot be silently
- *       upgraded to INDEPENDENT without an independent_runner reference
+ * Lineage: current target and immediate predecessor are derived from the
+ * LIVE publication records on disk (dynamic — never hard-coded).
  *
  * Run: node scripts/verify-assurance-invariants.mjs   (exit 0/1)
  */
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { validateResultEnvelope } from './verifier-result-contract.mjs';
@@ -37,22 +29,26 @@ const test = (name, fn) => {
 
 const runNode = (args) => spawnSync(process.execPath, args, { encoding: 'utf8' });
 
-// ── R4 / R5 — certified-target trigger policy ────────────────────────────────
+// ── dynamic lineage derivation ───────────────────────────────────────────────
 
 const TARGET = 'conformance/aep/certified-target.json';
-const PUBLICATION = 'conformance/aep/publications/aep-certified-2026-09-13-03.publication.json';
+const PUBLICATIONS_DIR = 'conformance/aep/publications';
 
-test('R4-pre: the published -03 manifest (no certification_reason) validates — grandfathered', () => {
-  const res = runNode([
-    'scripts/verify-certified-target.mjs',
-    '--target', TARGET,
-    '--previous-publication', PUBLICATION,
-  ]);
-  if (res.status !== 0) throw new Error(res.stdout);
-});
+function deriveLineage() {
+  const manifest = JSON.parse(readFileSync(TARGET, 'utf8'));
+  let current = null;
+  let predecessor = null;
+  for (const f of readdirSync(PUBLICATIONS_DIR)) {
+    if (!f.endsWith('.publication.json')) continue;
+    const rec = JSON.parse(readFileSync(join(PUBLICATIONS_DIR, f), 'utf8'));
+    if (rec.target_id === manifest.target_id) current = { rec, file: join(PUBLICATIONS_DIR, f) };
+    else predecessor = { rec, file: join(PUBLICATIONS_DIR, f) };
+  }
+  return { manifest, current, predecessor };
+}
 
 function doctoredTarget(mutate) {
-  const dir = mkdtempSync(join(tmpdir(), 'aep-r4-'));
+  const dir = mkdtempSync(join(tmpdir(), 'aep-inv-'));
   const path = join(dir, 'doctored-target.json');
   const t = JSON.parse(readFileSync(TARGET, 'utf8'));
   mutate(t);
@@ -60,44 +56,61 @@ function doctoredTarget(mutate) {
   return { dir, path };
 }
 
-test('R4: a hypothetical new target justified by docs-refresh is INVALID', () => {
+// ── R4 / R5 — certified-target trigger policy (dynamic lineage) ─────────────
+
+test('R4-pre: the current-generation manifest validates under lineage-aware trigger policy', () => {
+  const { predecessor } = deriveLineage();
+  const args = ['scripts/verify-certified-target.mjs', '--target', TARGET];
+  if (predecessor) args.push('--previous-publication', predecessor.file);
+  const res = runNode(args);
+  if (res.status !== 0) throw new Error(res.stdout + res.stderr);
+});
+
+test('R4: a hypothetical new generation justified by docs-refresh is INVALID (dynamic lineage)', () => {
+  const lineage = deriveLineage();
+  if (!lineage.current) throw new Error('no current publication record');
+  const predecessorId = lineage.current.rec.target_id;
   const { dir, path } = doctoredTarget((t) => {
-    t.target_id = 'aep-certified-2026-09-16-01';
+    t.target_id = 'aep-certified-2099-01-01-01';
+    t.supersedes = predecessorId;
+    t.certification_reason = ['docs-refresh'];
   });
   try {
-    // set fields properly (supersedes must point at -03)
-    const t = JSON.parse(readFileSync(path, 'utf8'));
-    t.target_id = 'aep-certified-2026-09-16-01';
-    t.supersedes = 'aep-certified-2026-09-13-03';
-    t.certification_reason = ['docs-refresh'];
-    writeFileSync(path, JSON.stringify(t, null, 2));
-    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--previous-publication', PUBLICATION]);
+    const res = runNode([
+      'scripts/verify-certified-target.mjs',
+      '--target', path,
+      '--previous-publication', lineage.current.file,
+    ]);
     if (res.status !== 1) throw new Error(`docs-refresh target must fail (status=${res.status})\n${res.stdout}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test('R4b: a new target with an allowed semantic reason is structurally valid', () => {
+test('R4b: a new generation with an allowed semantic reason passes the lineage gate', () => {
+  const lineage = deriveLineage();
+  if (!lineage.current) throw new Error('no current publication record');
+  const predecessorId = lineage.current.rec.target_id;
   const { dir, path } = doctoredTarget((t) => {
-    t.target_id = 'aep-certified-2026-09-16-01';
-    t.supersedes = 'aep-certified-2026-09-13-03';
+    t.target_id = 'aep-certified-2099-01-01-01';
+    t.supersedes = predecessorId;
     t.certification_reason = ['corpus-change'];
   });
   try {
-    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--previous-publication', PUBLICATION]);
-    // Tuple still matches the frozen record, so only CT-06-family checks
-    // apply here — must pass.
+    const res = runNode([
+      'scripts/verify-certified-target.mjs',
+      '--target', path,
+      '--previous-publication', lineage.current.file,
+    ]);
     if (res.status !== 0) throw new Error(`allowed-reason target must pass\n${res.stdout}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test('R5: an external-evidence status flip to merged leaves the certified target untouched', () => {
+test('R5: an external-evidence status flip to merged leaves the certified target untouched (dynamic lineage)', () => {
   const dir = mkdtempSync(join(tmpdir(), 'aep-r5-'));
   try {
-    // A merged ledger entry (with merge provenance) passes EE…
     const entry = JSON.parse(readFileSync('conformance/aep/external-evidence/aps-conformance-suite-pr-94.json', 'utf8'));
     entry.status = 'merged';
     entry.merged_in = { merge_commit: 'a'.repeat(40), final_head_sha: 'b'.repeat(40), merged_at: '2026-09-16T00:00:00Z' };
@@ -105,9 +118,11 @@ test('R5: an external-evidence status flip to merged leaves the certified target
     const ee = runNode(['scripts/verify-external-evidence.mjs', '--dir', dir, '--target', TARGET]);
     if (ee.status !== 0) throw new Error(`merged ledger entry must pass EE\n${ee.stdout}`);
 
-    // …and the certified target verification is byte-for-byte unaffected.
     const before = readFileSync(TARGET, 'utf8');
-    const ct = runNode(['scripts/verify-certified-target.mjs', '--target', TARGET, '--previous-publication', PUBLICATION]);
+    const lineage = deriveLineage();
+    const args = ['scripts/verify-certified-target.mjs', '--target', TARGET];
+    if (lineage.predecessor) args.push('--previous-publication', lineage.predecessor.file);
+    const ct = runNode(args);
     const after = readFileSync(TARGET, 'utf8');
     if (before !== after) throw new Error('target manifest changed during evidence verification');
     if (ct.status !== 0) throw new Error(`target verification must stay green\n${ct.stdout}`);
@@ -116,13 +131,13 @@ test('R5: an external-evidence status flip to merged leaves the certified target
   }
 });
 
-// ── R6 / R7 / R8 / R9 / R10 — verifier result contract ───────────────────────
+// ── R6–R10 — verifier result contract ────────────────────────────────────────
 
 test('R6: not-evaluated axis with an outcome is invalid; "not-checked" is not an outcome', () => {
   const { valid, errors } = validateResultEnvelope({
     structural: { evaluated: true, status: 'pass' },
     semantic: { evaluated: true, status: 'pass', violations: [] },
-    authenticity: { evaluated: false, status: 'not-checked' }, // merged-enum attempt
+    authenticity: { evaluated: false, status: 'not-checked' },
     chain: { evaluated: false },
     capture: { evaluated: false },
   });
@@ -134,7 +149,7 @@ test('R6b: evaluated=true requires an outcome (no silent defaults)', () => {
   const { valid } = validateResultEnvelope({
     structural: { evaluated: true, status: 'pass' },
     semantic: { evaluated: true, status: 'pass', violations: [] },
-    authenticity: { evaluated: true }, // missing outcome
+    authenticity: { evaluated: true },
     chain: { evaluated: false },
     capture: { evaluated: false },
   });
@@ -180,7 +195,7 @@ test('R10: a completeness claim without an independent witness profile is invali
     semantic: { evaluated: true, status: 'pass', violations: [] },
     authenticity: { evaluated: true, status: 'valid', binding: 'exact' },
     chain: { evaluated: true, status: 'intact' },
-    capture: { evaluated: true, status: 'complete-evidenced' }, // no witness
+    capture: { evaluated: true, status: 'complete-evidenced' },
   });
   if (valid) throw new Error('producer-signed completeness must be rejected');
   if (!errors.some((e) => e.includes('witness_profile'))) throw new Error('error must demand a witness profile');
@@ -188,7 +203,7 @@ test('R10: a completeness claim without an independent witness profile is invali
 
 test('R10b: a top-level complete flag is forbidden by construction', () => {
   const { valid } = validateResultEnvelope({
-    complete: true, // the exact collapse the contract forbids
+    complete: true,
     structural: { evaluated: true, status: 'pass' },
     semantic: { evaluated: true, status: 'pass', violations: [] },
     authenticity: { evaluated: true, status: 'valid', binding: 'exact' },
@@ -204,10 +219,6 @@ test('R11: claim-language lint rejects native-Python-verifier phrasing', () => {
   const dir = mkdtempSync(join(tmpdir(), 'aep-r11-'));
   try {
     writeFileSync(join(dir, 'bad.md'), 'trace-pipeline is a native python verifier for AEP.\n');
-    const res = runNode(['scripts/check-assurance-language.mjs']);
-    void res;
-    // lint scans fixed ROOTS, not arbitrary dirs — so exercise the pattern
-    // the same way the lint does: import-equivalent via a direct scan.
     const src = readFileSync('scripts/check-assurance-language.mjs', 'utf8');
     const patterns = ['native python verifier', 'python native verifier', 'wasmagent-py verifier', 'python verifier sdk'];
     const text = readFileSync(join(dir, 'bad.md'), 'utf8').toLowerCase();
