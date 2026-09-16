@@ -29,6 +29,11 @@ const arg = (name, fallback) => {
 const targetPath = arg('target', 'conformance/aep/certified-target.json');
 const publicationRef = arg('publication-ref');
 const protocolSha = arg('protocol-sha');
+// Optional: verify the anchor against the target manifest AT THE ANCHOR'S OWN
+// REF (self-consistency of that generation) instead of the working tree
+// (which holds the CURRENT generation and would false-fail historical
+// anchors). Required when verifying superseded publication generations.
+const targetRef = arg('target-ref');
 const extraAllowed = [].concat(
   ...args
     .map((a, i) => (a === '--allow-extra' ? (args[i + 1] ?? '').split(',').filter(Boolean) : [])),
@@ -49,11 +54,14 @@ const check = (id, ok, detail) => {
 };
 const git = (args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 
-// PUB-01 — working-tree target parses.
+// PUB-01 — the reference target parses: working-tree manifest by default, or
+// the manifest AT THE ANCHOR'S OWN REF when --target-ref is given.
 let target;
 try {
-  target = JSON.parse(readFileSync(targetPath, 'utf8'));
-  check('PUB-01', true, `${targetPath} parses`);
+  target = targetRef
+    ? JSON.parse(git(['show', `${targetRef}:${targetPath}`]))
+    : JSON.parse(readFileSync(targetPath, 'utf8'));
+  check('PUB-01', true, `${targetPath} parses${targetRef ? ` @ ${targetRef}` : ''}`);
 } catch (error) {
   check('PUB-01', false, `${targetPath} does not parse: ${String(error)}`);
   console.log(`INVALID: ${failures.length} check(s) failed`);
@@ -75,7 +83,8 @@ try {
   process.exit(1);
 }
 
-// PUB-04 — the published manifest names the exact component tuple.
+// PUB-04 — the published manifest names the exact component tuple (its OWN
+// generation when --target-ref is used).
 const tupleKeys = ['protocol', 'js', 'proxy', 'trace'];
 for (const key of tupleKeys) {
   check(

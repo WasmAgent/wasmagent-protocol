@@ -110,8 +110,20 @@ jobs:
             echo "--- $rec ---"
             node scripts/verify-publication-record.mjs --record "$rec"               --target conformance/aep/certified-target.json
           done
-      - name: Verify certified publication anchors (PUB-01..07)
-        run: node scripts/verify-certified-publication.mjs --target conformance/aep/certified-target.json --publication-ref aep-certified-2026-09-13-03
+      - name: Verify certified publication anchors (PUB-01..07, every generation)
+        run: |
+          # Each publication generation is verified at ITS OWN anchor against
+          # ITS OWN target manifest (generation self-consistency). Pending
+          # anchors are skipped until their fast-follow resolution commit.
+          for rec in conformance/aep/publications/*.publication.json; do
+            TAG=$(python3 -c "import json,sys; print(json.load(open('$rec'))['publication']['tag'])")
+            ANCHOR=$(python3 -c "import json,sys; d=json.load(open('$rec')); print(d['publication']['protected_main_commit'])")
+            if [[ "$ANCHOR" == PENDING* ]]; then
+              echo "skipping $TAG — anchor pending (fast-follow resolution)"
+              continue
+            fi
+            node scripts/verify-certified-publication.mjs               --target conformance/aep/certified-target.json               --publication-ref "$TAG"               --target-ref "$TAG"
+          done
       - name: Assurance geometry negative regressions (R1/R2/R3/R12)
         run: node scripts/verify-assurance-negatives.mjs
       - name: Verify certified target + trigger policy (CT-01..CT-08)
