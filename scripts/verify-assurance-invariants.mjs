@@ -46,7 +46,7 @@ test('R4-pre: the published -03 manifest (no certification_reason) validates —
   const res = runNode([
     'scripts/verify-certified-target.mjs',
     '--target', TARGET,
-    '--publication', PUBLICATION,
+    '--previous-publication', PUBLICATION,
   ]);
   if (res.status !== 0) throw new Error(res.stdout);
 });
@@ -71,7 +71,7 @@ test('R4: a hypothetical new target justified by docs-refresh is INVALID', () =>
     t.supersedes = 'aep-certified-2026-09-13-03';
     t.certification_reason = ['docs-refresh'];
     writeFileSync(path, JSON.stringify(t, null, 2));
-    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--publication', PUBLICATION]);
+    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--previous-publication', PUBLICATION]);
     if (res.status !== 1) throw new Error(`docs-refresh target must fail (status=${res.status})\n${res.stdout}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -85,7 +85,7 @@ test('R4b: a new target with an allowed semantic reason is structurally valid', 
     t.certification_reason = ['corpus-change'];
   });
   try {
-    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--publication', PUBLICATION]);
+    const res = runNode(['scripts/verify-certified-target.mjs', '--target', path, '--previous-publication', PUBLICATION]);
     // Tuple still matches the frozen record, so only CT-06-family checks
     // apply here — must pass.
     if (res.status !== 0) throw new Error(`allowed-reason target must pass\n${res.stdout}`);
@@ -107,7 +107,7 @@ test('R5: an external-evidence status flip to merged leaves the certified target
 
     // …and the certified target verification is byte-for-byte unaffected.
     const before = readFileSync(TARGET, 'utf8');
-    const ct = runNode(['scripts/verify-certified-target.mjs', '--target', TARGET, '--publication', PUBLICATION]);
+    const ct = runNode(['scripts/verify-certified-target.mjs', '--target', TARGET, '--previous-publication', PUBLICATION]);
     const after = readFileSync(TARGET, 'utf8');
     if (before !== after) throw new Error('target manifest changed during evidence verification');
     if (ct.status !== 0) throw new Error(`target verification must stay green\n${ct.stdout}`);

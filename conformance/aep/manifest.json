@@ -9,7 +9,7 @@
     "predicate_type": "https://wasmagent.dev/attestations/aep/v0.4"
   },
   "signing_profile": "DSSE-only aep-dsse-ed25519-decoded-body-v1: Ed25519 over DSSE PAE(payloadType, decoded serialized in-toto Statement bytes). The envelope payload field is base64 transport encoding only and is not itself the PAE body. Predicate bound to the record; exactly one signature.",
-  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label for an OFFICIAL standalone wasmagent-py SDK: no such SDK exists. Trace-pipeline is the current Python consumer implementation and executes this corpus's structural, semantic, authenticity, and chain targets in its CI — that consumer is not an official Python SDK.",
+  "description": "AEP conformance corpus. Every current fixture targets the DSSE-only signing profile. Verdict layers: structural (canonical JSON Schema), semantic (derived invariants), authenticity (unsigned | dsse-valid | invalid | not-checked), chain (not-present | intact | partial | orphaned | broken | not-checked). Retired labels (legacy-valid, dsse-or-legacy-valid) are not part of this vocabulary. expected_python remains 'not-implemented' as a corpus-slot label for an OFFICIAL standalone wasmagent-py SDK: no such SDK exists. Trace-pipeline is the current Python consumer implementation and executes this corpus's structural, semantic, authenticity, and chain targets in its CI \u2014 that consumer is not an official Python SDK.",
   "canonical_schema": "schemas/aep/aep-record.schema.json",
   "protocol_version": "0.1.10",
   "verifying_keys": {
@@ -26,6 +26,18 @@
       "structural": "valid",
       "semantic": "valid",
       "authenticity": "unsigned"
+    },
+    {
+      "path": "valid/default-emitter-build-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "unsigned"
+    },
+    {
+      "path": "dsse/js-default-emitter-v05.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "dsse-valid"
     },
     {
       "path": "valid/minimal-v05.json",
@@ -94,14 +106,14 @@
       "structural": "valid",
       "semantic": "invalid",
       "authenticity": "not-checked",
-      "note": "pair-presence symmetry: observed list without a floor — the pair ships together, never instead of."
+      "note": "pair-presence symmetry: observed list without a floor \u2014 the pair ships together, never instead of."
     },
     {
       "path": "invalid-semantic/empty-observed.json",
       "structural": "valid",
       "semantic": "invalid",
       "authenticity": "not-checked",
-      "note": "empty observed set with no floor — an empty grading claim."
+      "note": "empty observed set with no floor \u2014 an empty grading claim."
     },
     {
       "path": "dsse/js-signed-v05.json",
@@ -131,7 +143,7 @@
       "structural": "valid",
       "semantic": "valid",
       "authenticity": "invalid",
-      "note": "authentic signature, but payloadType is not the in-toto type — not an AEP attestation."
+      "note": "authentic signature, but payloadType is not the in-toto type \u2014 not an AEP attestation."
     },
     {
       "path": "dsse/wrong-predicate-type-resigned.json",
@@ -152,7 +164,7 @@
       "structural": "valid",
       "semantic": "valid",
       "authenticity": "invalid",
-      "note": "subject name absent — cannot bind the attestation to the run."
+      "note": "subject name absent \u2014 cannot bind the attestation to the run."
     },
     {
       "path": "dsse/wrong-subject-name-resigned.json",
@@ -189,7 +201,7 @@
       "semantic": "valid",
       "authenticity": "not-checked",
       "chain": "not-present",
-      "note": "no links — vacuous, must not read as tamper-evidence."
+      "note": "no links \u2014 vacuous, must not read as tamper-evidence."
     },
     {
       "path": "chain/partial-last.jsonl",
@@ -204,7 +216,7 @@
       "semantic": "valid",
       "authenticity": "not-checked",
       "chain": "partial",
-      "note": "middle link recomputed so later links stay consistent — isolated partial, not broken."
+      "note": "middle link recomputed so later links stay consistent \u2014 isolated partial, not broken."
     },
     {
       "path": "chain/broken-middle.jsonl",
@@ -212,7 +224,7 @@
       "semantic": "valid",
       "authenticity": "not-checked",
       "chain": "broken",
-      "note": "r3 links to absent r2 — brokenAt=1."
+      "note": "r3 links to absent r2 \u2014 brokenAt=1."
     },
     {
       "path": "chain/singleton-with-prev.jsonl",
@@ -220,19 +232,19 @@
       "semantic": "valid",
       "authenticity": "not-checked",
       "chain": "orphaned",
-      "note": "single record claiming an unavailable predecessor — not intact."
+      "note": "single record claiming an unavailable predecessor \u2014 not intact."
     }
   ],
   "historical": [
     {
       "path": "historical/js-canonical-ed25519.json",
       "conformance_target": false,
-      "note": "UNSUPPORTED HISTORICAL ARTIFACT. JS legacy construction (Ed25519 over raw sorted-canonical bytes), retired in the clean cut — kept as evidence only."
+      "note": "UNSUPPORTED HISTORICAL ARTIFACT. JS legacy construction (Ed25519 over raw sorted-canonical bytes), retired in the clean cut \u2014 kept as evidence only."
     },
     {
       "path": "historical/rust-struct-order-sha256-ed25519.json",
       "conformance_target": false,
-      "note": "UNSUPPORTED HISTORICAL ARTIFACT. Rust gateway construction (Ed25519 over SHA-256 of struct-order JSON), retired — kept as evidence only; rust-legacy-key.hex is likewise historical."
+      "note": "UNSUPPORTED HISTORICAL ARTIFACT. Rust gateway construction (Ed25519 over SHA-256 of struct-order JSON), retired \u2014 kept as evidence only; rust-legacy-key.hex is likewise historical."
     }
   ]
 }
