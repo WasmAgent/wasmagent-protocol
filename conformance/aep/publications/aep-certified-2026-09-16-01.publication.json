@@ -8,8 +8,8 @@
     "trace": "8e7a9932bee8c5e4e9e4b58df2f1b09f61abd4d5"
   },
   "publication": {
-    "source_commit": "PENDING-PROTECTED-MAIN-ANCHOR",
-    "protected_main_commit": "PENDING-PROTECTED-MAIN-ANCHOR",
+    "source_commit": "9159586160a58de08e6ecafcbdd4de10bd26d8ae",
+    "protected_main_commit": "b7372e2e1f90cd7da53514ea1360498264b37d4c",
     "tag": "aep-certified-2026-09-16-01"
   },
   "gate": {
@@ -18,5 +18,5 @@
     "verdict": "pass"
   },
   "signing_profile_id": "aep-dsse-ed25519-decoded-body-v1",
-  "note": "Publication record. protected_main_commit is resolved in the fast-follow commit immediately after this PR merges (the anchor must name the merge commit that contains the -04 manifest \u2014 it cannot name itself beforehand)."
+  "note": "Publication record. Anchor resolved: the annotated tag aep-certified-2026-09-16-01 points at the protected-main merge commit containing the -04 manifest."
 }
