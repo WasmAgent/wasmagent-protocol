@@ -17,7 +17,13 @@
  * Usage:
  *   node scripts/verify-certified-target.mjs \
  *     --target conformance/aep/certified-target.json \
- *     [--previous-publication conformance/aep/publications/<prev>.publication.json]
+ *     [--previous-publication conformance/aep/publications/<prev>.publication.json] \
+ *     [--historical]
+ *
+ * --historical verifies a pre-policy target at structural + provenance level
+ * only (grandfathered): CT-01..CT-07 always apply, CT-08 applies when a Gate C
+ * provenance record exists for the target's run, and the lifecycle
+ * trigger-policy checks (CT-LINEAGE-02..05, CT-06) are skipped entirely.
  *
  * Exit 0 = valid; 1 = any check failed; 2 = usage error.
  */
@@ -32,6 +38,11 @@ const arg = (name, fallback) => {
 };
 const targetPath = arg('target', 'conformance/aep/certified-target.json');
 const previousPublicationPath = arg('previous-publication');
+// --historical: the target predates the trigger policy (grandfathered).
+// Structural checks (CT-01..CT-07) and provenance integrity (CT-08, when a
+// provenance record exists for the run) still apply; ALL lifecycle
+// trigger-policy requirements (CT-LINEAGE-02..05, CT-06) are skipped.
+const historicalMode = args.includes('--historical');
 
 const ALLOWED_REASONS = new Set([
   'schema-change', 'semantic-rule-change', 'verifier-contract-change',
@@ -105,7 +116,12 @@ if (previous !== null && previous.target_id === target.target_id && claimsNewGen
 }
 
 // CT-LINEAGE-02: forbidden reasons on a new generation fail.
-if (claimsNewGeneration) {
+// In historical mode the entire lifecycle trigger policy (CT-LINEAGE-02..05,
+// CT-06) is skipped: a grandfathered pre-policy manifest carries no
+// certification_reason and must not be judged by rules that postdate it.
+if (historicalMode) {
+  check('CT-LINEAGE-02', true, 'historical mode — lifecycle trigger-policy skipped (grandfathered)');
+} else if (claimsNewGeneration) {
   const forbiddenFound = (reasons ?? []).filter((r) => FORBIDDEN_REASONS.has(r));
   check('CT-LINEAGE-02', forbiddenFound.length === 0,
     `forbidden reasons: [${forbiddenFound.join(', ') || 'none'}]`);
@@ -115,7 +131,11 @@ if (claimsNewGeneration) {
 
 // CT-LINEAGE-03: allowed reason + exact immediate predecessor + resolved
 // predecessor publication => PASS.
-if (claimsNewGeneration) {
+if (historicalMode) {
+  check('CT-LINEAGE-03', true, 'historical mode — lifecycle trigger-policy skipped (grandfathered)');
+  check('CT-LINEAGE-04', true, 'historical mode — lifecycle trigger-policy skipped (grandfathered)');
+  check('CT-LINEAGE-05', true, 'historical mode — lifecycle trigger-policy skipped (grandfathered)');
+} else if (claimsNewGeneration) {
   const reasonsOk = reasons !== null && reasons.length > 0 && reasons.every((r) => ALLOWED_REASONS.has(r));
   check('CT-LINEAGE-03', reasonsOk,
     `certification_reason=${JSON.stringify(target.certification_reason ?? null)}`);
@@ -131,7 +151,9 @@ if (claimsNewGeneration) {
 }
 
 // ── CT-06 — same-generation: trigger policy not applicable ──────────────────
-if (!claimsNewGeneration) {
+if (historicalMode) {
+  check('CT-06', true, 'historical mode — lifecycle trigger-policy skipped (grandfathered)');
+} else if (!claimsNewGeneration) {
   check('CT-06', true, `target ${target.target_id} — not a new generation`);
 } else {
   const reasonsOk = reasons !== null && reasons.length > 0 && reasons.every((r) => ALLOWED_REASONS.has(r));
@@ -159,7 +181,12 @@ check('CT-07', forbiddenAnywhere.length === 0,
     }
   } catch { /* dir absent */ }
   if (gateTuple === null) {
-    check('CT-08', false, `no persisted Gate C provenance for run ${target.gate_c_run_id}`);
+    if (historicalMode) {
+      check('CT-08', true,
+        `historical mode — no persisted Gate C provenance for run ${target.gate_c_run_id} (pre-provenance era, grandfathered)`);
+    } else {
+      check('CT-08', false, `no persisted Gate C provenance for run ${target.gate_c_run_id}`);
+    }
   } else {
     const drift = tupleKeys.filter((k) => gateTuple[k] !== target[k]);
     check('CT-08', drift.length === 0,
