@@ -243,6 +243,28 @@ test('R6b: evaluated=true requires an outcome (no silent defaults)', () => {
   if (valid) throw new Error('evaluated axis without outcome must be rejected');
 });
 
+test("R6c: evaluated=false rejects status='unknown' on every axis (no alias exemption)", () => {
+  const base = {
+    structural: { evaluated: true, status: 'pass' },
+    semantic: { evaluated: true, status: 'pass', violations: [] },
+    authenticity: { evaluated: true, status: 'valid', binding: 'exact' },
+    chain: { evaluated: true, status: 'intact' },
+  };
+  for (const axisName of ['capture', 'authenticity']) {
+    const { valid, errors } = validateResultEnvelope({
+      ...base,
+      [axisName]: { evaluated: false, status: 'unknown' },
+    });
+    if (valid) throw new Error(`${axisName}: evaluated=false + status=unknown must be rejected`);
+    if (!errors.some((e) => e.startsWith(`${axisName}: evaluated=false must not carry an outcome`))) {
+      throw new Error(`${axisName}: error must name the exactness rule\n${errors.join('\n')}`);
+    }
+  }
+  // Positive: the bare not-evaluated form (no outcome payload) stays legal.
+  const { valid } = validateResultEnvelope({ ...base, capture: { evaluated: false } });
+  if (!valid) throw new Error('capture evaluated=false without status must stay legal');
+});
+
 test('R7: semantic fail + authenticity valid is representable (no implication)', () => {
   const { valid, errors } = validateResultEnvelope({
     structural: { evaluated: true, status: 'pass' },

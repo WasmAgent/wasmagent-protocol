@@ -50,10 +50,12 @@ function validateAxis(name, axis, errors) {
 
   if (!axis.evaluated) {
     // R6 — evaluation state and record outcome are orthogonal. An axis that
-    // was not evaluated carries NO outcome: there is no "not-checked" status
-    // in any outcome vocabulary, and no outcome field may be present.
+    // was not evaluated carries NO outcome — not even "unknown": outcome
+    // vocabularies describe evaluated axes only, and "not-checked"/"unknown"
+    // as evaluation states are forbidden aliases. Any status on a
+    // non-evaluated axis is a contract violation.
     const extra = Object.keys(axis).filter((k) => k !== "evaluated" && k !== "status");
-    if (axis.status !== undefined && axis.status !== "unknown") {
+    if (axis.status !== undefined) {
       errors.push(
         `${name}: evaluated=false must not carry an outcome (got status=${JSON.stringify(axis.status)}); "not-checked" is an evaluation state, not an outcome`,
       );
