@@ -41,7 +41,6 @@ _SCAN_IGNORE_DIRS = {
     "build",
     "__pycache__",
     ".pytest_cache",
-    ".claude-bot",
     ".turbo",
     ".next",
     "target",
