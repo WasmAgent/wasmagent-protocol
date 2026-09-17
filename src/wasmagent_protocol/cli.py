@@ -9,16 +9,23 @@ Usage::
     # dependency, and competing schemas/index.json registries.
     wasmagent-protocol check --scan --root .
 
+    # Locate / inspect / self-check the packaged AEP conformance corpus.
+    wasmagent-protocol aep-conformance path
+    wasmagent-protocol aep-conformance manifest
+    wasmagent-protocol aep-conformance self-check
+
 Exits non-zero on any drift or violation, so this is safe to wire into CI.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from . import drift
+from .conformance import get_aep_conformance_dir, get_aep_conformance_manifest, run_self_check
 
 
 def _format(finding: drift.Finding) -> str:
@@ -69,11 +76,51 @@ def build_parser() -> argparse.ArgumentParser:
             "no-package-dep and competing-registry checks). Auto-detected normally."
         ),
     )
+
+    aep = sub.add_parser(
+        "aep-conformance",
+        help="Locate, inspect, or self-check the packaged AEP conformance corpus.",
+        description=(
+            "The AEP conformance corpus ships inside this package. Use `path` to "
+            "locate it, `manifest` to print the verdict-authority manifest, and "
+            "`self-check` to verify the installed corpus against the manifest and "
+            "the project-owned reference layers. Self-check is NOT independent "
+            "semantic verification."
+        ),
+    )
+    aep.add_argument(
+        "action",
+        choices=["path", "manifest", "self-check"],
+        help="path: print the corpus directory. manifest: print manifest.json. "
+        "self-check: verify the installed corpus.",
+    )
+    aep.add_argument(
+        "--corpus",
+        default=None,
+        help="Optional corpus directory override (defaults to the packaged corpus).",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+
+    if args.command == "aep-conformance":
+        if args.action == "path":
+            print(get_aep_conformance_dir() if args.corpus is None else Path(args.corpus).resolve())
+            return 0
+        if args.action == "manifest":
+            manifest = (
+                get_aep_conformance_manifest()
+                if args.corpus is None
+                else json.loads((Path(args.corpus) / "manifest.json").read_text(encoding="utf-8"))
+            )
+            print(json.dumps(manifest, indent=2, ensure_ascii=False))
+            return 0
+        ok, report = run_self_check(args.corpus)
+        for line in report:
+            print(line)
+        return 0 if ok else 1
 
     if args.command != "check":
         return 2

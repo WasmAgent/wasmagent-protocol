@@ -108,6 +108,27 @@ aep = get_schema("aep-record")        # parsed dict
 path = schema_path("aep-record")      # pathlib.Path to the .json file
 ```
 
+## AEP conformance corpus (installable)
+
+The AEP conformance corpus ships inside both packages, so you can pin and
+verify it without cloning this repository:
+
+```bash
+npx wasmagent-protocol aep-conformance path        # locate the installed corpus
+npx wasmagent-protocol aep-conformance self-check  # verify the installed corpus
+```
+
+```bash
+wasmagent-protocol aep-conformance self-check   # PyPI wheel, same subcommand
+```
+
+The corpus verdict authority is its `manifest.json`; see
+[`conformance/aep/IMPLEMENTER.md`](conformance/aep/IMPLEMENTER.md) for the
+layer vocabulary, the signing profile, and the rules for claiming an
+*independent* verifier implementation. Self-check verifies corpus integrity
+and the project-owned reference layers only — it is **not** independent
+semantic verification.
+
 ## Preventing cross-repo drift
 
 Downstream repos must not keep local copies of these schemas — but "must not"

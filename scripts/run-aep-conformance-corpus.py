@@ -28,19 +28,19 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CORPUS = REPO_ROOT / "conformance" / "aep"
 MANIFEST = CORPUS / "manifest.json"
 
-STRUCTURAL = {"valid", "invalid"}
-SEMANTIC = {"valid", "invalid"}
-AUTHENTICITY = {"unsigned", "dsse-valid", "invalid", "not-checked"}
-CHAIN = {"not-present", "intact", "partial", "orphaned", "broken", "not-checked"}
-RETIRED_LABELS = {"legacy-valid", "dsse-or-legacy-valid"}
-
-# Canonical grade order for floor semantics (weakest first).
-_BACKING_RANK = {
-    "unknown": 0,
-    "operator_asserted": 1,
-    "principal_key_signed": 2,
-    "qualified_signature": 3,
-}
+# The semantic reference rules and label vocabularies are implemented once in
+# the packaged module (shipped to installers via npm/wheel self-check) and
+# imported here so the protocol-side runner can never drift from them.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from wasmagent_protocol.conformance import (  # noqa: E402
+    AUTHENTICITY,
+    CHAIN,
+    RETIRED_LABELS,
+    SEMANTIC,
+    STRUCTURAL,
+    SUPPORTED_SIGNING_PROFILE as SUPPORTED_PROFILE,
+    check_semantic,
+)
 
 failures: list[str] = []
 
@@ -48,50 +48,6 @@ failures: list[str] = []
 def fail(msg: str) -> None:
     failures.append(msg)
     print(f"FAIL {msg}")
-
-
-def check_semantic(record: dict) -> tuple[bool, str]:
-    """Reference semantic checker — mirrors the normative floor rules."""
-    floor = record.get("run_attribution_backing_floor")
-    observed = record.get("run_attribution_backing_observed")
-
-    for key, value in (
-        ("attribution_backing", record.get("attribution_backing")),
-        ("run_attribution_backing_floor", floor),
-    ):
-        if value is not None and value not in _BACKING_RANK:
-            return False, f"attribution: {key} outside canonical vocabulary"
-
-    count = record.get("authorization_evidence_count")
-    if count is not None and (not isinstance(count, int) or isinstance(count, bool) or count < 0):
-        return False, "attribution: authorization_evidence_count must be a non-negative integer"
-
-    # Pair-presence symmetry: the floor and observed fields ship together —
-    # "reported alongside, never instead of". Any half-pair fails closed:
-    #   floor present + observed absent/empty → invalid
-    #   observed present (non-list, empty, or floor absent)  → invalid
-    observed_is_list = isinstance(observed, list)
-    observed_nonempty = observed_is_list and len(observed) > 0
-    if floor is not None and not observed_nonempty:
-        return False, "attribution: floor provided without a non-empty observed set"
-    if observed is not None:
-        if not observed_nonempty:
-            return False, "attribution: observed provided as an empty set — empty grading claim"
-        if floor is None:
-            return False, "attribution: observed provided without floor — the pair ships together"
-
-    if floor is not None and observed_nonempty:
-        if any(g not in _BACKING_RANK for g in observed):
-            return False, "attribution: observed grade outside canonical vocabulary"
-        # Independent membership check: the floor must literally be one of the
-        # observed grades, not merely tie the minimum by rank arithmetic.
-        if floor not in observed:
-            return False, "attribution: floor not present in observed"
-        if len(set(observed)) != len(observed):
-            return False, "attribution: duplicate grade in observed set"
-        if _BACKING_RANK[floor] != min(_BACKING_RANK[g] for g in observed):
-            return False, "attribution: floor is not the weakest observed grade"
-    return True, ""
 
 
 def main(argv: list[str] | None = None) -> int:

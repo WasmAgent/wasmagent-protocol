@@ -29,7 +29,8 @@
     "index.js",
     "index.d.ts",
     "bin/",
-    "schemas/"
+    "schemas/",
+    "conformance/aep/"
   ],
   "scripts": {
     "test": "node --test",
