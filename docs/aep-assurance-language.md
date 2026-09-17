@@ -105,8 +105,8 @@ the record semantic layer.
 
 ## Certified-target lifecycle trigger policy
 
-Creating a new certified-target generation (any target with a `supersedes` reference) requires at least one
-semantic/runtime trigger:
+Creating a new certified-target generation (any target with a `supersedes`
+reference) requires at least one semantic/runtime trigger:
 
 ```text
 schema-change | semantic-rule-change | verifier-contract-change |
@@ -128,5 +128,7 @@ wording, and publication-index changes MUST NOT create a new certified target.
 
 - `conformance/aep/README.md` — component identity vs publication identity (normative)
 - `scripts/verify-publication-record.mjs` — PC-01..PC-07
-- `scripts/verify-external-evidence.mjs` — EE-01..EE-06
+- `scripts/verify-external-evidence.mjs` — EE-01..EE-07, where EE-07 is the
+  external evidence grade firewall: an independent runner does not imply
+  every layer was independently implemented
 - `scripts/check-assurance-language.mjs` — this policy, enforced

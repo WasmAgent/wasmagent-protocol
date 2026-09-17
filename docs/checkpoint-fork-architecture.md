@@ -49,4 +49,4 @@ Forking is appropriate when:
 
 ## Relationship to CheckpointEvidence
 
-`CheckpointEvidence` (`schemas/aep/checkpoint-evidence.schema.json`) is the AEP evidence record that attests a checkpoint occurred within a run. It carries the AEP envelope fields plus the same `checkpoint_id`, `parent_run_id`, `fork_of`, and `state_digest` fields. The `Checkpoint` and `Fork` schemas in this directory define the standalone data structures; `CheckpointEvidence` wraps them in the AEP evidence envelope.
+`CheckpointEvidence` (`schemas/aep/checkpoint-evidence.schema.json`) is the AEP evidence record that attests a checkpoint occurred within a run. It currently carries equivalent AEP envelope fields inline, alongside the same `checkpoint_id`, `parent_run_id`, `fork_of`, and `state_digest` fields. The `Checkpoint` and `Fork` schemas in this directory define the standalone data structures. Shared-envelope `$ref` consolidation (referencing `evidence-envelope.schema.json` instead of inlining) remains planned work — see `docs/15-milestones.md`.
