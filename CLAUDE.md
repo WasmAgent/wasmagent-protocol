@@ -1,9 +1,11 @@
 # wasmagent-protocol — CLAUDE.md
 
 Canonical source of truth for cross-repository contracts in the
-[WasmAgent](https://github.com/WasmAgent) org: the Agent Evidence Protocol (AEP)
-and the compliance schema family. **Specifications only** — no runtime, no
-business logic, no product code.
+[WasmAgent](https://github.com/WasmAgent) org: the schema families listed in
+`schemas/index.json` (AEP, compliance, AgentBOM, MCP Posture, Trust Passport),
+plus the conformance, publication, provenance, and assurance-verification
+tooling that keeps those contracts machine-checkable. No production runtime,
+no gateway enforcement engine, no product business logic.
 
 | | |
 |---|---|
@@ -38,10 +40,17 @@ business logic, no product code.
 - **A schema belongs here only when ≥2 repositories must agree on it.** A schema
   a single repo consumes stays in that repo (e.g. trace-pipeline's
   `*-training-record`).
-- **Never add runtime/validation logic.** This repo defines contracts; engines
-  that evaluate them live in `symkernel` (verification) or the consuming runtime.
+- **Do not add production runtime or policy-enforcement logic.** Engines that
+  evaluate the contracts live in `symkernel` (verification) or the consuming
+  runtime. Protocol/conformance validation, assurance-contract verification,
+  publication verification, provenance verification, schema compatibility
+  checks, and related contract-governance tooling belong here when they protect
+  canonical cross-repository contracts (e.g. `verify-certified-target.mjs`,
+  `verify-gate-provenance.mjs`, `verify-publication-record.mjs`,
+  `verify-external-evidence.mjs`, `verifier-result-contract.mjs`).
 - **Protocol is sedimented, not designed up front.** Schemas are extracted from
-  shipping products; shape changes are recorded as RFCs in `.github/docs/RFC/`
+  shipping products; shape changes are recorded as RFCs in the org-level
+  registry `WasmAgent/.github` (`https://github.com/WasmAgent/.github/tree/main/docs/RFC`)
   first (see `docs/CONTRACT-CHANGE-PROCESS.md`).
 - **Consumers depend on the published package**, never copy schema JSON.
 

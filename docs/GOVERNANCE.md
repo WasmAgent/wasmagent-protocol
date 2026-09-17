@@ -53,7 +53,7 @@ workflow.
 ## Version band mechanism
 
 - All consumer repositories must pin or declare an acceptable version range within the supported `@wasmagent/protocol` version band.
-- A cross-repo CI compatibility check (`scripts/check-consumer-versions.mjs`) is planned to verify that consumer repos do not depend on out-of-band protocol versions; implementation is tracked in issue #69.
+- The cross-repo CI compatibility check (`scripts/check-consumer-versions.mjs`) is implemented and runs in CI ("Consumer protocol version bands"): it reads each consumer repo's declared `@wasmagent/protocol` range and fails the compatibility gate for declarations outside the supported `>=0.1.0 <0.2.0` band.
 - Protocol packages (`@wasmagent/protocol` on npm, `wasmagent-protocol` on PyPI) serve as the foundation contract across all WasmAgent ecosystem services.
 
 ## Exit condition

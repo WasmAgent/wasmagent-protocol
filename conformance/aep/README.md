@@ -24,7 +24,7 @@ chain/             inter-record hash-chain sequences (intact / missing / partial
 historical/        UNSUPPORTED historical artifacts — evidence, not conformance
 manifest.json      expected verdict per fixture per verification layer
                    (machine-readable signing_profile_id + verifying_keys.by_keyid)
-certified-target.json  exact four-repo SHA tuple of the latest passing Gate C
+certified-target.json  Gate C run pinned by the currently published certified-target generation
 ```
 
 Everything in `dsse/` was produced by the REAL emitter signing paths — never
@@ -35,9 +35,11 @@ hand-written signatures:
 - The pinned cross-language pair (`dsse/js-signed-v05.json`,
   `dsse/rust-signed-v05.json`, key id `ci-sample-key`, seed `deadbeef` × 8)
   is byte-identical to what all three CI consumer gates verify.
-- `certified-target.json` pins the exact four-repo SHA tuple of the latest
-  PASSING Gate C run — cross-repo closure claims reference it, never
-  "latest main".
+- `certified-target.json` pins the Gate C run associated with the currently
+  published certified-target generation — cross-repo closure claims reference
+  it, never "latest main" and never "the latest successful CI run" (docs and
+  governance changes keep producing successful runs without a new
+  certified target).
 
 `historical/` documents the two retired inline-signature constructions —
 JS (Ed25519 over raw sorted-canonical bytes) and the Rust gateway
@@ -67,6 +69,10 @@ A certified target names **two distinct anchors**. Conflating them is the
 single most common integration mistake — an external consumer once reasonably
 expected the `-03` manifest to exist *at* the pinned protocol component SHA
 (it does not, and structurally cannot).
+
+> **Historical example: `aep-certified-2026-09-13-03`** — the tuple and
+> anchors below illustrate the superseded `-03` generation. For current
+> certified-target truth, read `conformance/aep/certified-target.json`.
 
 1. **Component identity** — the exact repository SHAs exercised by Gate C:
 
@@ -110,7 +116,9 @@ in `publications/aep-certified-2026-09-13-03.publication.json` (verified by
 `scripts/verify-publication-record.mjs`, PC-01..PC-07) and pinned by the
 immutable tag `aep-certified-2026-09-13-03`. External runs are registered —
 never certified — in `external-evidence/` (verified by
-`scripts/verify-external-evidence.mjs`, EE-01..EE-06). Assurance claim
+`scripts/verify-external-evidence.mjs`, EE-01..EE-07, where EE-07 is the
+external-evidence grade firewall: an independent runner does not imply every
+layer was independently implemented). Assurance claim
 vocabulary is governed by `docs/aep-assurance-language.md` and enforced by
 `scripts/check-assurance-language.mjs`. Verifier implementations are governed
 by the logical result envelope in `verifier-result-contract.md`

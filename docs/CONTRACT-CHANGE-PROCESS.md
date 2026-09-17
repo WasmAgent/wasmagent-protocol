@@ -84,7 +84,7 @@ to merge automatically.
   ```yaml
   jobs:
     schema-drift:
-      uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.9
+      uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.10
   ```
 
   It installs the pinned package and runs the scan. A PR that forks or drifts a

@@ -8,4 +8,9 @@
   `aep-dsse-ed25519-decoded-body-v1`); a profile pin is part of every
   certified target.
 - Certified targets are append-only publications: `supersedes` records
-  lineage; published targets are never edited in place.
+  lineage. Certified component tuples, immutable tags, and publication
+  identities are not rewritten in place. Metadata-only corrections (e.g. a
+  wrong `certified_at` timestamp) are represented explicitly through an
+  erratum in `conformance/aep/corrections/` and MUST NOT silently alter
+  component identity, publication identity, or signing/verdict fields;
+  an erratum is not a recertification.

@@ -26,7 +26,7 @@ equivalent. A team already on OTel can populate them from existing spans.
 | `trace_id` | trace context `trace_id` | Same correlation identity; AEP records reference the OTel trace. |
 | `parent_trace_id` | parent span/trace `trace_id` | Links delegated / sub-agent runs. |
 | `run_id` | (custom) `gen_ai.agent.run.id` / span attribute | AEP's run identity; carry as a span attribute if not already present. |
-| `model_provider` | `gen_ai.system` (a.k.a. `gen_ai.provider.name`) | e.g. `anthropic`, `openai`. |
+| `model_provider` | `gen_ai.provider.name` (current name; `gen_ai.system` is the deprecated alias) | e.g. `anthropic`, `openai`. |
 | `model_id` | `gen_ai.request.model` / `gen_ai.response.model` | Model identifier. |
 | `actions[].tool_name` | `gen_ai.tool.name` | One AEP action ≈ one tool-execution span. |
 | `actions[].action_id` | span `span_id` of the tool call | AEP action ↔ OTel span. |
@@ -77,7 +77,7 @@ wasn't tampered with".
 |---|---|
 | `verifier_results[]` (`verifier_id`, `passed`, `score`, `claim_ids`) | Outcome of formal/heuristic verifiers over the run — the "was it correct" evidence. |
 | `argument_drift` (`declared_digest`, `actual_digest`, `drifted_args`) | Detected drift between declared and runtime tool arguments. |
-| `recording_mode` (`full` / `delta` / `validation`) | **Retention depth** of captured evidence — how much of what was observed the producer kept. `full` = complete provenance; `delta` = before/after state digests; `validation` = action metadata only. This is a retention dial, not a coverage claim: it describes depth, not observation scope. Observation scope (what the monitor could see) is conveyed via `configSource` and `tracePolicy`. |
+| `recording_mode` (`full` / `delta` / `validation`) | **Retention depth** of captured evidence — how much of what was observed the producer kept. `full` = complete provenance; `delta` = before/after state digests; `validation` = action metadata only. This is a retention dial, not a coverage claim: it describes depth, not observation scope. The current schema carries no dedicated observation-scope field; what a monitor could see must be inferred from the recorded evidence population (e.g. `input_refs`/`output_refs` coverage and `precondition_digest`/`post_state_digest` pairs), which is exactly why capture completeness requires an independent witness rather than a producer assertion. |
 
 ### 2.5 Budgets beyond token usage
 

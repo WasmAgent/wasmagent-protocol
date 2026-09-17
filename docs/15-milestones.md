@@ -17,15 +17,15 @@ bullets into issues. Each bullet is scoped to concrete files.
 - [x] Strip local schema copies from `wasmagent-js` (`packages/compliance/schemas/`,
       `packages/core/src/ranking/schemas/rollout-wire.schema.json`) and depend on
       the npm package.
-- [ ] Strip `trace-pipeline` local schema copies (`schemas/*.schema.json`) and depend on `wasmagent-protocol` (PyPI); rename `repair-trace-entry` usage to `repair-trace`. (tracked: WasmAgent/trace-pipeline#17)
+- [x] Strip `trace-pipeline` local schema copies (`schemas/*.schema.json`) and depend on `wasmagent-protocol` (PyPI); rename `repair-trace-entry` usage to `repair-trace`. (tracked: WasmAgent/trace-pipeline#17)
 
 ## Milestone 2 — AEP as the authoritative evidence contract
 
-- [ ] Add a CI step in `wasmagent-proxy` that validates emitted AEP records against `@wasmagent/protocol`'s `schemas/aep/aep-record.schema.json` (vendor the schema from the published package at a pinned version). (tracked: WasmAgent/wasmagent-proxy#294)
+- [x] Add a CI step in `wasmagent-proxy` that validates emitted AEP records against `@wasmagent/protocol`'s `schemas/aep/aep-record.schema.json` (vendor the schema from the published package at a pinned version). (tracked: WasmAgent/wasmagent-proxy#294)
 - [x] Point `wasmagent-train-replay` `EpochEvidenceBundle` at the shared AEP
       record schema for its evidence envelope.
-- [ ] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.schema.json` onto `@wasmagent/protocol` `aep-record`, with a conformance test proving a sample AEP record validates. (tracked: WasmAgent/open-agent-audit#94)
-- [ ] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consumer repo's declared `@wasmagent/protocol` range and fails if any is out of the supported band. (tracked: WasmAgent/wasmagent-protocol#69)
+- [x] In `open-agent-audit`, add an adapter mapping `schemas/v0.1/canonical-event.schema.json` onto `@wasmagent/protocol` `aep-record`, with a conformance test proving a sample AEP record validates. (tracked: WasmAgent/open-agent-audit#94)
+- [x] Add `scripts/check-consumer-versions.mjs` + a CI job here that reads each consumer repo's declared `@wasmagent/protocol` range and fails if any is out of the supported band. (tracked: WasmAgent/wasmagent-protocol#69)
 
 ## Milestone 3 — Stability & conformance
 

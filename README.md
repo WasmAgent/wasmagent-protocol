@@ -10,10 +10,21 @@ evidence pipelines, the audit product — speak the **same** evidence and
 compliance vocabulary. `wasmagent-protocol` is where that vocabulary is defined,
 versioned, and published, so no repository has to keep its own copy.
 
-This repository holds **specifications only**. It contains no business logic,
-no runtime, and no product code — only JSON Schemas, conformance fixtures, and
-thin loader packages that expose the schemas to JavaScript and Python
-consumers.
+This repository holds **specifications and the tooling that keeps them
+machine-checkable**. It contains no production runtime, no gateway enforcement
+engine, and no product business logic. Beyond the canonical JSON Schemas,
+conformance fixtures, and thin loader packages that expose the schemas to
+JavaScript and Python consumers, it hosts the verification tooling for the
+cross-repository contracts: certified-target lifecycle verification,
+publication-record verification, Gate C provenance verification, the
+external-evidence ledger, assurance invariants and the verifier-result
+contract, and consumer version-band checking.
+
+Schema families canonically hosted and versioned here are listed in
+`schemas/index.json` (AEP, compliance, AgentBOM, MCP Posture, Trust
+Passport), which is the machine authority for what is hosted. Canonical
+hosting here does not transfer domain ownership: ownership of a schema
+family may remain with another repository or team.
 
 ## Why this repository exists
 
@@ -125,7 +136,7 @@ Consumer repos call the shared gate with one job:
 ```yaml
 jobs:
   schema-drift:
-    uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.9
+    uses: WasmAgent/wasmagent-protocol/.github/workflows/schema-drift.yml@v0.1.10
 ```
 
 A PR in any consumer that forks or drifts a canonical schema now fails CI

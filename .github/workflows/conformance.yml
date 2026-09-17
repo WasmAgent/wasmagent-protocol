@@ -151,7 +151,7 @@ jobs:
         run: node scripts/verify-assurance-negatives.mjs
       - name: Verifier result contract invariants (R6–R10)
         run: node scripts/verify-assurance-invariants.mjs
-      - name: Verify external evidence ledger (EE-01..EE-06)
+      - name: Verify external evidence ledger (EE-01..EE-07)
         run: node scripts/verify-external-evidence.mjs --dir conformance/aep/external-evidence
       - name: Claim-language firewall
         run: node scripts/check-assurance-language.mjs
