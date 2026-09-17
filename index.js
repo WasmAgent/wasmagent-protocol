@@ -97,7 +97,6 @@ const SCAN_IGNORE_DIRS = new Set([
   'build',
   '__pycache__',
   '.pytest_cache',
-  '.claude-bot',
   '.turbo',
   '.next',
   'target',
