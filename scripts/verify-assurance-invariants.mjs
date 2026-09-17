@@ -122,52 +122,76 @@ test('R4b: a new generation with an allowed semantic reason passes the lineage g
 });
 
 // ── Historical grandfather regression ────────────────────────────────────────
-// Materializes the -03 manifest FROM THE IMMUTABLE TAG via git show (not the
-// working tree copy) and runs the CT verifier against THAT tagged manifest:
-// with --historical it must pass (grandfathered, no certification_reason);
-// without the flag the same artifact must FAIL (policy isolation holds).
+// The grandfather exemption is AUTHORITY-BOUND: the verifier reads the -03
+// manifest from the immutable tag itself (--historical-ref) and requires a
+// publication-record binding (publication.tag === ref && target_id match)
+// before any lifecycle rule is skipped. A caller-supplied file can never
+// obtain historical semantics; the old boolean form is a usage error.
 
-test('R4-grandfather: historical -03 manifest at its immutable tag validates under --historical, fails without it', () => {
+test('R4-grandfather: -03 immutable tag passes under --historical-ref; unbound refs, caller files, and the removed boolean all fail', () => {
   const tag = 'aep-certified-2026-09-13-03';
-  const taggedRaw = execFileSync(
-    'git', ['show', `${tag}:conformance/aep/certified-target.json`], { encoding: 'utf8' }
+  const taggedManifest = JSON.parse(
+    execFileSync('git', ['show', `${tag}:conformance/aep/certified-target.json`], { encoding: 'utf8' })
   );
-  const taggedManifest = JSON.parse(taggedRaw);
-  if (taggedManifest.target_id !== 'aep-certified-2026-09-13-03') {
+  if (taggedManifest.target_id !== tag) {
     throw new Error(`tagged manifest target_id mismatch: ${taggedManifest.target_id}`);
   }
   if (taggedManifest.certification_reason !== undefined) {
     throw new Error('historical -03 should not have certification_reason');
   }
 
+  // Real immutable tag → PASS, and the success names the TAGGED target.
+  const historical = runNode([
+    'scripts/verify-certified-target.mjs', '--historical-ref', tag,
+  ]);
+  if (historical.status !== 0) {
+    throw new Error(`tagged historical -03 must pass under --historical-ref\n${historical.stdout}`);
+  }
+  if (!historical.stdout.includes(`target_id=${tag}`)) {
+    throw new Error(`verifier success must refer to the tagged manifest\n${historical.stdout}`);
+  }
+  if (!historical.stdout.includes('CT-HIST-BINDING')) {
+    throw new Error(`historical pass must show its authority binding\n${historical.stdout}`);
+  }
+
+  // The caller-controlled boolean is gone (usage error, exit 2).
+  const legacy = runNode(['scripts/verify-certified-target.mjs', '--historical']);
+  if (legacy.status !== 2) {
+    throw new Error(`boolean --historical must be rejected\n${legacy.stdout}${legacy.stderr}`);
+  }
+
   const dir = mkdtempSync(join(tmpdir(), 'aep-grandfather-'));
-  const taggedPath = join(dir, 'tagged-certified-target.json');
-  writeFileSync(taggedPath, taggedRaw);
   try {
-    const historical = runNode([
+    // A caller-supplied file cannot claim historical semantics (exit 2).
+    const forgedPath = join(dir, 'forged-target.json');
+    writeFileSync(forgedPath, JSON.stringify(taggedManifest, null, 2));
+    const bypass = runNode([
       'scripts/verify-certified-target.mjs',
-      '--target', taggedPath,
-      '--historical',
+      '--target', forgedPath,
+      '--historical-ref', tag,
     ]);
-    if (historical.status !== 0) {
-      throw new Error(`tagged historical -03 must pass under --historical\n${historical.stdout}`);
-    }
-    if (!historical.stdout.includes('aep-certified-2026-09-13-03')) {
-      throw new Error(`verifier must have validated the TAGGED manifest\n${historical.stdout}`);
+    if (bypass.status !== 2) {
+      throw new Error(`--target + --historical-ref must be refused\n${bypass.stdout}${bypass.stderr}`);
     }
 
+    // Strict mode on the tagged artifact is unchanged (normal mode = strict).
     const strict = runNode([
-      'scripts/verify-certified-target.mjs',
-      '--target', taggedPath,
+      'scripts/verify-certified-target.mjs', '--target', forgedPath,
     ]);
     if (strict.status !== 1) {
-      throw new Error(`tagged historical -03 must FAIL without --historical\n${strict.stdout}`);
-    }
-    if (!strict.stdout.includes('CT-06')) {
-      throw new Error(`strict failure must be the lifecycle trigger policy\n${strict.stdout}`);
+      throw new Error(`tagged historical -03 must FAIL in normal mode\n${strict.stdout}`);
     }
   } finally {
     rmSync(dir, { recursive: true, force: true });
+  }
+
+  // A resolvable ref WITHOUT a publication-record binding is refused (exit 1)
+  // even though the manifest it carries is structurally valid.
+  const unbound = runNode([
+    'scripts/verify-certified-target.mjs', '--historical-ref', 'HEAD',
+  ]);
+  if (unbound.status !== 1) {
+    throw new Error(`unbound ref must not obtain grandfather status\n${unbound.stdout}${unbound.stderr}`);
   }
 });
 
