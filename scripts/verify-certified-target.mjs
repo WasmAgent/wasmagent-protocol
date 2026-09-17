@@ -17,13 +17,22 @@
  * Usage:
  *   node scripts/verify-certified-target.mjs \
  *     --target conformance/aep/certified-target.json \
- *     [--previous-publication conformance/aep/publications/<prev>.publication.json] \
- *     [--historical]
+ *     [--previous-publication conformance/aep/publications/<prev>.publication.json]
  *
- * --historical verifies a pre-policy target at structural + provenance level
- * only (grandfathered): CT-01..CT-07 always apply, CT-08 applies when a Gate C
- * provenance record exists for the target's run, and the lifecycle
- * trigger-policy checks (CT-LINEAGE-02..05, CT-06) are skipped entirely.
+ *   node scripts/verify-certified-target.mjs \
+ *     --historical-ref <certified-tag>
+ *
+ * --historical-ref verifies a pre-policy target anchored at an immutable
+ * certified tag (grandfathered): the verifier itself reads
+ *   <tag>:conformance/aep/certified-target.json
+ * and requires a publication record whose publication.tag equals the ref and
+ * whose target_id equals the tagged manifest's target_id. Only with that
+ * binding are lifecycle trigger-policy checks (CT-LINEAGE-02..05, CT-06)
+ * skipped. Structural checks CT-01..CT-07 always apply; CT-08 applies when a
+ * Gate C provenance record exists for the target's run. The generic
+ * caller-controlled boolean (--historical + arbitrary --target file) was
+ * removed by design: a caller-supplied file can never obtain historical
+ * semantics.
  *
  * Exit 0 = valid; 1 = any check failed; 2 = usage error.
  */
@@ -38,11 +47,23 @@ const arg = (name, fallback) => {
 };
 const targetPath = arg('target', 'conformance/aep/certified-target.json');
 const previousPublicationPath = arg('previous-publication');
-// --historical: the target predates the trigger policy (grandfathered).
-// Structural checks (CT-01..CT-07) and provenance integrity (CT-08, when a
-// provenance record exists for the run) still apply; ALL lifecycle
-// trigger-policy requirements (CT-LINEAGE-02..05, CT-06) are skipped.
-const historicalMode = args.includes('--historical');
+const historicalRef = arg('historical-ref');
+
+// The historical exemption is AUTHORITY-BOUND, never a caller-controlled
+// boolean: `--historical <any file>` would let any structurally valid
+// manifest claim grandfather status. The ref form makes the verifier read
+// the manifest from the immutable tag itself and bind it to its published
+// record before any lifecycle rule is skipped.
+if (args.includes('--historical')) {
+  console.error('--historical (boolean) is not accepted: grandfather status is authority-bound.');
+  console.error('Use --historical-ref <certified-tag>; the manifest is read from the immutable tag itself.');
+  process.exit(2);
+}
+if (historicalRef !== undefined && args.includes('--target')) {
+  console.error('--historical-ref reads the manifest from the tag itself; --target cannot be combined with it');
+  process.exit(2);
+}
+let historicalMode = false;
 
 const ALLOWED_REASONS = new Set([
   'schema-change', 'semantic-rule-change', 'verifier-contract-change',
@@ -67,12 +88,56 @@ function git(args2) {
 }
 
 // ── Load manifest ────────────────────────────────────────────────────────────
+// Historical mode: the manifest comes from the immutable tag, and the tag
+// must be bound to a published record BEFORE any exemption is granted.
 let target;
-try {
-  target = JSON.parse(readFileSync(targetPath, 'utf8'));
-} catch (error) {
-  console.error(`manifest unreadable: ${String(error).slice(0, 200)}`);
-  process.exit(1);
+let boundRecordFile = null;
+if (historicalRef !== undefined) {
+  let raw;
+  try {
+    raw = git(['show', `${historicalRef}:conformance/aep/certified-target.json`]);
+  } catch (error) {
+    console.error(`historical ref did not resolve: ${String(error.message || error).slice(0, 200)}`);
+    process.exit(1);
+  }
+  try {
+    target = JSON.parse(raw);
+  } catch (error) {
+    console.error(`tagged manifest unreadable: ${String(error).slice(0, 200)}`);
+    process.exit(1);
+  }
+  try {
+    const pubDir = 'conformance/aep/publications';
+    for (const f of readdirSync(pubDir)) {
+      if (!f.endsWith('.publication.json')) continue;
+      const rec = JSON.parse(readFileSync(join(pubDir, f), 'utf8'));
+      if (rec?.publication?.tag === historicalRef && rec.target_id === target.target_id) {
+        boundRecordFile = f;
+        break;
+      }
+    }
+  } catch { /* publications dir absent */ }
+  if (boundRecordFile === null) {
+    console.error(
+      `historical ref ${historicalRef} is not authority-bound: no publication record with ` +
+      `publication.tag === "${historicalRef}" and target_id === "${target.target_id}" — historical semantics refused`
+    );
+    process.exit(1);
+  }
+  historicalMode = true;
+} else {
+  try {
+    target = JSON.parse(readFileSync(targetPath, 'utf8'));
+  } catch (error) {
+    console.error(`manifest unreadable: ${String(error).slice(0, 200)}`);
+    process.exit(1);
+  }
+}
+
+// Authority binding of historical mode is itself a visible, passing check.
+if (historicalMode) {
+  check('CT-HIST-BINDING', true,
+    `ref ${historicalRef} bound to publication record ${boundRecordFile} (target_id ${target.target_id})`);
 }
 
 // ── Load predecessor publication record (optional) ───────────────────────────
