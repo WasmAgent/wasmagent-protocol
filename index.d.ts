@@ -135,3 +135,56 @@ export function loadAgentBOMSchema(): unknown;
 
 /** Return the parsed MCP Posture JSON Schema. Equivalent to getSchema("mcp-posture"). */
 export function loadMCPPostureSchema(): unknown;
+
+// ---------------------------------------------------------------------------
+// AEP conformance kit.
+// ---------------------------------------------------------------------------
+
+/** Absolute path to the packaged AEP conformance corpus. Throws if absent. */
+export function getAepConformanceDir(): string;
+
+/** The parsed AEP conformance manifest (the corpus verdict authority). */
+export function getAepConformanceManifest(): AepConformanceManifest;
+
+/**
+ * JS port of the project-owned semantic reference checker (attribution
+ * floor / vocabulary / count invariants). Returns [ok, reason].
+ */
+export function checkSemanticReference(record: unknown): [boolean, string];
+
+/** Self-check result: `report` is a printable line list. */
+export interface AepConformanceSelfCheckResult {
+  ok: boolean;
+  report: string[];
+}
+
+/**
+ * Self-check the packaged AEP corpus: manifest coherence, fixture presence,
+ * verifying keys, canonical schema parse, and agreement between the
+ * project-owned semantic reference checker and every manifest semantic label.
+ * Structural (JSON Schema) validation is not executed in JS self-check.
+ */
+export function aepConformanceSelfCheck(options?: { dir?: string }): AepConformanceSelfCheckResult;
+
+/** One `conformance_target` entry of the AEP conformance manifest. */
+export interface AepConformanceTarget {
+  path: string;
+  structural?: string;
+  semantic?: string;
+  authenticity?: string;
+  chain?: string;
+  note?: string;
+  [key: string]: unknown;
+}
+
+/** The AEP conformance manifest — the corpus verdict authority. */
+export interface AepConformanceManifest {
+  schema_version: number;
+  signing_profile_id: string;
+  canonical_schema: string;
+  protocol_version: string;
+  verifying_keys: Record<string, unknown>;
+  conformance_target: AepConformanceTarget[];
+  historical?: AepConformanceTarget[];
+  [key: string]: unknown;
+}

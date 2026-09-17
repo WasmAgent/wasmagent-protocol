@@ -17,6 +17,8 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
+from .conformance import get_aep_conformance_dir, get_aep_conformance_manifest
+
 __all__ = [
     "INDEX",
     "get_schema",
@@ -24,6 +26,8 @@ __all__ = [
     "schema_ids",
     "schema_families",
     "family_members",
+    "get_aep_conformance_dir",
+    "get_aep_conformance_manifest",
 ]
 
 _PACKAGE = "wasmagent_protocol"

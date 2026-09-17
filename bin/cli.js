@@ -3,14 +3,18 @@
 //
 //   wasmagent-protocol check path/to/aep-record.schema.json --id aep-record
 //   wasmagent-protocol check --scan --root .
+//   wasmagent-protocol aep-conformance path|manifest|self-check
 //
 // Exits non-zero on any drift or violation. See index.js for the library API.
 
 import { resolve } from 'node:path';
 import {
+  aepConformanceSelfCheck,
   checkFile,
-  scan,
+  getAepConformanceDir,
+  getAepConformanceManifest,
   hasDrift,
+  scan,
 } from '../index.js';
 
 function format(f) {
@@ -19,13 +23,22 @@ function format(f) {
 }
 
 function parseArgs(argv) {
-  const out = { command: null, path: null, schemaId: null, root: '.', scan: false, allowCanonicalSource: false, help: false, version: false };
+  const out = { command: null, path: null, schemaId: null, root: '.', scan: false, allowCanonicalSource: false, aepAction: null, help: false, version: false };
   const args = argv.slice(2);
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === '-h' || a === '--help') out.help = true;
     else if (a === '-v' || a === '--version') out.version = true;
     else if (a === 'check') out.command = 'check';
+    else if (a === 'aep-conformance') out.command = 'aep-conformance';
+    else if (a === 'path' || a === 'manifest' || a === 'self-check') {
+      if (out.command === 'aep-conformance' && out.aepAction === null) out.aepAction = a;
+      else if (out.command === 'check' && out.path === null) out.path = a;
+      else {
+        console.error(`error: unexpected argument ${a}`);
+        process.exit(2);
+      }
+    }
     else if (a === '--scan') out.scan = true;
     else if (a === '--allow-canonical-source') out.allowCanonicalSource = true;
     else if (a === '--id') {
@@ -63,7 +76,35 @@ Usage:
       Scan a repo for drifted canonical schemas, re-declared canonical $ids
       without a package dependency, and competing schemas/index.json registries.
 
+  wasmagent-protocol aep-conformance path
+      Print the packaged AEP conformance corpus directory.
+
+  wasmagent-protocol aep-conformance manifest
+      Print the AEP conformance manifest (the corpus verdict authority).
+
+  wasmagent-protocol aep-conformance self-check
+      Verify the packaged corpus against the manifest and the project-owned
+      reference layers. Self-check is NOT independent semantic verification.
+
 Exits non-zero on any drift or violation.`);
+}
+
+function runAepConformance(args) {
+  if (!args.aepAction) {
+    console.error('error: aep-conformance requires an action: path | manifest | self-check');
+    return 2;
+  }
+  if (args.aepAction === 'path') {
+    console.log(getAepConformanceDir());
+    return 0;
+  }
+  if (args.aepAction === 'manifest') {
+    console.log(JSON.stringify(getAepConformanceManifest(), null, 2));
+    return 0;
+  }
+  const { ok, report } = aepConformanceSelfCheck();
+  for (const line of report) console.log(line);
+  return ok ? 0 : 1;
 }
 
 function main() {
@@ -76,6 +117,7 @@ function main() {
     printHelp();
     return args.command === null ? 1 : 0;
   }
+  if (args.command === 'aep-conformance') return runAepConformance(args);
   if (args.command !== 'check') {
     console.error(`error: unknown command ${args.command}`);
     return 2;

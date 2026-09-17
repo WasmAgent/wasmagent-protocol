@@ -40,6 +40,8 @@ Issues = "https://github.com/WasmAgent/wasmagent-protocol/issues"
 packages = ["src/wasmagent_protocol"]
 
 # Ship the canonical schema JSON alongside the loader so get_schema() works
-# from an installed wheel.
+# from an installed wheel, plus the AEP conformance corpus so the packaged
+# self-check can locate it without a source checkout.
 [tool.hatch.build.targets.wheel.force-include]
 "schemas" = "wasmagent_protocol/schemas"
+"conformance/aep" = "wasmagent_protocol/conformance/aep"
