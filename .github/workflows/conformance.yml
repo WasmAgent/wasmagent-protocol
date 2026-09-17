@@ -41,6 +41,11 @@ jobs:
           node-version: '20'
       - name: getSchema round-trips every registered id
         run: node --test
+      # Packed-artifact regression: validate the real npm tarball (bin
+      # mapping, files allowlist, corpus inclusion, installed-package CLI +
+      # self-check), not just the source tree.
+      - name: Packed npm artifact CLI smoke
+        run: node scripts/smoke-npm-package.mjs
 
   consumer-version-bands:
     name: Consumer protocol version bands
