@@ -1,0 +1,77 @@
+{
+  "schema": "wasmagent-aep-adequacy-closure/v1",
+  "closure_id": "aep-adequacy-v4-closure",
+  "frozen_at_utc": "2026-10-01",
+  "title": "AEP adequacy closure — H2 classification and exact-SHA consumer lane",
+  "purpose": "Finite closure record for the AEP internal hardening generation: H2 reclassification ratification (PR #258), exact-SHA consumer adequacy CI lane (PR #259), and the certified-target trigger reclassification from the actual merged deltas. This record is NOT certification, NOT independent verification, and creates no new authority.",
+  "pr_258": {
+    "url": "https://github.com/WasmAgent/wasmagent-protocol/pull/258",
+    "maintainer_decision_comment": "https://github.com/WasmAgent/wasmagent-protocol/pull/258#issuecomment-5925191371",
+    "head_sha": "101028f4624198ecca07028de50b2fc593cd03d0",
+    "merge_sha": "239e9af1431532c883ef1fde1f458cdc80b5007b",
+    "merged_at_utc": "2026-10-01T05:13:21Z",
+    "delta": "conformance/aep/adequacy/reports/aep-adequacy-v4-h2-investigation.{json,md} only",
+    "h2_historical_classification": "corpus-discrimination-gap (aep-adequacy-v3-heldout, immutable historical evidence)",
+    "h2_current_structural_classification": "equivalent-mutant (at contract version aep/v0.5; canonical AEP record schema declares zero `pattern` constraints, so the H2 strip-`pattern` mutation is an identity transform)",
+    "historical_v3_unchanged": true,
+    "schema_corpus_authority_changed": false
+  },
+  "pr_259": {
+    "url": "https://github.com/WasmAgent/wasmagent-protocol/pull/259",
+    "head_sha": "11cac81b86f4a45b3553dbbea5059f9069512e9f",
+    "merge_sha": "5dc52960daa67b8d326ae22caa2ac05af56dcbcb",
+    "merged_at_utc": "2026-10-01T05:17:24Z",
+    "delta": "exact-SHA consumer CI lane (.github/workflows/conformance.yml), result-contract validator (conformance/aep/adequacy/check-consumer-lane-result.mjs), harness consumer-only selection + bun workspace robustness (run-adequacy.mjs), adequacy README",
+    "pinned_consumer_sha": "47ae05f3baca5a198b40b17e310e3d117228fbd8",
+    "revalidated_after_258": true,
+    "revalidation_branch_head": "11cac81b86f4a45b3553dbbea5059f9069512e9f (Merge branch 'main' into ci/consumer-adequacy-exact-sha, parent 239e9af)",
+    "revalidation_runs": {
+      "conformance_run_id": "36818798626",
+      "l2l3_job_id": "110229652849",
+      "gate_c_run_id": "36818798653",
+      "schema_parity_run_id": "36818798629"
+    },
+    "results": {
+      "controls": "CTL-POS-01=detected, CTL-INERT-01=inert-ok",
+      "l2_detected": "7/7 (L2-1..L2-7 all detected)",
+      "l3_detected": "5/5 (L3-1..L3-5 all detected)",
+      "unexpected_survivor": 0,
+      "crash": 0,
+      "missing_result": 0,
+      "harness_defect": 0,
+      "lane_checks": "LC-01..LC-10 all PASS",
+      "pinned_vs_resolved_consumer_sha": "equal (47ae05f3baca5a198b40b17e310e3d117228fbd8)"
+    }
+  },
+  "protocol_final_main_sha": "5dc52960daa67b8d326ae22caa2ac05af56dcbcb",
+  "trigger_policy": {
+    "policy_source": "docs/aep-assurance-language.md § Certified-target lifecycle trigger policy; machine enforcement in scripts/verify-certified-target.mjs (ALLOWED_REASONS / FORBIDDEN_REASONS)",
+    "allowed_reasons": [
+      "schema-change",
+      "semantic-rule-change",
+      "verifier-contract-change",
+      "signing-profile-change",
+      "chain-semantics-change",
+      "corpus-change",
+      "security-repair"
+    ],
+    "pr_258_trigger": "none — investigation/classification record only; no schema, corpus, manifest, verifier-contract, or authority change",
+    "pr_259_trigger": "none — CI/adequacy enforcement infrastructure only; not stretched onto verifier-contract-change",
+    "conclusion": "no valid certification trigger from either merged delta; documentation-only movement and CI-enforcement infrastructure MUST NOT create a new certified target",
+    "successor_generated": false,
+    "closure_statement": "This hardening round improved project-owned adequacy classification and CI enforcement without changing the certified protocol/corpus/verifier authority. Therefore no certified-target successor was generated."
+  },
+  "certified_target": {
+    "current_target_id": "aep-certified-2026-09-16-01",
+    "retained": true,
+    "verification": "node scripts/verify-certified-target.mjs --target conformance/aep/certified-target.json --previous-publication conformance/aep/publications/aep-certified-2026-09-13-03.publication.json → VALID on 5dc52960daa67b8d326ae22caa2ac05af56dcbcb"
+  },
+  "freeze": "This AEP internal hardening generation is FROZEN at closure. No further mutants or fixtures are added in this generation. The next substantive engineering work belongs in WasmAgent/wasmagent-js (IF-07a provenance-preserving information-flow gate) and is a separate project.",
+  "required_semantics": [
+    "historical v3 is immutable",
+    "H2 is equivalent-mutant at AEP v0.5",
+    "L2/L3 exact-SHA adequacy is CI-enforced",
+    "certification generation follows trigger policy, not the superseded plan"
+  ],
+  "claim_ceiling": "project-owned adequacy hardening — not independent semantic verification, not independent authenticity verification, not external certification, not proof of corpus completeness, not proof of capture completeness"
+}
