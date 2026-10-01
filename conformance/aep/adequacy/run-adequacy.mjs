@@ -22,7 +22,12 @@
  *   node conformance/aep/adequacy/run-adequacy.mjs --known
  *   node conformance/aep/adequacy/run-adequacy.mjs --known  --consumer-js /path/to/wasmagent-js
  *   node conformance/aep/adequacy/run-adequacy.mjs --heldout --consumer-js /path/to/wasmagent-js
+ *   node conformance/aep/adequacy/run-adequacy.mjs --known --consumer-only --consumer-js /path/to/wasmagent-js [--json <out>]
  *   node conformance/aep/adequacy/run-adequacy.mjs --all    [--json <out>] [--allow-drift]
+ *
+ *   --consumer-only restricts the fault set to the KNOWN consumer-js adapter
+ *   faults (L2 authenticity / L3 chain) while keeping both controls gating
+ *   the run — the exact-SHA CI lane subset. It requires --consumer-js.
  *
  * Outputs: per-fault table on stdout; with --json, a machine result file.
  * The harness writes ONLY to the --json path and a self-cleaning tmp dir.
@@ -54,6 +59,7 @@ const want = {
   heldout: args.includes("--heldout"),
   all: args.includes("--all"),
 };
+const consumerOnly = args.includes("--consumer-only");
 const consumerJs = (() => {
   const i = args.indexOf("--consumer-js");
   return i >= 0 ? resolve(args[i + 1]) : process.env.ADEQUACY_CONSUMER_JS
@@ -66,8 +72,17 @@ const jsonOut = (() => {
 })();
 const allowDrift = args.includes("--allow-drift");
 const checkKnown = args.includes("--check-known");
-if (!want.known && !want.heldout && !want.all) {
-  console.error("usage: run-adequacy.mjs --known | --heldout | --all [--consumer-js <dir>] [--json <file>] [--allow-drift]");
+const selection = want.all ? "all" : want.known ? "known" : want.heldout ? "heldout" : null;
+if (!selection) {
+  console.error("usage: run-adequacy.mjs --known | --heldout | --all [--consumer-only] [--consumer-js <dir>] [--json <file>] [--allow-drift]");
+  process.exit(2);
+}
+if (consumerOnly && selection !== "known") {
+  console.error("--consumer-only combines only with --known");
+  process.exit(2);
+}
+if (consumerOnly && !consumerJs) {
+  console.error("--consumer-only requires --consumer-js <dir> (the L2/L3 subset has no meaning without the consumer adapter)");
   process.exit(2);
 }
 
@@ -93,13 +108,19 @@ if (drift.length > 0 && !allowDrift) {
 }
 
 // ── fault selection ──────────────────────────────────────────────────────────
-const selection = want.all ? "all" : want.known ? "known" : "heldout";
-const faults = faultsManifest.faults.filter((f) => {
-  if (f.in_scope !== true) return false;
-  if (selection === "all") return true;
-  return f.known_or_heldout === selection;
-});
-const controls = faults.filter((f) => f.layer === "control");
+// Controls ALWAYS gate the run (they validate the harness itself), so they are
+// drawn from the full known set regardless of the fault-subset selection.
+const inScopeKnown = faultsManifest.faults.filter(
+  (f) => f.in_scope === true && f.known_or_heldout === "known"
+);
+const controls = inScopeKnown.filter((f) => f.layer === "control");
+const faults = consumerOnly
+  ? inScopeKnown.filter((f) => f.adapter === "consumer-js")
+  : faultsManifest.faults.filter((f) => {
+      if (f.in_scope !== true) return false;
+      if (selection === "all") return true;
+      return f.known_or_heldout === selection;
+    });
 const realFaults = faults.filter((f) => f.layer !== "control");
 
 // ── tmp workspace (self-cleaning) ────────────────────────────────────────────
@@ -109,7 +130,7 @@ try {
   runFaults();
 } finally {
   rmSync(TMP, { recursive: true, force: true });
-  if (consumerJs) rmSync(join(consumerJs, ".aep-adequacy"), { recursive: true, force: true });
+  if (consumerJs) rmSync(join(consumerJs, "packages", "aep", ".aep-adequacy"), { recursive: true, force: true });
 }
 
 // ── engine ───────────────────────────────────────────────────────────────────
@@ -163,10 +184,13 @@ function buildContractMutant(fault) {
 /** Build a consumer-js mutant (verify-corpus.mjs + full packages/aep/src copy). */
 function buildConsumerMutant(fault) {
   if (!consumerJs) return { error: "consumer-js adapter unavailable (pass --consumer-js)" };
-  // The mutant workspace lives INSIDE the consumer repo tree so package
-  // resolution (@noble/ed25519 …) walks up to the consumer's node_modules.
-  // It is namespaced and removed after the run (see the finally block).
-  const ws = join(consumerJs, ".aep-adequacy", fault.fault_id);
+  // The mutant workspace lives INSIDE the consumer repo tree, under
+  // packages/aep/, so package resolution (@noble/ed25519 …) walks up through
+  // packages/aep/node_modules — the layout that resolves under both bun
+  // linker modes (hoisted roots everything at the repo root; isolated keeps
+  // workspace deps under packages/aep/node_modules). It is namespaced and
+  // removed after the run (see the finally block).
+  const ws = join(consumerJs, "packages", "aep", ".aep-adequacy", fault.fault_id);
   const gateSrc = join(consumerJs, "scripts", "verify-corpus.mjs");
   cpSync(gateSrc, join(ws, "verify-corpus.mjs"));
   cpSync(join(consumerJs, "packages", "aep", "src"), join(ws, "aep"), { recursive: true });
@@ -350,6 +374,9 @@ function runFaults() {
         {
           schema: "wasmagent-aep-adequacy-run/v1",
           selection,
+          consumer_only: consumerOnly,
+          claim_ceiling:
+            "project-owned mutation adequacy against the declared fault set — not independent semantic verification, not certification, not proof of corpus completeness or generalisation",
           frozen_authority: frozen,
           drift_recorded: drift,
           faults_manifest_id: faultsManifest.manifest_id,
