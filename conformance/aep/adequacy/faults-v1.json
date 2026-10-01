@@ -1,0 +1,633 @@
+{
+  "schema": "wasmagent-aep-adequacy-faults/v1",
+  "manifest_id": "aep-adequacy-faults-v1",
+  "created_utc": "2026-10-01T00:00:00Z",
+  "frozen_source_sha": "b0fd2abc4fb6c8e22bc77c3efef037a0c1bb3a0c",
+  "scoring": {
+    "detected": "the mutated verifier changes the targeted result exactly as the witness describes",
+    "crash": "mutant run crashes or exits >= 2 — reported separately, NEVER counted as semantic detection",
+    "missing-result": "mutant run produces no parseable verdict output",
+    "survivor": "targeted result unchanged",
+    "fail-closed-exit": "mutant run hits a fail-closed gate (e.g. signing-profile guard) before evaluating any witness"
+  },
+  "survivor_classes": [
+    "corpus-discrimination-gap",
+    "equivalent-mutant",
+    "outside-stated-contract",
+    "harness-defect",
+    "needs-review"
+  ],
+  "faults": [
+    {
+      "fault_id": "L0-1",
+      "layer": "L0-structural",
+      "target_rule": "required-field validation",
+      "mutation_description": "strip every `required` keyword from the canonical schema before validation",
+      "expected_witness": "a fixture that is invalid solely because a required field is missing would flip structural agreement to failure; none exists in the frozen corpus (invalid-schema/ is reserved but empty)",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L0 candidate: required-field validation removed",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    validator = Validator(canonical)",
+      "replace": "    def _strip_required(o):\n        if isinstance(o, dict):\n            o.pop(\"required\", None)\n            for v in o.values():\n                _strip_required(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_required(v)\n    _strip_required(canonical)\n    validator = Validator(canonical)",
+      "witness_fixtures": []
+    },
+    {
+      "fault_id": "L0-2",
+      "layer": "L0-structural",
+      "target_rule": "enum validation",
+      "mutation_description": "strip every `enum` keyword from the canonical schema before validation",
+      "expected_witness": "invalid-semantic/unknown-attribution-grade.json (structurally invalid via enum) would lose its structural failure",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L0 candidate: enum validation weakened",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    validator = Validator(canonical)",
+      "replace": "    def _strip_enum(o):\n        if isinstance(o, dict):\n            o.pop(\"enum\", None)\n            for v in o.values():\n                _strip_enum(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_enum(v)\n    _strip_enum(canonical)\n    validator = Validator(canonical)",
+      "witness_fixtures": [
+        "invalid-semantic/unknown-attribution-grade.json"
+      ]
+    },
+    {
+      "fault_id": "L0-3",
+      "layer": "L0-structural",
+      "target_rule": "uniqueItems",
+      "mutation_description": "strip every `uniqueItems` keyword from the canonical schema",
+      "expected_witness": "invalid-semantic/duplicate-observed-grade.json (structurally invalid via uniqueItems)",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L0 candidate: uniqueItems ignored",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    validator = Validator(canonical)",
+      "replace": "    def _strip_unique(o):\n        if isinstance(o, dict):\n            o.pop(\"uniqueItems\", None)\n            for v in o.values():\n                _strip_unique(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_unique(v)\n    _strip_unique(canonical)\n    validator = Validator(canonical)",
+      "witness_fixtures": [
+        "invalid-semantic/duplicate-observed-grade.json"
+      ]
+    },
+    {
+      "fault_id": "L0-4",
+      "layer": "L0-structural",
+      "target_rule": "minimum / minItems / minLength constraints",
+      "mutation_description": "strip numeric/string minimum constraints from the canonical schema",
+      "expected_witness": "invalid-semantic/negative-authorization-evidence-count.json (structurally invalid via minimum: 0)",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L0 candidate: minimum/count constraint ignored",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    validator = Validator(canonical)",
+      "replace": "    def _strip_min(o):\n        if isinstance(o, dict):\n            for k in (\"minimum\", \"minItems\", \"minLength\"):\n                o.pop(k, None)\n            for v in o.values():\n                _strip_min(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_min(v)\n    _strip_min(canonical)\n    validator = Validator(canonical)",
+      "witness_fixtures": [
+        "invalid-semantic/negative-authorization-evidence-count.json"
+      ]
+    },
+    {
+      "fault_id": "L0-5",
+      "layer": "L0-structural",
+      "target_rule": "schema dialect (meta-)validation",
+      "mutation_description": "skip Validator.check_schema (the Draft-2020-12 dialect gate on the canonical schema itself)",
+      "expected_witness": "no corpus fixture exercises a canonical schema that violates its declared dialect; detection is a meta-property outside the fixture set",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L0 candidate: schema dialect check bypassed",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    Validator.check_schema(canonical)",
+      "replace": "    pass  # FAULT: dialect check bypassed",
+      "witness_fixtures": []
+    },
+    {
+      "fault_id": "L1-1",
+      "layer": "L1-semantics",
+      "target_rule": "weakest-floor recomputation",
+      "mutation_description": "remove the check that the floor is the weakest observed grade",
+      "expected_witness": "invalid-semantic/floor-roundup.json (floor stronger than weakest observed) would be accepted",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: weakest-floor recomputation removed; doubles as the positive control CTL-POS-01",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if _BACKING_RANK[floor] != min(_BACKING_RANK[g] for g in observed):",
+      "replace": "        if False:  # FAULT: weakest-floor recomputation removed",
+      "witness_fixtures": [
+        "invalid-semantic/floor-roundup.json"
+      ]
+    },
+    {
+      "fault_id": "L1-2",
+      "layer": "L1-semantics",
+      "target_rule": "floor membership in observed",
+      "mutation_description": "remove the independent membership check (floor must literally be one of the observed grades)",
+      "expected_witness": "invalid-semantic/floor-not-observed.json (floor not a member of observed) would be accepted",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: floor membership check removed",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if floor not in observed:",
+      "replace": "        if False:  # FAULT: membership check removed",
+      "witness_fixtures": [
+        "invalid-semantic/floor-not-observed.json"
+      ]
+    },
+    {
+      "fault_id": "L1-3",
+      "layer": "L1-semantics",
+      "target_rule": "pair-presence symmetry (floor half)",
+      "mutation_description": "remove the floor-without-observed fail-closed branch",
+      "expected_witness": "invalid-semantic/floor-without-observed.json would be accepted",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: floor/observed pair-presence symmetry removed (floor half)",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "    if floor is not None and not observed_nonempty:",
+      "replace": "    if False:  # FAULT: floor-half pair-presence removed",
+      "witness_fixtures": [
+        "invalid-semantic/floor-without-observed.json",
+        "invalid-semantic/floor-with-empty-observed.json"
+      ]
+    },
+    {
+      "fault_id": "L1-4",
+      "layer": "L1-semantics",
+      "target_rule": "duplicate observed grade",
+      "mutation_description": "accept duplicate grades in the observed set",
+      "expected_witness": "invalid-semantic/duplicate-observed-grade.json would pass the semantic layer",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: duplicate observed grade accepted",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if len(set(observed)) != len(observed):",
+      "replace": "        if False:  # FAULT: duplicate grade accepted",
+      "witness_fixtures": [
+        "invalid-semantic/duplicate-observed-grade.json"
+      ]
+    },
+    {
+      "fault_id": "L1-5",
+      "layer": "L1-semantics",
+      "target_rule": "non-negative authorization_evidence_count",
+      "mutation_description": "accept a negative authorization_evidence_count",
+      "expected_witness": "invalid-semantic/negative-authorization-evidence-count.json would pass the semantic layer",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: negative authorization-evidence count accepted",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "    if count is not None and (not isinstance(count, int) or isinstance(count, bool) or count < 0):",
+      "replace": "    if False:  # FAULT: negative count accepted",
+      "witness_fixtures": [
+        "invalid-semantic/negative-authorization-evidence-count.json"
+      ]
+    },
+    {
+      "fault_id": "L1-6",
+      "layer": "L1-semantics",
+      "target_rule": "entire semantic reference checker",
+      "mutation_description": "short-circuit check_semantic to always valid (violation rounded into pass)",
+      "expected_witness": "invalid-semantic/floor-roundup.json — and every other invalid-semantic fixture — flips to semantic acceptance",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L1 candidate: semantic violation incorrectly rounded into pass (maximal form)",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "    floor = record.get(\"run_attribution_backing_floor\")\n    observed = record.get(\"run_attribution_backing_observed\")",
+      "replace": "    return True, \"\"  # FAULT: semantic checker disabled\n    floor = record.get(\"run_attribution_backing_floor\")\n    observed = record.get(\"run_attribution_backing_observed\")",
+      "witness_fixtures": [
+        "invalid-semantic/floor-roundup.json"
+      ]
+    },
+    {
+      "fault_id": "L2-1",
+      "layer": "L2-authenticity",
+      "target_rule": "DSSE signature verification",
+      "mutation_description": "skip verifyDSSEEnvelope entirely (signature verification removed)",
+      "expected_witness": "every dsse/tampered-* and dsse/*-resigned.json fixture (manifest authenticity=invalid) would be reported dsse-valid",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: signature verification removed",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "      if (!(await verifyDSSEEnvelope(record.dsse_envelope, publicKey))) {",
+      "replace": "      if (false) {  // FAULT: signature verification removed",
+      "witness_fixtures": [
+        "dsse/tampered-run-id.json",
+        "dsse/wrong-payload-type-resigned.json",
+        "dsse/wrong-predicate-type-resigned.json",
+        "dsse/wrong-statement-type-resigned.json",
+        "dsse/missing-subject-name-resigned.json",
+        "dsse/wrong-subject-name-resigned.json",
+        "dsse/multiple-signatures.json"
+      ]
+    },
+    {
+      "fault_id": "L2-2",
+      "layer": "L2-authenticity",
+      "target_rule": "verifying-key selection",
+      "mutation_description": "always verify with the default corpus key, ignoring per-entry verify_key",
+      "expected_witness": "dsse/rust-signed-v05.json (pinned rust-fixture-verify-key.hex) fails under the wrong key while the manifest expects dsse-valid",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: wrong key accepted",
+      "adapter": "consumer-js",
+      "target_file": "scripts/verify-corpus.mjs",
+      "find": "  const keyHex = entry.verify_key\n    ? readFileSync(insideCorpus(entry.verify_key), \"utf8\").trim()\n    : keyHexDefault;",
+      "replace": "  const keyHex = keyHexDefault; // FAULT: wrong key accepted",
+      "witness_fixtures": [
+        "dsse/rust-signed-v05.json"
+      ]
+    },
+    {
+      "fault_id": "L2-3",
+      "layer": "L2-authenticity",
+      "target_rule": "predicateType check",
+      "mutation_description": "remove the exact AEP predicateType check",
+      "expected_witness": "dsse/wrong-predicate-type-resigned.json would pass",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: payloadType/predicateType check removed",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (statement.predicateType !== AEP_PREDICATE_TYPE) return \"invalid\";",
+      "replace": "    if (false) return \"invalid\"; // FAULT: predicateType check removed",
+      "witness_fixtures": [
+        "dsse/wrong-predicate-type-resigned.json"
+      ]
+    },
+    {
+      "fault_id": "L2-4",
+      "layer": "L2-authenticity",
+      "target_rule": "in-toto statement _type check",
+      "mutation_description": "remove the Statement/v1 _type check",
+      "expected_witness": "dsse/wrong-statement-type-resigned.json would pass",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: statement _type check removed",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (statement._type !== \"https://in-toto.io/Statement/v1\") return \"invalid\";",
+      "replace": "    if (false) return \"invalid\"; // FAULT: _type check removed",
+      "witness_fixtures": [
+        "dsse/wrong-statement-type-resigned.json"
+      ]
+    },
+    {
+      "fault_id": "L2-5",
+      "layer": "L2-authenticity",
+      "target_rule": "subject/run binding",
+      "mutation_description": "remove the subject.name ↔ run_id binding check",
+      "expected_witness": "dsse/wrong-subject-name-resigned.json would pass",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: subject/run binding removed",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (subject.name !== `urn:wasmagent:run:${unsigned.run_id}`) return \"invalid\";",
+      "replace": "    if (false) return \"invalid\"; // FAULT: subject/run binding removed",
+      "witness_fixtures": [
+        "dsse/wrong-subject-name-resigned.json",
+        "dsse/missing-subject-name-resigned.json"
+      ]
+    },
+    {
+      "fault_id": "L2-6",
+      "layer": "L2-authenticity",
+      "target_rule": "exactly-one-signature policy",
+      "mutation_description": "accept DSSE envelopes with any number of signatures",
+      "expected_witness": "dsse/multiple-signatures.json would pass",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: exactly-one-signature policy removed",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/dsse.ts",
+      "find": "    if (envelope.signatures?.length !== 1) {",
+      "replace": "    if (false) { // FAULT: signature-count policy removed",
+      "witness_fixtures": [
+        "dsse/multiple-signatures.json"
+      ]
+    },
+    {
+      "fault_id": "L2-7",
+      "layer": "L2-authenticity",
+      "target_rule": "payload/record predicate binding",
+      "mutation_description": "remove the canonical-digest equality between the signed predicate and the unsigned record",
+      "expected_witness": "dsse/tampered-run-id.json (fields mutated on a signed record) would pass",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L2 candidate: payload/record binding weakened",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (canonicalDigest(predicate) !== canonicalDigest(unsigned)) return \"invalid\";",
+      "replace": "    if (false) return \"invalid\"; // FAULT: predicate binding removed",
+      "witness_fixtures": [
+        "dsse/tampered-run-id.json"
+      ]
+    },
+    {
+      "fault_id": "L3-1",
+      "layer": "L3-chain",
+      "target_rule": "predecessor hash verification",
+      "mutation_description": "never compare prev_record_hash against the computed digest",
+      "expected_witness": "chain/broken-middle.jsonl (expects broken) would be judged intact/partial",
+      "targeted_result_field": "chain",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L3 candidate: predecessor hash ignored",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (current.prev_record_hash !== expectedHash) {",
+      "replace": "    if (false) { // FAULT: predecessor hash ignored",
+      "witness_fixtures": [
+        "chain/broken-middle.jsonl"
+      ]
+    },
+    {
+      "fault_id": "L3-2",
+      "layer": "L3-chain",
+      "target_rule": "missing-link accounting",
+      "mutation_description": "stop counting null prev_record_hash links as missing",
+      "expected_witness": "chain/partial-middle.jsonl (expects partial) flips to another status",
+      "targeted_result_field": "chain",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L3 candidate: missing predecessor treated as intact (accounting form)",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "    if (current.prev_record_hash == null) {\n      missing++;\n      continue;\n    }",
+      "replace": "    if (false) { // FAULT: missing links not accounted\n      missing++;\n      continue;\n    }",
+      "witness_fixtures": [
+        "chain/partial-middle.jsonl"
+      ]
+    },
+    {
+      "fault_id": "L3-3",
+      "layer": "L3-chain",
+      "target_rule": "partial-chain verdict",
+      "mutation_description": "never emit the partial verdict",
+      "expected_witness": "chain/partial-last.jsonl and chain/partial-middle.jsonl (expect partial) flip to intact",
+      "targeted_result_field": "chain",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L3 candidate: partial chain treated as intact",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "  if (missing > 0) return { valid: true, status: \"partial\" };",
+      "replace": "  if (false) return { valid: true, status: \"partial\" }; // FAULT: partial verdict removed",
+      "witness_fixtures": [
+        "chain/partial-last.jsonl",
+        "chain/partial-middle.jsonl"
+      ]
+    },
+    {
+      "fault_id": "L3-4",
+      "layer": "L3-chain",
+      "target_rule": "orphaned-chain verdict (singleton)",
+      "mutation_description": "a singleton record claiming a predecessor is judged not-present instead of orphaned",
+      "expected_witness": "chain/singleton-with-prev.jsonl (expects orphaned) flips to not-present",
+      "targeted_result_field": "chain",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L3 candidate: orphaned chain treated as intact-family",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "      status: records[0]?.prev_record_hash == null ? \"not-present\" : \"orphaned\",",
+      "replace": "      status: \"not-present\", // FAULT: orphaned verdict removed",
+      "witness_fixtures": [
+        "chain/singleton-with-prev.jsonl"
+      ]
+    },
+    {
+      "fault_id": "L3-5",
+      "layer": "L3-chain",
+      "target_rule": "chain evaluation executed at all",
+      "mutation_description": "short-circuit verifyAEPChain to always return intact while still emitting a verdict",
+      "expected_witness": "chain/missing-all.jsonl (expects not-present) and chain/broken-middle.jsonl (expects broken) flip to intact",
+      "targeted_result_field": "chain",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 L3 candidate: chain evaluation silently skipped while an outcome is emitted",
+      "adapter": "consumer-js",
+      "target_file": "packages/aep/src/verify.ts",
+      "find": "  if (records.length === 0) {",
+      "replace": "  return { valid: true, status: \"intact\" }; // FAULT: chain eval skipped, outcome emitted\n  if (records.length === 0) {",
+      "witness_fixtures": [
+        "chain/missing-all.jsonl",
+        "chain/broken-middle.jsonl"
+      ]
+    },
+    {
+      "fault_id": "RC-1",
+      "layer": "result-contract",
+      "target_rule": "R6 — evaluated=false carries no outcome",
+      "mutation_description": "suppress the R6 violation error",
+      "expected_witness": "envelopes/rc1-evaluated-false-with-status.json must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 result-contract candidate: evaluated=false allowed to carry an outcome",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "    if (axis.status !== undefined) {",
+      "replace": "    if (false) { // FAULT: R6 suppressed"
+    },
+    {
+      "fault_id": "RC-2",
+      "layer": "result-contract",
+      "target_rule": "evaluated=true requires an outcome",
+      "mutation_description": "silently accept an evaluated axis with no status",
+      "expected_witness": "envelopes/rc2-evaluated-true-no-status.json must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 result-contract candidate: evaluated axis allowed with no outcome",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "  if (axis.status === undefined) {\n    errors.push(`${name}: evaluated=true requires a status from [${AXIS_STATUS[name].join(\", \")}]`);\n    return;\n  }",
+      "replace": "  if (axis.status === undefined) {\n    return; // FAULT: missing outcome silently accepted\n  }"
+    },
+    {
+      "fault_id": "RC-3",
+      "layer": "result-contract",
+      "target_rule": "no aggregate verdict / unknown keys forbidden",
+      "mutation_description": "stop rejecting unknown top-level keys (an aggregate `verdict` field becomes representable)",
+      "expected_witness": "envelopes/rc3-aggregate-verdict.json must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 result-contract candidate: aggregate verdict introduced",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "    if (!ALLOWED_TOP_LEVEL.has(key)) {",
+      "replace": "    if (false) { // FAULT: unknown keys accepted"
+    },
+    {
+      "fault_id": "RC-4",
+      "layer": "result-contract",
+      "target_rule": "R10 — complete-evidenced requires witness_profile",
+      "mutation_description": "accept capture completeness without an independent witness profile",
+      "expected_witness": "envelopes/rc4-capture-complete-no-witness.json must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 result-contract candidate: capture-complete asserted without witness",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "    if (typeof axis.witness_profile !== \"string\" || axis.witness_profile.length === 0) {",
+      "replace": "    if (false) { // FAULT: witness requirement removed"
+    },
+    {
+      "fault_id": "RC-5",
+      "layer": "result-contract",
+      "target_rule": "R10 — no top-level complete/capture_complete",
+      "mutation_description": "allow the top-level completeness shortcut",
+      "expected_witness": "envelopes/rc5-top-level-complete.json must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "plan B1 result-contract candidate: producer-signed completeness shortcut accepted",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "  if (\"complete\" in envelope || \"capture_complete\" in envelope) {",
+      "replace": "  if (false) { // FAULT: top-level completeness accepted"
+    },
+    {
+      "fault_id": "CTL-POS-01",
+      "layer": "control",
+      "target_rule": "harness positive control",
+      "mutation_description": "identical to L1-1; the corpus MUST detect it or the run is invalid",
+      "expected_witness": "invalid-semantic/floor-roundup.json must flip",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "B2 positive control",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if _BACKING_RANK[floor] != min(_BACKING_RANK[g] for g in observed):",
+      "replace": "        if False:  # CONTROL-POSITIVE"
+    },
+    {
+      "fault_id": "CTL-INERT-01",
+      "layer": "control",
+      "target_rule": "harness inert control",
+      "mutation_description": "documentation-only comment change; every projected outcome must stay unchanged",
+      "expected_witness": "no outcome changes; run must remain exit 0 with identical per-fixture agreement",
+      "targeted_result_field": "none",
+      "known_or_heldout": "known",
+      "in_scope": true,
+      "reason": "B2 inert control",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "# Canonical grade order for floor semantics (weakest first).",
+      "replace": "# Canonical grade order for floor semantics (weakest first; inert doc mutation)."
+    },
+    {
+      "fault_id": "H1",
+      "layer": "L1-semantics",
+      "target_rule": "weakest-floor recomputation (inverted form)",
+      "mutation_description": "invert the weakest-floor comparison so valid floors are rejected",
+      "expected_witness": "valid/*.json fixtures (floor == weakest observed) would be rejected — false-positive direction",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "heldout",
+      "in_scope": true,
+      "reason": "B5 held-out: different formulation of the L1-1 target, defined before corpus repair and not used to tune it",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if _BACKING_RANK[floor] != min(_BACKING_RANK[g] for g in observed):",
+      "replace": "        if _BACKING_RANK[floor] == min(_BACKING_RANK[g] for g in observed):  # FAULT(H1): inverted",
+      "witness_fixtures": [
+        "valid/unsigned-v05.json",
+        "valid/minimal-v05.json",
+        "valid/default-emitter-build-v05.json",
+        "valid/proto-key-preserved.json"
+      ]
+    },
+    {
+      "fault_id": "H2",
+      "layer": "L0-structural",
+      "target_rule": "pattern constraints",
+      "mutation_description": "strip every `pattern` keyword from the canonical schema",
+      "expected_witness": "no frozen fixture is invalid solely via pattern; expected survivor → candidate gap",
+      "targeted_result_field": "structural",
+      "known_or_heldout": "heldout",
+      "in_scope": true,
+      "reason": "B5 held-out: pattern-constraint class, declared before repair",
+      "adapter": "python-corpus",
+      "target_file": "scripts/run-aep-conformance-corpus.py",
+      "find": "    validator = Validator(canonical)",
+      "replace": "    def _strip_pattern(o):\n        if isinstance(o, dict):\n            o.pop(\"pattern\", None)\n            for v in o.values():\n                _strip_pattern(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_pattern(v)\n    _strip_pattern(canonical)\n    validator = Validator(canonical)",
+      "witness_fixtures": []
+    },
+    {
+      "fault_id": "H3",
+      "layer": "L2-authenticity",
+      "target_rule": "consumer expectation comparison (unsigned not re-checked)",
+      "mutation_description": "relax the consumer's validity comparison so any non-invalid verdict passes the dsse-valid expectation",
+      "expected_witness": "expected survivor: the consumer adapter never re-checks `authenticity: unsigned` entries, so relaxing to !== invalid changes no projected verdict",
+      "targeted_result_field": "authenticity",
+      "known_or_heldout": "heldout",
+      "in_scope": true,
+      "reason": "B5 held-out: expectation-comparison formulation, declared before repair",
+      "adapter": "consumer-js",
+      "target_file": "scripts/verify-corpus.mjs",
+      "find": "    const valid = detailed.authenticity === \"dsse-valid\";",
+      "replace": "    const valid = detailed.authenticity !== \"invalid\"; // FAULT(H3): relaxed",
+      "witness_fixtures": []
+    },
+    {
+      "fault_id": "H4",
+      "layer": "L1-semantics",
+      "target_rule": "observed-set vocabulary check",
+      "mutation_description": "remove the observed-grade vocabulary check (redundancy-masking probe: the enum structural layer also rejects that fixture)",
+      "expected_witness": "invalid-semantic/unknown-attribution-grade.json is doubly invalid; removing one of the two layers may be masked — measures layered redundancy",
+      "targeted_result_field": "semantic",
+      "known_or_heldout": "heldout",
+      "in_scope": true,
+      "reason": "B5 held-out: redundancy-masking formulation, declared before repair",
+      "adapter": "python-corpus",
+      "target_file": "src/wasmagent_protocol/conformance.py",
+      "find": "        if any(g not in _BACKING_RANK for g in observed):",
+      "replace": "        if False:  # FAULT(H4): observed vocabulary check removed",
+      "witness_fixtures": [
+        "invalid-semantic/unknown-attribution-grade.json"
+      ]
+    },
+    {
+      "fault_id": "H5",
+      "layer": "result-contract",
+      "target_rule": "R10 witness_profile non-empty (boundary form)",
+      "mutation_description": "accept an empty-string witness_profile (boundary constant corrupted instead of check removed)",
+      "expected_witness": "envelopes/h5-empty-witness-profile.json (witness_profile \"\") must flip to ACCEPTED",
+      "targeted_result_field": "envelope.valid",
+      "known_or_heldout": "heldout",
+      "in_scope": true,
+      "reason": "B5 held-out: boundary-value formulation of RC-4, declared before repair",
+      "adapter": "result-contract",
+      "target_file": "scripts/verifier-result-contract.mjs",
+      "find": "    if (typeof axis.witness_profile !== \"string\" || axis.witness_profile.length === 0) {",
+      "replace": "    if (typeof axis.witness_profile !== \"string\" || axis.witness_profile.length === 99) { // FAULT(H5): boundary corrupted"
+    }
+  ]
+}

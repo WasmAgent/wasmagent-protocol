@@ -1,0 +1,222 @@
+{
+  "schema": "wasmagent-aep-adequacy-run/v1",
+  "selection": "known",
+  "frozen_authority": {
+    "schema": "wasmagent-aep-adequacy-frozen-authority/v1",
+    "frozen_at_utc": "2026-10-01T00:00:00Z",
+    "purpose": "B0 evidence freeze for the AEP conformance corpus adequacy workstream. The adequacy run measures corpus discrimination against seeded verifier faults; it NEVER modifies the authority chain and never masquerades as a certified-target run.",
+    "repository": "WasmAgent/wasmagent-protocol",
+    "protocol_repo_sha": "b0fd2abc4fb6c8e22bc77c3efef037a0c1bb3a0c",
+    "authority": {
+      "certified_target_id": "aep-certified-2026-09-16-01",
+      "certified_target_sha256": "00b0f113c62553e447f7ee53593293e9a07154ebacdacf3555581049b4aa5fad",
+      "predecessor_target_id": "aep-certified-2026-09-13-03",
+      "gate_c_run_id": "35051620734",
+      "note": "The -03 external run (aps-conformance-suite PR #94) remains immutable historical evidence. The adequacy workstream is NOT a certification and MUST NOT be recorded in certified-target.json."
+    },
+    "measured_inputs": {
+      "manifest": {
+        "path": "conformance/aep/manifest.json",
+        "sha256": "6cb3dab3c0ac959df5dd8f0ebf362e5a50a1e9e73e1e6146179fad3804dbdc73"
+      },
+      "verifier_result_contract": {
+        "path": "conformance/aep/verifier-result-contract.md",
+        "sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b"
+      },
+      "corpus_fixture_count_conformance_target": 30,
+      "corpus_fixture_count_on_disk": 32,
+      "note": "32 files on disk = 30 manifest entries + 2 .hex verify keys."
+    },
+    "verifier_sources_under_test": {
+      "python_corpus_runner": "scripts/run-aep-conformance-corpus.py",
+      "python_semantic_reference": "src/wasmagent_protocol/conformance.py",
+      "result_contract_validator": "scripts/verifier-result-contract.mjs",
+      "consumer_js_gate": "WasmAgent/wasmagent-js scripts/verify-corpus.mjs (+ packages/aep/src verify.ts / dsse.ts)"
+    },
+    "non_invasiveness_contract": [
+      "The harness writes ONLY inside conformance/aep/adequacy/ (reports) and a temporary directory that is deleted after the run.",
+      "Mutants are temporary patched copies generated from declarative find/replace records in faults-v1.json; the in-tree verifiers are never modified.",
+      "The harness reads certified-target.json and manifest.json for identity only; a change to either invalidates the freeze (hash mismatch) and the run refuses to start unless --allow-drift is passed and the drift is recorded in the report.",
+      "Adequacy results are NEVER promotion evidence: no field of a run may be referenced from certified-target.json, gate-provenance, or publication records."
+    ]
+  },
+  "drift_recorded": [],
+  "faults_manifest_id": "aep-adequacy-faults-v1",
+  "protocol_repo_sha": "b0fd2abc4fb6c8e22bc77c3efef037a0c1bb3a0c",
+  "consumer_js": {
+    "path": "/Users/I041705/github/wasmagent-js",
+    "head": "0a9b8d21d0e889168b9ba708bee1171d58f05f92"
+  },
+  "manifest_sha256": "6cb3dab3c0ac959df5dd8f0ebf362e5a50a1e9e73e1e6146179fad3804dbdc73",
+  "contract_sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b",
+  "controls": [
+    {
+      "fault_id": "CTL-POS-01",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "CTL-INERT-01",
+      "outcome": "inert-ok",
+      "exit": 0
+    }
+  ],
+  "results": [
+    {
+      "fault_id": "CTL-POS-01",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "CTL-INERT-01",
+      "outcome": "inert-ok",
+      "exit": 0
+    },
+    {
+      "fault_id": "L0-1",
+      "outcome": "survivor",
+      "exit": 0
+    },
+    {
+      "fault_id": "L0-2",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L0-3",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L0-4",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L0-5",
+      "outcome": "survivor",
+      "exit": 0
+    },
+    {
+      "fault_id": "L1-1",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L1-2",
+      "outcome": "survivor",
+      "exit": 0
+    },
+    {
+      "fault_id": "L1-3",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L1-4",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L1-5",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L1-6",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-1",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-2",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-3",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-4",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-5",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-6",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L2-7",
+      "outcome": "survivor",
+      "exit": 0
+    },
+    {
+      "fault_id": "L3-1",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L3-2",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L3-3",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L3-4",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "L3-5",
+      "outcome": "detected",
+      "exit": 1
+    },
+    {
+      "fault_id": "RC-1",
+      "outcome": "detected",
+      "exit": 0
+    },
+    {
+      "fault_id": "RC-2",
+      "outcome": "detected",
+      "exit": 0
+    },
+    {
+      "fault_id": "RC-3",
+      "outcome": "detected",
+      "exit": 0
+    },
+    {
+      "fault_id": "RC-4",
+      "outcome": "detected",
+      "exit": 0
+    },
+    {
+      "fault_id": "RC-5",
+      "outcome": "detected",
+      "exit": 0
+    }
+  ],
+  "counts": {
+    "detected": 25,
+    "inert-ok": 1,
+    "survivor": 4
+  },
+  "generated_at_utc": "2026-10-01T02:15:23.035Z"
+}
