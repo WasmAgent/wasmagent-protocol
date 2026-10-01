@@ -130,7 +130,7 @@ try {
   runFaults();
 } finally {
   rmSync(TMP, { recursive: true, force: true });
-  if (consumerJs) rmSync(join(consumerJs, ".aep-adequacy"), { recursive: true, force: true });
+  if (consumerJs) rmSync(join(consumerJs, "packages", "aep", ".aep-adequacy"), { recursive: true, force: true });
 }
 
 // ── engine ───────────────────────────────────────────────────────────────────
@@ -184,10 +184,13 @@ function buildContractMutant(fault) {
 /** Build a consumer-js mutant (verify-corpus.mjs + full packages/aep/src copy). */
 function buildConsumerMutant(fault) {
   if (!consumerJs) return { error: "consumer-js adapter unavailable (pass --consumer-js)" };
-  // The mutant workspace lives INSIDE the consumer repo tree so package
-  // resolution (@noble/ed25519 …) walks up to the consumer's node_modules.
-  // It is namespaced and removed after the run (see the finally block).
-  const ws = join(consumerJs, ".aep-adequacy", fault.fault_id);
+  // The mutant workspace lives INSIDE the consumer repo tree, under
+  // packages/aep/, so package resolution (@noble/ed25519 …) walks up through
+  // packages/aep/node_modules — the layout that resolves under both bun
+  // linker modes (hoisted roots everything at the repo root; isolated keeps
+  // workspace deps under packages/aep/node_modules). It is namespaced and
+  // removed after the run (see the finally block).
+  const ws = join(consumerJs, "packages", "aep", ".aep-adequacy", fault.fault_id);
   const gateSrc = join(consumerJs, "scripts", "verify-corpus.mjs");
   cpSync(gateSrc, join(ws, "verify-corpus.mjs"));
   cpSync(join(consumerJs, "packages", "aep", "src"), join(ws, "aep"), { recursive: true });
