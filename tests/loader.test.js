@@ -41,7 +41,7 @@ test('getAepConformanceDir locates the packaged corpus', () => {
 test('getAepConformanceManifest parses the verdict authority', () => {
   const manifest = getAepConformanceManifest();
   assert.equal(manifest.schema_version, 2);
-  assert.equal(manifest.conformance_target.length, 30);
+  assert.equal(manifest.conformance_target.length, 32); // 30 + 2 adequacy-repair fixtures (L0-1, L2-7)
   assert.equal(manifest.signing_profile_id, 'aep-dsse-ed25519-decoded-body-v1');
 });
 
@@ -69,7 +69,7 @@ test('aepConformanceSelfCheck passes and states its boundary', () => {
   const { ok, report } = aepConformanceSelfCheck();
   assert.ok(ok, report.join('\n'));
   const joined = report.join('\n');
-  assert.match(joined, /30\/30/);
+  assert.match(joined, /32\/32/);
   assert.match(joined, /NOT independent semantic verification/);
   assert.match(joined, /structural layer: not executed/);
 });

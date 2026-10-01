@@ -65,6 +65,7 @@ const jsonOut = (() => {
   return i >= 0 ? resolve(args[i + 1]) : null;
 })();
 const allowDrift = args.includes("--allow-drift");
+const checkKnown = args.includes("--check-known");
 if (!want.known && !want.heldout && !want.all) {
   console.error("usage: run-adequacy.mjs --known | --heldout | --all [--consumer-js <dir>] [--json <file>] [--allow-drift]");
   process.exit(2);
@@ -319,6 +320,28 @@ function runFaults() {
   console.log(
     "\nCLAIM CEILING: project-owned mutation adequacy against the declared fault set — not independent semantic verification, not certification, not proof of corpus completeness or generalisation."
   );
+
+  if (checkKnown) {
+    // CI gate: controls green, no harness defects, and every survivor is one
+    // of the deliberately classified survivors in frozen-authority.json.
+    const allowlist = new Set(frozen.ci_gate?.classified_survivors_known ?? []);
+    const bad = [];
+    for (const r of results) {
+      if (r.fault_id.startsWith("CTL-")) continue;
+      if (["harness-defect", "crash", "missing-result", "unrelated-failure", "fail-closed-exit"].includes(r.outcome)) {
+        bad.push(`${r.fault_id}: ${r.outcome}`);
+      } else if (r.outcome === "survivor" && !allowlist.has(r.fault_id)) {
+        bad.push(`${r.fault_id}: unclassified survivor — classify it and update frozen-authority.json`);
+      } else if (r.outcome === "skipped-consumer-unavailable" && consumerJs) {
+        bad.push(`${r.fault_id}: skipped even though a consumer was provided`);
+      }
+    }
+    if (bad.length > 0) {
+      console.error(`CHECK-KNOWN FAILED:\n  - ${bad.join("\n  - ")}`);
+      process.exit(1);
+    }
+    console.log("CHECK-KNOWN OK: controls green, no harness defects, all survivors classified.");
+  }
 
   if (jsonOut) {
     writeFileSync(

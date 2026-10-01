@@ -11,7 +11,9 @@
 //   3. `npx --no-install wasmagent-protocol aep-conformance path` prints a
 //      path inside the installed package
 //   4. `npx --no-install wasmagent-protocol aep-conformance self-check`
-//      exits 0, reports 30/30 fixtures, and carries the not-independent notice
+//      exits 0, reports complete coverage of the packaged manifest target
+//      (N/N, with N derived from the installed manifest), and carries the
+//      not-independent notice
 //
 // Run: node scripts/smoke-npm-package.mjs
 
@@ -85,7 +87,23 @@ try {
   const out = `${checkRun.stdout}`;
   if (checkRun.status !== 0) fail(`aep-conformance self-check exited ${checkRun.status}`);
   else console.log("OK   aep-conformance self-check exited 0");
-  if (!/30\/30/.test(out)) fail("self-check did not report 30/30 corpus completeness");
+  // The packaged manifest is the corpus verdict authority: derive the expected
+  // completeness figure from what npm actually installed, so adding a fixture
+  // to the corpus never stale-dates this check against a hard-coded count.
+  let expected = null;
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(pathRun.stdout.trim(), "manifest.json"), "utf8"),
+    );
+    expected = Array.isArray(manifest.conformance_target)
+      ? manifest.conformance_target.length
+      : null;
+  } catch (e) {
+    fail(`could not read conformance_target from the installed manifest: ${e.message}`);
+  }
+  if (expected !== null && !out.includes(`${expected}/${expected}`)) {
+    fail(`self-check did not report ${expected}/${expected} corpus completeness`);
+  }
   if (!out.includes("NOT independent semantic verification")) {
     fail("self-check output missing the not-independent notice");
   }
