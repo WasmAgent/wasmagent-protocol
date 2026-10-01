@@ -30,7 +30,12 @@ def test_get_aep_conformance_dir_locates_corpus():
 def test_get_aep_conformance_manifest_is_verdict_authority():
     manifest = get_aep_conformance_manifest()
     assert manifest["schema_version"] == 2
-    assert len(manifest["conformance_target"]) == 30
+    # Corpus size is owned by the manifest, not by this test: the kit loader
+    # must resolve the same target set as the repo file, whatever its size.
+    repo_manifest = json.loads(
+        (REPO_ROOT / "conformance" / "aep" / "manifest.json").read_text(encoding="utf-8")
+    )
+    assert manifest["conformance_target"] == repo_manifest["conformance_target"]
     assert manifest["signing_profile_id"] == "aep-dsse-ed25519-decoded-body-v1"
 
 
@@ -81,7 +86,8 @@ def test_self_check_passes_on_source_corpus():
     ok, report = run_self_check()
     assert ok, "\n".join(report)
     joined = "\n".join(report)
-    assert "30/30" in joined
+    expected = len(get_aep_conformance_manifest()["conformance_target"])
+    assert f"{expected}/{expected}" in joined
     assert "NOT independent semantic verification" in joined
 
 

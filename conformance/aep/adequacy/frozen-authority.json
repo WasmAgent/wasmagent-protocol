@@ -43,5 +43,13 @@
       "reason": "B4 additive corpus repair (faults L0-1, L2-7): +invalid-schema/missing-required-field.json, +dsse/tampered-created-at.json. Additive only; prior fixtures untouched. A corpus-change certified-target generation follows the normal trigger policy at the next certification event — this repo edit does not create one.",
       "new_manifest_sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
     }
-  ]
+  ],
+  "ci_gate": {
+    "command": "node conformance/aep/adequacy/run-adequacy.mjs --known --check-known",
+    "semantics": "controls must pass; no harness-defect / crash / missing-result / unrelated-failure; every survivor must be in classified_survivors_known (a new survivor fails the gate and must be classified deliberately)",
+    "classified_survivors_known": [
+      "L0-5",
+      "L1-2"
+    ]
+  }
 }

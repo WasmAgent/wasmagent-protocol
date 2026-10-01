@@ -162,3 +162,11 @@ jobs:
         run: node scripts/check-assurance-language.mjs
       - name: Claim-language firewall
         run: node scripts/check-assurance-language.mjs
+      # Corpus adequacy gate (project-owned seeded-fault check): controls must
+      # pass, no harness defects, and every survivor must be one of the
+      # classified survivors in adequacy/frozen-authority.json. Consumer-JS
+      # (L2/L3) faults run in the protocol-only configuration here; the full
+      # run including the consumer adapter stays a manual/nightly command
+      # (see adequacy/README.md).
+      - name: Corpus adequacy gate (known faults + controls)
+        run: node conformance/aep/adequacy/run-adequacy.mjs --known --check-known
