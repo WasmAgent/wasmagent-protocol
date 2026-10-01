@@ -72,6 +72,14 @@ node conformance/aep/adequacy/run-adequacy.mjs --known
 node conformance/aep/adequacy/run-adequacy.mjs --known \
   --consumer-js /path/to/wasmagent-js
 
+# ONLY the consumer-side L2/L3 known subset (controls still gate the run);
+# this is the subset the exact-SHA CI lane executes:
+node conformance/aep/adequacy/run-adequacy.mjs --known --consumer-only \
+  --consumer-js /path/to/wasmagent-js \
+  --json consumer-adequacy-l2l3.json
+node conformance/aep/adequacy/check-consumer-lane-result.mjs \
+  consumer-adequacy-l2l3.json <pinned-40-hex-consumer-sha>
+
 # held-out round (run only AFTER the repaired corpus is frozen):
 node conformance/aep/adequacy/run-adequacy.mjs --heldout \
   --consumer-js /path/to/wasmagent-js
@@ -80,3 +88,19 @@ node conformance/aep/adequacy/run-adequacy.mjs --heldout \
 The harness refuses to start if `manifest.json` / `verifier-result-contract.md`
 no longer match the frozen hashes (corpus drift), unless `--allow-drift` is
 passed — in which case the drift is recorded prominently in the report.
+
+## Exact-SHA consumer CI lane
+
+The `consumer-adequacy-exact-sha` job in `.github/workflows/conformance.yml`
+runs the consumer-only subset in CI against `WasmAgent/wasmagent-js` checked
+out at ONE explicitly pinned full 40-hex SHA (the `CONSUMER_JS_SHA` job env —
+bump it deliberately in the PR that re-verifies the new consumer SHA; never a
+floating branch), installs the consumer with a frozen lockfile, and enforces
+the machine-readable result contract (`check-consumer-lane-result.mjs`:
+controls green, exact L2/L3 fault set present, declared result vocabulary,
+no crash/missing-result/harness-defect/unclassified-survivor, consumer SHA
+drift fails the lane, claim ceiling verbatim).
+
+Claim ceiling of that lane: **project-owned cross-repository adequacy** — it
+is NOT independent semantic verification, NOT independent authenticity
+verification, and NOT certification.
