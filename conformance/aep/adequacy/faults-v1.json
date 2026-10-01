@@ -32,7 +32,16 @@
       "target_file": "scripts/run-aep-conformance-corpus.py",
       "find": "    validator = Validator(canonical)",
       "replace": "    def _strip_required(o):\n        if isinstance(o, dict):\n            o.pop(\"required\", None)\n            for v in o.values():\n                _strip_required(v)\n        elif isinstance(o, list):\n            for v in o:\n                _strip_required(v)\n    _strip_required(canonical)\n    validator = Validator(canonical)",
-      "witness_fixtures": []
+      "witness_fixtures": [
+        "invalid-schema/missing-required-field.json"
+      ],
+      "witness_amendments": [
+        {
+          "at_round": "v2-post-repair",
+          "added": "invalid-schema/missing-required-field.json",
+          "reason": "repair-round fixture; v1 ran with an empty witness list (any-new-failure semantics)"
+        }
+      ]
     },
     {
       "fault_id": "L0-2",
@@ -343,7 +352,15 @@
       "find": "    if (canonicalDigest(predicate) !== canonicalDigest(unsigned)) return \"invalid\";",
       "replace": "    if (false) return \"invalid\"; // FAULT: predicate binding removed",
       "witness_fixtures": [
-        "dsse/tampered-run-id.json"
+        "dsse/tampered-run-id.json",
+        "dsse/tampered-created-at.json"
+      ],
+      "witness_amendments": [
+        {
+          "at_round": "v2-post-repair",
+          "added": "dsse/tampered-created-at.json",
+          "reason": "repair-round fixture; v1 witnesses preserved for reproducibility at the v1 commit"
+        }
       ]
     },
     {

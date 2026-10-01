@@ -14,15 +14,16 @@
   "measured_inputs": {
     "manifest": {
       "path": "conformance/aep/manifest.json",
-      "sha256": "6cb3dab3c0ac959df5dd8f0ebf362e5a50a1e9e73e1e6146179fad3804dbdc73"
+      "sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
     },
     "verifier_result_contract": {
       "path": "conformance/aep/verifier-result-contract.md",
       "sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b"
     },
-    "corpus_fixture_count_conformance_target": 30,
-    "corpus_fixture_count_on_disk": 32,
-    "note": "32 files on disk = 30 manifest entries + 2 .hex verify keys."
+    "corpus_fixture_count_conformance_target": 32,
+    "corpus_fixture_count_on_disk": 34,
+    "note": "32 files on disk = 30 manifest entries + 2 .hex verify keys.",
+    "previous_manifest_sha256": "6cb3dab3c0ac959df5dd8f0ebf362e5a50a1e9e73e1e6146179fad3804dbdc73"
   },
   "verifier_sources_under_test": {
     "python_corpus_runner": "scripts/run-aep-conformance-corpus.py",
@@ -35,5 +36,12 @@
     "Mutants are temporary patched copies generated from declarative find/replace records in faults-v1.json; the in-tree verifiers are never modified.",
     "The harness reads certified-target.json and manifest.json for identity only; a change to either invalidates the freeze (hash mismatch) and the run refuses to start unless --allow-drift is passed and the drift is recorded in the report.",
     "Adequacy results are NEVER promotion evidence: no field of a run may be referenced from certified-target.json, gate-provenance, or publication records."
+  ],
+  "refreeze_log": [
+    {
+      "at_utc": "2026-10-01",
+      "reason": "B4 additive corpus repair (faults L0-1, L2-7): +invalid-schema/missing-required-field.json, +dsse/tampered-created-at.json. Additive only; prior fixtures untouched. A corpus-change certified-target generation follows the normal trigger policy at the next certification event — this repo edit does not create one.",
+      "new_manifest_sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
+    }
   ]
 }
