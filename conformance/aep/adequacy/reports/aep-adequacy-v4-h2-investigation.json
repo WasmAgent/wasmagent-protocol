@@ -1,0 +1,93 @@
+{
+  "schema": "wasmagent-aep-adequacy-investigation/v1",
+  "investigation_id": "aep-adequacy-v4-h2-investigation",
+  "frozen_at_utc": "2026-10-01",
+  "purpose": "Closure record for the planned v4 H2 additive repair round. The planned repair (one fixture invalid solely via a schema `pattern` violation, run as a new KNOWN fault) was found to be impossible without a BREAKING canonical-schema change. This record freezes the evidence and the decision analysis. It is NOT a repair round, NOT held-out evidence, NOT independent verification, and NOT certification. No corpus fixture, manifest entry, schema, or fault manifest was added or modified by this investigation.",
+  "predecessor_round": "aep-adequacy-v3-heldout",
+  "investigated_fault": {
+    "fault_id": "H2",
+    "declared_in": "conformance/aep/adequacy/faults-v1.json (manifest_id aep-adequacy-faults-v1)",
+    "known_or_heldout": "heldout",
+    "historical_classification_v3": "corpus-discrimination-gap",
+    "mutation": "strip every `pattern` keyword from the canonical schema before validation",
+    "mutation_target_file": "scripts/run-aep-conformance-corpus.py",
+    "historical_v3_file_unchanged": true
+  },
+  "identity": {
+    "protocol_repo_sha": "3270b83c2d5814ac0c04cdeb2d7b618de1daedd4",
+    "corpus_manifest_sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48",
+    "corpus_manifest_matches_frozen_authority": true,
+    "verifier_result_contract_sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b",
+    "faults_v1_sha256": "b6d90640e3b854f3ef9c707f9a59b11bda82f7c64e041f41f4f7a46a584cd117",
+    "frozen_authority_sha256": "0b092561b7d8d29cc4fc79c1303d78ac4c3ff75252540f15122536fc72910a34",
+    "canonical_schema_path": "schemas/aep/aep-record.schema.json",
+    "canonical_schema_sha256": "fd24ecd63e8181c97a20e0ec66fcfd11a8834f98b8a2efe3c876efb5e27f8aa2"
+  },
+  "evidence": {
+    "reproduced_known_gate": {
+      "command": "node conformance/aep/adequacy/run-adequacy.mjs --known",
+      "result": "CHECK-KNOWN OK",
+      "summary": {
+        "detected": 15,
+        "inert-ok": 1,
+        "survivor": 2,
+        "skipped-consumer-unavailable": 12
+      },
+      "survivors": ["L0-5", "L1-2"],
+      "note": "survivors are the deliberately classified ones in frozen-authority.json ci_gate"
+    },
+    "reproduced_heldout_without_consumer": {
+      "command": "node conformance/aep/adequacy/run-adequacy.mjs --heldout",
+      "summary": {
+        "detected": 1,
+        "unrelated-failure": 1,
+        "survivor": 2,
+        "skipped-consumer-unavailable": 1
+      },
+      "h2_outcome": "survivor",
+      "note": "H2 survivor reproduced on main @ 3270b83; H1 unrelated-failure is the pre-declared witness-direction misprediction preserved verbatim from v3; H3 skipped (consumer adapter not attached in this reproduction)"
+    },
+    "zero_pattern_analysis": {
+      "pattern_keyword_count_in_canonical_schema": 0,
+      "pattern_keyword_count_in_schemas_dir": "only mcp-posture / compliance rollout-wire / agentbom schemas declare `pattern`; none of them is the corpus canonical schema",
+      "strip_pattern_transform_is_identity_on_canonical_schema": true,
+      "method": "deep-copy the canonical schema, recursively pop every `pattern` key (the exact transform the H2 mutation injects), compare canonical-form JSON equality with the original: equal"
+    },
+    "historical_reports_unchanged": {
+      "aep-adequacy-v1-known.json_git_blob": "85c502476bfac673d9f12fa7731cca8e5c2504b1",
+      "aep-adequacy-v1-known.md_git_blob": "3d557625544b22b2ca8bf9e30491f6a380397162",
+      "aep-adequacy-v2-known-post-repair.json_git_blob": "d35cd0ec470d3e966b4a85db3fe041bcf304899c",
+      "aep-adequacy-v2-known-post-repair.md_git_blob": "4d9cd46c861819047c014c114fe3fdee7999adc4",
+      "aep-adequacy-v3-heldout.json_git_blob": "b746d075e9aec52ef78d0280f4541ded3b767c4a",
+      "aep-adequacy-v3-heldout.md_git_blob": "38e665d395c3e98f1a9be2db3728ae0707e14a1a",
+      "note": "each file is touched only by the commit that created it; no post-merge rewrite"
+    }
+  },
+  "finding": {
+    "statement": "The canonical AEP record schema declares ZERO `pattern` constraints. The H2 mutation (strip every `pattern` keyword from the canonical schema) is therefore an IDENTITY transform at this contract version: the mutant computes exactly the same function as the unmutated verifier on every possible input, not just on corpus inputs. No fixture can be invalid solely via a `pattern` violation, because the contract contains no `pattern` rule to violate.",
+    "reclassification_assessment": "The v3 classification `corpus-discrimination-gap` (\"no fixture is invalid solely via a pattern violation\") is factually true but understates the situation: the corpus is not missing a fixture, the contract is missing the feature. Under the declared survivor_classes vocabulary this is the `equivalent-mutant` class (same class as L1-2). The v3 report file itself remains immutable historical evidence; any reclassification is a NEW statement in THIS record and requires maintainer ratification (needs-review).",
+    "repair_blocker": "The planned repair requires a `pattern` constraint to exist in schemas/aep/aep-record.schema.json. Adding one (e.g. a non-empty run_id pattern) tightens schema acceptance: per docs/CONTRACT-CHANGE-PROCESS.md section 1, \"Tighten a constraint (narrow enum, stricter pattern)\" is a BREAKING change requiring a major version bump, new schema version, an org RFC, a release-ledger announcement before merge, and consumer tracking issues. It also requires the consumer schema copy (wasmagent-js packages/aep/schemas/aep-record.schema.json) to gain the identical constraint to stay Gate-B clean. A closure round scoped as \"finite, no unrelated expansion\" cannot carry that, and a round that silently reclassified the schema edit as corpus-only would make a later certification_reason=[\"corpus-change\"] dishonest."
+  },
+  "resolution_options": [
+    {
+      "option": "A — ratify equivalent-mutant reclassification (no schema change)",
+      "action": "Record H2 as equivalent-mutant at contract version aep/v0.5 (this record + maintainer sign-off); close the H2 gap as a classification correction, not a repair. If the contract later gains pattern constraints in a breaking-contract round, H2 becomes a live known fault again and the additive fixture path opens.",
+      "certification_impact": "no corpus change, no certification trigger from this workstream"
+    },
+    {
+      "option": "B — schedule the breaking schema change as its own round",
+      "action": "Run the full CONTRACT-CHANGE-PROCESS.md section 3 path (RFC, release ledger, major bump, consumer copy + tracking issues), then perform the v4 additive repair exactly as planned, then certify with an honestly broader certification_reason (schema-change and corpus-change).",
+      "certification_impact": "certification_reason must include schema-change; a corpus-change-only label would be dishonest"
+    }
+  ],
+  "non_changes": [
+    "no fixture added or modified",
+    "no manifest.json change (corpus_manifest_sha256 still equals the frozen value)",
+    "no canonical schema change",
+    "no faults-v2.json created (no repair exists to record)",
+    "no frozen-authority.json refreeze (nothing measured changed)",
+    "historical reports v1/v2/v3 byte-unchanged",
+    "certified-target.json and the authority chain untouched"
+  ],
+  "claim_ceiling": "Project-owned mutation adequacy against the declared fault set — not independent semantic verification, not certification, not proof of corpus completeness or generalisation. This investigation record is engineering analysis frozen as evidence; it is never promotion evidence."
+}
