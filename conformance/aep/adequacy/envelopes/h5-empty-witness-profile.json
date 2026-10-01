@@ -1,0 +1,9 @@
+{
+  "profile": "aep-dsse-ed25519-decoded-body-v1",
+  "subject": "aep-adequacy-harness",
+  "structural": { "evaluated": true, "status": "pass" },
+  "semantic": { "evaluated": true, "status": "pass", "violations": [] },
+  "authenticity": { "evaluated": true, "status": "valid", "binding": "exact" },
+  "chain": { "evaluated": true, "status": "intact" },
+  "capture": { "evaluated": true, "status": "complete-evidenced", "witness_profile": "" }
+}
