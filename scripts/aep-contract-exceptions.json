@@ -368,10 +368,10 @@
     },
     {
       "path": "prev_record_hash",
-      "kind": "extra-in-consumer",
-      "class": "intentional-extension",
-      "reason": "chain linkage modeled in consumer; canonical adoption pending (#214).",
-      "canonical_hash": null,
+      "kind": "semantic-drift",
+      "class": "compatibility-exception",
+      "reason": "canonical now defines prev_record_hash with type:[string,null] + pattern (hex-64); consumer schema has the type constraint only. Pattern enforcement is additive and backward-compatible; consumer update tracked separately.",
+      "canonical_hash": "{\"pattern\": \"^[0-9a-f]{64}$\", \"type\": [\"string\", \"null\"]}",
       "consumer_hash": "{\"type\": [\"string\", \"null\"]}"
     },
     {
