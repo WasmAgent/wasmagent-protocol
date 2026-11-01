@@ -17,7 +17,8 @@
     "note": "corpus seed c0ffee00 x8, key id conformance-seed-key-01; the pinned rust fixture uses dsse/rust-fixture-verify-key.hex (seed deadbeef x8).",
     "by_keyid": {
       "conformance-seed-key-01": "dsse/js-verify-key.hex",
-      "ci-sample-key": "dsse/rust-fixture-verify-key.hex"
+      "ci-sample-key": "dsse/rust-fixture-verify-key.hex",
+      "sig-tampered-verify-key-01": "dsse/sig-tampered-verify-key-01.hex"
     }
   },
   "conformance_target": [
@@ -247,6 +248,14 @@
       "semantic": "valid",
       "authenticity": "invalid",
       "note": "derived_from dsse/js-signed-v05.json with created_at_ms mutated after signing — only the canonical predicate/record digest binding rejects it (subject-name binding is unaffected). Adequacy repair for fault L2-7 (aep-adequacy-v1-known)."
+    },
+    {
+      "path": "dsse/tampered-sig-only.json",
+      "structural": "valid",
+      "semantic": "valid",
+      "authenticity": "invalid",
+      "verify_key": "dsse/sig-tampered-verify-key-01.hex",
+      "note": "Pins Ed25519 signature verification as a distinct fault (L2-sig-only). Payload and record are consistent — the DSSE binding and subject-name checks both pass — but the final byte of the Ed25519 signature has been flipped. A verifier that skips raw signature verification but otherwise validates binding passes this record as dsse-valid instead of invalid. Adequacy repair for the unpinned-signature gap reported in wasmagent-protocol#261."
     }
   ],
   "historical": [
@@ -256,7 +265,7 @@
       "note": "UNSUPPORTED HISTORICAL ARTIFACT. JS legacy construction (Ed25519 over raw sorted-canonical bytes), retired in the clean cut — kept as evidence only."
     },
     {
-      "path": "historical/rust-struct-order-sha256-ed25519.json",
+      "path": "historical/rust-sha256-ed25519.json",
       "conformance_target": false,
       "note": "UNSUPPORTED HISTORICAL ARTIFACT. Rust gateway construction (Ed25519 over SHA-256 of struct-order JSON), retired — kept as evidence only; rust-legacy-key.hex is likewise historical."
     }

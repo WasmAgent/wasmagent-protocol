@@ -494,6 +494,13 @@
       },
       "additionalProperties": true
     },
+    "prev_record_hash": {
+      "description": "SHA-256 hex digest of the previous AEP record in this chain (additive, aep/v0.3+). The digest is computed over the canonical JSON of the previous record with the `signature` and `dsse_envelope` fields excluded; canonical JSON is RFC 8785 (JSON Canonicalization Scheme). Null for the first record in a chain or when chaining is not used. The subject digest of the in-toto Statement for a DSSE-signed record is the SHA-256 of the same canonical-JSON predicate; the subject name is `urn:wasmagent:run:` followed by the record's `run_id`.",
+      "oneOf": [
+        { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        { "type": "null" }
+      ]
+    },
     "dsse_envelope": {
       "description": "DSSE envelope (aep/v0.4+). Present when the producer signed via DSSE PAE; the legacy signature field is derived from the envelope's signatures[0] for backward compatibility. payload is base64-encoded; payloadType uses DSSE PayloadType format.",
       "type": "object",

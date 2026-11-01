@@ -33,6 +33,36 @@ lists a fixture path plus expected verdicts per layer:
   one signature per envelope. See the `dsse` block in `manifest.json`.
 - **Verifying keys:** `manifest.json#verifying_keys` maps key ids to key files
   under `dsse/`. The pinned Rust fixture uses its own key (`rust-fixture-verify-key.hex`).
+
+## DSSE predicate, subject, and chain-hash definitions
+
+These definitions are normative for any verifier claiming AEP authenticity
+conformance.
+
+**Predicate (the signed body):** the AEP record JSON object with exactly two
+top-level fields removed before signing: `signature` and `dsse_envelope`.
+No other fields are removed. The remaining object is serialized to canonical
+JSON (see below) and used as the in-toto Statement `predicate`.
+
+**Canonical JSON:** RFC 8785 JSON Canonicalization Scheme (JCS). All
+string and numeric values are serialized verbatim; object keys are sorted
+lexicographically by Unicode code point; no insignificant whitespace. This is
+the only supported canonicalization algorithm; implementations MUST use it and
+MUST NOT substitute alternatives.
+
+**Subject name:** `urn:wasmagent:run:` followed by the record's `run_id` value
+(e.g. `urn:wasmagent:run:conf-js-dsse`). The in-toto Statement carries exactly
+one subject entry with this name.
+
+**Subject digest:** SHA-256 of the canonical-JSON predicate bytes (the same
+object computed above). The digest is hex-encoded and stored under the
+`sha256` key in the subject's `digest` map.
+
+**`prev_record_hash` (chain link):** SHA-256 hex digest of the *previous*
+record's canonical-JSON predicate (i.e. the same object the previous record
+signs, with `signature` and `dsse_envelope` removed). `null` for the first
+record in a chain or when chaining is not used. See `prev_record_hash` in
+`aep-record.schema.json`.
 - **Fixture paths** in the manifest are corpus-relative; fixtures may be a
   single JSON document or `.jsonl` (one record per non-empty line).
 - **`historical/` fixtures are NOT part of the current target.** They exist for
