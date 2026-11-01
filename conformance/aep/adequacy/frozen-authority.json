@@ -14,16 +14,16 @@
   "measured_inputs": {
     "manifest": {
       "path": "conformance/aep/manifest.json",
-      "sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
+      "sha256": "3deae7ad4a7a0082e6d2a471d35356aef23a3f18dc83dabdaa1a6bd148657e2a"
     },
     "verifier_result_contract": {
       "path": "conformance/aep/verifier-result-contract.md",
       "sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b"
     },
-    "corpus_fixture_count_conformance_target": 32,
-    "corpus_fixture_count_on_disk": 34,
-    "note": "32 files on disk = 30 manifest entries + 2 .hex verify keys.",
-    "previous_manifest_sha256": "6cb3dab3c0ac959df5dd8f0ebf362e5a50a1e9e73e1e6146179fad3804dbdc73"
+    "corpus_fixture_count_conformance_target": 33,
+    "corpus_fixture_count_on_disk": 37,
+    "note": "33 conformance target entries; 3 .hex verify keys under dsse/.",
+    "previous_manifest_sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
   },
   "verifier_sources_under_test": {
     "python_corpus_runner": "scripts/run-aep-conformance-corpus.py",
@@ -42,6 +42,11 @@
       "at_utc": "2026-10-01",
       "reason": "B4 additive corpus repair (faults L0-1, L2-7): +invalid-schema/missing-required-field.json, +dsse/tampered-created-at.json. Additive only; prior fixtures untouched. A corpus-change certified-target generation follows the normal trigger policy at the next certification event — this repo edit does not create one.",
       "new_manifest_sha256": "1b0b22049226ecd37ea9f108beebe25d1113530f42c476e6e743a076ebb22f48"
+    },
+    {
+      "at_utc": "2026-11-01",
+      "reason": "B4 additive corpus repair (fault L2-sig-only): +dsse/tampered-sig-only.json + dsse/sig-tampered-verify-key-01.hex. Pins Ed25519 signature verification as a distinct corpus fault — addresses unpinned-signature gap reported in wasmagent-protocol#261 (Tetsurohhori blind run). Also: manifest.json filename fix (historical/rust-sha256-ed25519.json), prev_record_hash added to aep-record.schema.json, predicate/canonical-JSON/subject definitions added to IMPLEMENTER.md. Additive only; prior fixtures untouched.",
+      "new_manifest_sha256": "3deae7ad4a7a0082e6d2a471d35356aef23a3f18dc83dabdaa1a6bd148657e2a"
     }
   ],
   "ci_gate": {
