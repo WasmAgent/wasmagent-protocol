@@ -115,7 +115,33 @@ the producer itself signs is a **signed claim of completeness**, not
 - A bare `complete: true` anywhere in a result envelope is invalid by
   construction.
 
-## 6. Relation to other boundaries
+## 6. Multi-record authenticity aggregation (open gap)
+
+The result envelope in §3 is defined for a **single AEP record**. The contract
+currently has no normative rules for aggregating per-record authenticity
+outcomes across the records of a `.jsonl` chain file.
+
+The following questions are **undefined** by this contract:
+
+- Whether an aggregate authenticity status for a multi-record file should be a
+  single value or a per-record map
+- Whether `invalid` on any record dominates the aggregate
+- Whether heterogeneous outcomes (e.g. some `valid`, some `unsigned`) should
+  produce a new aggregate value or be represented differently
+- Whether `mixed` (or any equivalent) is a valid aggregate value
+
+Implementations that need to produce a per-file result today must define their
+own aggregation policy, clearly document it as an extension beyond this
+contract, and not present the aggregate as a contract-conformant outcome.
+
+A future revision of this contract will define multi-record aggregation rules.
+Until then, a verifier producing per-record envelopes (one per `.jsonl` line)
+is more conservative and easier to verify against the corpus than one producing
+a single aggregate.
+
+Tracking: wasmagent-protocol#266 (multi-record authenticity aggregation rules).
+
+## 7. Relation to other boundaries
 
 - Component identity vs publication identity: `conformance/aep/README.md`
 - External evidence vs certification: `conformance/aep/external-evidence/`

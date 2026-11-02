@@ -69,6 +69,45 @@ record in a chain or when chaining is not used. See `prev_record_hash` in
   backward-compatibility archaeology only — never score your implementation
   against them.
 
+## Semantic invariants (normative)
+
+These invariants are checked by the semantic layer (L1). A record that violates
+any invariant must receive `semantic: invalid` regardless of structural validity.
+
+### Attribution backing — pair-presence rule
+
+`run_attribution_backing_floor` and a non-empty
+`run_attribution_backing_observed` array must either both be present or both
+absent. Mixed presence is semantically invalid:
+
+| `floor` present | `observed` non-empty | Semantic verdict |
+|---|---|---|
+| yes | yes | valid (if count rules also pass) |
+| no | no | valid (no attribution claim) |
+| yes | no | **invalid** — floor without any observed grades |
+| no | yes | **invalid** — observed grades without a floor to bound them |
+
+### Empty observed set
+
+An empty `run_attribution_backing_observed` array (`[]`) is always semantically
+invalid. An empty set provides no grading evidence; the record makes an
+attribution assertion it cannot support. This applies even when no
+`run_attribution_backing_floor` is present.
+
+**This rule is not recoverable by providing a floor.** If `observed` is empty,
+the record is invalid. The fix is to emit the actual observed grades or omit
+both fields.
+
+### Attribution count rule
+
+When both `floor` and a non-empty `observed` are present, every observed grade's
+`count` must be consistent with the floor bound stated in the record. The exact
+constraint is encoded in the canonical JSON Schema (`aep-record.schema.json`);
+the semantic layer checks derived cross-field consistency not expressible in
+schema alone.
+
+---
+
 ## Rules for claiming an *independent* semantic verifier
 
 The corpus authors ship reference checkers (the `self-check` subcommand and
