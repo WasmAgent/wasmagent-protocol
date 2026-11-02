@@ -18,7 +18,7 @@
     },
     "verifier_result_contract": {
       "path": "conformance/aep/verifier-result-contract.md",
-      "sha256": "87aa3e0cffef14282b70be69663bb23873c4c06284a1cdb5524603d3ec274e3b"
+      "sha256": "394799dc781715e3a218bdce530e357840d12de8d2070fb6fa18f683906f12af"
     },
     "corpus_fixture_count_conformance_target": 33,
     "corpus_fixture_count_on_disk": 37,
@@ -47,6 +47,11 @@
       "at_utc": "2026-11-01",
       "reason": "B4 additive corpus repair (fault L2-sig-only): +dsse/tampered-sig-only.json + dsse/sig-tampered-verify-key-01.hex. Pins Ed25519 signature verification as a distinct corpus fault — addresses unpinned-signature gap reported in wasmagent-protocol#261 (Tetsurohhori blind run). Also: manifest.json filename fix (historical/rust-sha256-ed25519.json), prev_record_hash added to aep-record.schema.json, predicate/canonical-JSON/subject definitions added to IMPLEMENTER.md. Additive only; prior fixtures untouched.",
       "new_manifest_sha256": "3deae7ad4a7a0082e6d2a471d35356aef23a3f18dc83dabdaa1a6bd148657e2a"
+    },
+    {
+      "at_utc": "2026-11-03",
+      "reason": "Documentation-only refreeze: added §Semantic invariants to IMPLEMENTER.md (pair-presence rule, empty-observed rule); added §6 multi-record aggregation gap to verifier-result-contract.md with tracking ref #266. No corpus fixtures changed, no schema changes, no verdict changes. Only the verifier_result_contract sha256 needs updating.",
+      "new_verifier_result_contract_sha256": "394799dc781715e3a218bdce530e357840d12de8d2070fb6fa18f683906f12af"
     }
   ],
   "ci_gate": {
