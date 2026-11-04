@@ -46,9 +46,9 @@ JSON (see below) and used as the in-toto Statement `predicate`.
 
 **Canonical JSON:** RFC 8785 JSON Canonicalization Scheme (JCS). All
 string and numeric values are serialized verbatim; object keys are sorted
-lexicographically by Unicode code point; no insignificant whitespace. This is
-the only supported canonicalization algorithm; implementations MUST use it and
-MUST NOT substitute alternatives.
+lexicographically by UTF-16 code unit (RFC 8785 §3.2.3); no insignificant
+whitespace. This is the only supported canonicalization algorithm;
+implementations MUST use it and MUST NOT substitute alternatives.
 
 **Subject name:** `urn:wasmagent:run:` followed by the record's `run_id` value
 (e.g. `urn:wasmagent:run:conf-js-dsse`). The in-toto Statement carries exactly
